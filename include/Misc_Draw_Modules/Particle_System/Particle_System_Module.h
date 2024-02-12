@@ -48,6 +48,9 @@ namespace Particle_System
         void forcefully_emit_particles(unsigned int _amount = 1);
 
     public:
+        unsigned int alive_particles_amount() const;
+
+    public:
         void update(float _dt) override;
 
     };

@@ -58,6 +58,21 @@ void Particle_System_Module::forcefully_emit_particles(unsigned int _amount)
 
 
 
+unsigned int Particle_System_Module::alive_particles_amount() const
+{
+    unsigned int result = 0;
+
+    for(unsigned int i=0; i<m_particle_data.size(); ++i)
+    {
+        if(m_particle_data[i]->is_alive())
+            ++result;
+    }
+
+    return result;
+}
+
+
+
 void Particle_System_Module::update(float _dt)
 {
     L_ASSERT(m_particle_data_reseter);
@@ -69,7 +84,7 @@ void Particle_System_Module::update(float _dt)
 
     m_emission_timer.update(_dt);
 
-    if(!m_emission_timer.is_active())
+    if(!m_emission_timer.is_active() && m_emission_frequency > 0.000001f)
     {
         unsigned int ratio = _dt / m_emission_frequency;
         unsigned int amount = 1;
