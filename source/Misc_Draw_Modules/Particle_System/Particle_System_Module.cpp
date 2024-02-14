@@ -104,7 +104,7 @@ void Particle_System_Module::update(float _dt)
 
 
 
-INIT_FIELDS(Particle_System::Particle_System_Module_Stub, LV::Builder_Stub)
+INIT_FIELDS(Particle_System::Particle_System_Module_Stub, LEti::Module_Stub)
 
 ADD_FIELD(unsigned int, max_particles)
 ADD_FIELD(float, emission_frequency)
@@ -132,7 +132,7 @@ void Particle_System_Module_Stub::M_init_constructed_product(LV::Variable_Base* 
     L_ASSERT(particle_draw_module);
     L_ASSERT(particle_data_reseter_stub);
 
-    LV::Builder_Stub::M_init_constructed_product(_product);
+    LEti::Module_Stub::M_init_constructed_product(_product);
 
     Particle_System_Module* product = (Particle_System_Module*)_product;
 

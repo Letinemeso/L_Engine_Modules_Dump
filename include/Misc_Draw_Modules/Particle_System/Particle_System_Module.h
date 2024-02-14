@@ -41,6 +41,10 @@ namespace Particle_System
         inline void set_emission_frequency(float _value) { m_emission_frequency = _value; }
 
     public:
+        inline Particle_Data_Reseter* particle_data_reseter() { return m_particle_data_reseter; }
+        inline const Particle_Data_Reseter* particle_data_reseter() const { return m_particle_data_reseter; }
+
+    public:
         void set_transformation_data(LEti::Transformation_Data* _data) override;
         void set_max_particles(unsigned int _amount);
 
@@ -56,7 +60,7 @@ namespace Particle_System
     };
 
 
-    class Particle_System_Module_Stub : public LV::Builder_Stub
+    class Particle_System_Module_Stub : public LEti::Module_Stub
     {
     public:
         DECLARE_VARIABLE;
