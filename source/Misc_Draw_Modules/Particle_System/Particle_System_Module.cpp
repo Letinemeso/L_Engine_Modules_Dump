@@ -14,11 +14,25 @@ Particle_System_Module::Particle_System_Module()
 
 Particle_System_Module::~Particle_System_Module()
 {
-    delete m_particle_draw_module;
     delete m_particle_data_reseter;
+
+    for(unsigned int i=0; i<m_particle_draw_modules.size(); ++i)
+        delete m_particle_draw_modules[i];
 
     for(unsigned int i=0; i<m_particle_data.size(); ++i)
         delete m_particle_data[i];
+}
+
+
+
+bool Particle_System_Module::M_draw_module_registred(LR::Draw_Module* _ptr) const
+{
+    for(unsigned int i=0; i<m_particle_draw_modules.size(); ++i)
+    {
+        if(_ptr == m_particle_draw_modules[i])
+            return true;
+    }
+    return false;
 }
 
 
@@ -40,6 +54,13 @@ void Particle_System_Module::set_max_particles(unsigned int _amount)
 
     for(unsigned int i=0; i<_amount; ++i)
         m_particle_data.push(m_particle_data_reseter->create_particle_data_instance());
+}
+
+void Particle_System_Module::add_particle_draw_module(LR::Draw_Module* _ptr)
+{
+    L_ASSERT(!M_draw_module_registred(_ptr));
+
+    m_particle_draw_modules.push(_ptr);
 }
 
 
@@ -73,14 +94,27 @@ unsigned int Particle_System_Module::alive_particles_amount() const
 
 
 
+void Particle_System_Module::M_draw_with_particle(float _dt, LR::Draw_Module* _particle_draw_module)
+{
+    L_ASSERT(_particle_draw_module);
+
+    _particle_draw_module->set_draw_on_update(false);
+    _particle_draw_module->update(_dt);
+    _particle_draw_module->set_draw_on_update(true);
+
+    for(unsigned int i=0; i<m_particle_data.size(); ++i)
+    {
+        if(m_particle_data[i]->is_alive())
+            m_particle_data[i]->draw(_particle_draw_module);
+    }
+}
+
+
+
 void Particle_System_Module::update(float _dt)
 {
+    L_ASSERT(m_particle_draw_modules.size() > 0);
     L_ASSERT(m_particle_data_reseter);
-    L_ASSERT(m_particle_draw_module);
-
-    m_particle_draw_module->set_draw_on_update(false);
-    m_particle_draw_module->update(_dt);
-    m_particle_draw_module->set_draw_on_update(true);
 
     m_emission_timer.update(_dt);
 
@@ -98,8 +132,11 @@ void Particle_System_Module::update(float _dt)
     for(unsigned int i=0; i<m_particle_data.size(); ++i)
     {
         if(m_particle_data[i]->is_alive())
-            m_particle_data[i]->update(_dt, m_particle_draw_module);
+            m_particle_data[i]->update(_dt);
     }
+
+    for(unsigned int i=0; i<m_particle_draw_modules.size(); ++i)
+        M_draw_with_particle(_dt, m_particle_draw_modules[i]);
 }
 
 
@@ -109,7 +146,7 @@ INIT_FIELDS(Particle_System::Particle_System_Module_Stub, LEti::Module_Stub)
 ADD_FIELD(unsigned int, max_particles)
 ADD_FIELD(float, emission_frequency)
 
-ADD_CHILD("particle_draw_module", particle_draw_module);
+//ADD_CHILD("particle_draw_module", particle_draw_module);
 ADD_CHILD("particle_data_reseter_stub", particle_data_reseter_stub);
 
 FIELDS_END
@@ -129,16 +166,22 @@ LV::Variable_Base* Particle_System_Module_Stub::M_construct_product() const
 
 void Particle_System_Module_Stub::M_init_constructed_product(LV::Variable_Base* _product) const
 {
-    L_ASSERT(particle_draw_module);
+    L_ASSERT(particle_draw_modules.size() > 0);
     L_ASSERT(particle_data_reseter_stub);
 
     LEti::Module_Stub::M_init_constructed_product(_product);
 
     Particle_System_Module* product = (Particle_System_Module*)_product;
 
-    product->set_particle_draw_module((LR::Draw_Module*)particle_draw_module->construct());
     product->set_particle_data_reseter((Particle_Data_Reseter*)particle_data_reseter_stub->construct());
     product->set_emission_frequency(emission_frequency);
 
     product->set_max_particles(max_particles);
+
+    for(LV::Variable_Base::Childs_List::Const_Iterator it = particle_draw_modules.begin(); !it.end_reached(); ++it)
+    {
+        LR::Draw_Module_Stub* stub = LV::cast_variable<LR::Draw_Module_Stub>(it->child_ptr);
+        L_ASSERT(stub);
+        product->add_particle_draw_module((LR::Draw_Module*)stub->construct());
+    }
 }

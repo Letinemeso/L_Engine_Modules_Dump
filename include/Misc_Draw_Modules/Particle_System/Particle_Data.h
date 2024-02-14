@@ -15,7 +15,8 @@ namespace Particle_System
         virtual bool is_alive() const = 0;
 
     public:
-        virtual void update(float _dt, LR::Draw_Module* _draw_module) = 0;
+        virtual void update(float _dt) = 0;
+        virtual void draw(LR::Draw_Module* _draw_module) = 0;
 
     };
 
