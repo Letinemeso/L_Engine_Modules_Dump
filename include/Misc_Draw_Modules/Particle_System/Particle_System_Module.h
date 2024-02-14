@@ -42,6 +42,7 @@ namespace Particle_System
     public:
         inline Particle_Data_Reseter* particle_data_reseter() { return m_particle_data_reseter; }
         inline const Particle_Data_Reseter* particle_data_reseter() const { return m_particle_data_reseter; }
+        inline float emission_frequency() const { return m_emission_frequency; }
 
     private:
         bool M_draw_module_registred(LR::Draw_Module* _ptr) const;
