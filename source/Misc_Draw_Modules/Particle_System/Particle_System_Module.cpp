@@ -154,6 +154,9 @@ FIELDS_END
 
 Particle_System_Module_Stub::~Particle_System_Module_Stub()
 {
+    for(LV::Variable_Base::Childs_List::Iterator it = particle_draw_modules.begin(); !it.end_reached(); ++it)
+        delete it->child_ptr;
+
     delete particle_data_reseter_stub;
 }
 
