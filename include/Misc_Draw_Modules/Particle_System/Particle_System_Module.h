@@ -20,7 +20,7 @@ namespace Particle_System
     class Particle_System_Module : public LEti::Module
     {
     public:
-        DECLARE_VARIABLE;
+        INIT_VARIABLE(Particle_System::Particle_System_Module, LEti::Module)
 
     private:
         LDS::Vector<LR::Draw_Module*> m_particle_draw_modules;
@@ -70,7 +70,20 @@ namespace Particle_System
     class Particle_System_Module_Stub : public LEti::Module_Stub
     {
     public:
-        DECLARE_VARIABLE;
+        INIT_VARIABLE(Particle_System::Particle_System_Module_Stub, LEti::Module_Stub)
+
+        INIT_FIELDS
+        ADD_FIELD(unsigned int, max_particles)
+        ADD_FIELD(float, emission_frequency)
+        FIELDS_END
+
+        INIT_CHILDS
+        ADD_CHILD("particle_data_reseter_stub", particle_data_reseter_stub);
+        CHILDS_END
+
+        INIT_CHILDS_LISTS
+        ADD_CHILDS_LIST("Particle_Draw_Module__*", &particle_draw_modules)
+        CHILDS_LISTS_END
 
     public:
         unsigned int max_particles = 0;

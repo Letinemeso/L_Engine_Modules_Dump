@@ -3,10 +3,6 @@
 using namespace Particle_System;
 
 
-INIT_FIELDS(Particle_System::Particle_System_Module, LV::Variable_Base)
-FIELDS_END
-
-
 Particle_System_Module::Particle_System_Module()
 {
 
@@ -141,15 +137,6 @@ void Particle_System_Module::update(float _dt)
 
 
 
-INIT_FIELDS(Particle_System::Particle_System_Module_Stub, LEti::Module_Stub)
-
-ADD_FIELD(unsigned int, max_particles)
-ADD_FIELD(float, emission_frequency)
-
-//ADD_CHILD("particle_draw_module", particle_draw_module);
-ADD_CHILD("particle_data_reseter_stub", particle_data_reseter_stub);
-
-FIELDS_END
 
 
 Particle_System_Module_Stub::~Particle_System_Module_Stub()

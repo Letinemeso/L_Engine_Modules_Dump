@@ -12,7 +12,7 @@ namespace Particle_System
     class Particle_Data_Reseter : public LV::Variable_Base
     {
     public:
-        DECLARE_VARIABLE;
+        INIT_VARIABLE(Particle_System::Particle_Data_Reseter, LV::Variable_Base)
 
     private:
         const LEti::Transformation_Data* m_parent_transformation_data = nullptr;
@@ -31,7 +31,7 @@ namespace Particle_System
     class Particle_Data_Reseter_Stub : public LV::Builder_Stub
     {
     public:
-        DECLARE_VARIABLE;
+        INIT_VARIABLE(Particle_System::Particle_Data_Reseter_Stub, LV::Builder_Stub)
 
     };
 
