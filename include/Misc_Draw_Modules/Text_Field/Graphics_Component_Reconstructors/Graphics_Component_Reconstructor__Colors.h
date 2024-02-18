@@ -12,10 +12,10 @@ namespace LMD
     class Text_Field_Settings;
 
 
-    class Graphics_Component_Reconstructor__Colors : public LR::Graphics_Component_Reconstructor
+    class TF_Graphics_Component_Reconstructor__Colors : public LR::Graphics_Component_Reconstructor
     {
     public:
-        INIT_VARIABLE(LMD::Graphics_Component_Reconstructor__Colors, LR::Graphics_Component_Reconstructor)
+        INIT_VARIABLE(LMD::TF_Graphics_Component_Reconstructor__Colors, LR::Graphics_Component_Reconstructor)
 
     public:
         void reconstruct_graphics_component() override;
@@ -23,10 +23,10 @@ namespace LMD
     };
 
 
-    class Graphics_Component_Reconstructor_Stub__Colors : public LR::Graphics_Component_Reconstructor_Stub
+    class TF_Graphics_Component_Reconstructor_Stub__Colors : public LR::Graphics_Component_Reconstructor_Stub
     {
     public:
-        INIT_VARIABLE(LMD::Graphics_Component_Reconstructor_Stub__Colors, LR::Graphics_Component_Reconstructor_Stub)
+        INIT_VARIABLE(LMD::TF_Graphics_Component_Reconstructor_Stub__Colors, LR::Graphics_Component_Reconstructor_Stub)
 
     protected:
         LV::Variable_Base* M_construct_product() const override;

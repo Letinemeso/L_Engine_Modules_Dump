@@ -4,7 +4,7 @@
 using namespace LMD;
 
 
-void Graphics_Component_Reconstructor__Colors::reconstruct_graphics_component()
+void TF_Graphics_Component_Reconstructor__Colors::reconstruct_graphics_component()
 {
     L_ASSERT(LV::cast_variable<LMD::Draw_Module__Text_Field>(m_draw_module));
     L_ASSERT(m_graphics_component);
@@ -35,15 +35,15 @@ void Graphics_Component_Reconstructor__Colors::reconstruct_graphics_component()
 
 
 
-LV::Variable_Base* Graphics_Component_Reconstructor_Stub__Colors::M_construct_product() const
+LV::Variable_Base* TF_Graphics_Component_Reconstructor_Stub__Colors::M_construct_product() const
 {
-    return new Graphics_Component_Reconstructor__Colors;
+    return new TF_Graphics_Component_Reconstructor__Colors;
 }
 
-void Graphics_Component_Reconstructor_Stub__Colors::M_init_constructed_product(LV::Variable_Base *_product) const
+void TF_Graphics_Component_Reconstructor_Stub__Colors::M_init_constructed_product(LV::Variable_Base *_product) const
 {
     LR::Graphics_Component_Reconstructor_Stub::M_init_constructed_product(_product);
 
-    Graphics_Component_Reconstructor__Colors* product = (Graphics_Component_Reconstructor__Colors*)_product;
+    TF_Graphics_Component_Reconstructor__Colors* product = (TF_Graphics_Component_Reconstructor__Colors*)_product;
 
 }

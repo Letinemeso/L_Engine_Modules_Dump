@@ -4,7 +4,7 @@
 using namespace LMD;
 
 
-glm::vec2 Graphics_Component_Reconstructor__Coordinates::M_calculate_raw_size(const Text_Field_Settings& _settings) const
+glm::vec2 TF_Graphics_Component_Reconstructor__Coordinates::M_calculate_raw_size(const Text_Field_Settings& _settings) const
 {
     glm::vec2 result;
 
@@ -25,7 +25,7 @@ glm::vec2 Graphics_Component_Reconstructor__Coordinates::M_calculate_raw_size(co
     return result;
 }
 
-float Graphics_Component_Reconstructor__Coordinates::M_calculate_raw_scale(const Text_Field_Settings& _settings, const glm::vec2& _raw_size) const
+float TF_Graphics_Component_Reconstructor__Coordinates::M_calculate_raw_scale(const Text_Field_Settings& _settings, const glm::vec2& _raw_size) const
 {
     if(_settings.raw_size < 0.0f)
         return _settings.raw_size_multiplier;
@@ -42,7 +42,7 @@ float Graphics_Component_Reconstructor__Coordinates::M_calculate_raw_scale(const
 
 
 
-void Graphics_Component_Reconstructor__Coordinates::reconstruct_graphics_component()
+void TF_Graphics_Component_Reconstructor__Coordinates::reconstruct_graphics_component()
 {
     L_ASSERT(LV::cast_variable<LMD::Draw_Module__Text_Field>(m_draw_module));
     L_ASSERT(m_graphics_component);
@@ -115,15 +115,15 @@ void Graphics_Component_Reconstructor__Coordinates::reconstruct_graphics_compone
 
 
 
-LV::Variable_Base* Graphics_Component_Reconstructor_Stub__Coordinates::M_construct_product() const
+LV::Variable_Base* TF_Graphics_Component_Reconstructor_Stub__Coordinates::M_construct_product() const
 {
-    return new Graphics_Component_Reconstructor__Coordinates;
+    return new TF_Graphics_Component_Reconstructor__Coordinates;
 }
 
-void Graphics_Component_Reconstructor_Stub__Coordinates::M_init_constructed_product(LV::Variable_Base *_product) const
+void TF_Graphics_Component_Reconstructor_Stub__Coordinates::M_init_constructed_product(LV::Variable_Base *_product) const
 {
     LR::Graphics_Component_Reconstructor_Stub::M_init_constructed_product(_product);
 
-    Graphics_Component_Reconstructor__Coordinates* product = (Graphics_Component_Reconstructor__Coordinates*)_product;
+    TF_Graphics_Component_Reconstructor__Coordinates* product = (TF_Graphics_Component_Reconstructor__Coordinates*)_product;
 
 }

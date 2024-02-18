@@ -12,10 +12,10 @@ namespace LMD
     class Text_Field_Settings;
 
 
-    class Graphics_Component_Reconstructor__Coordinates : public LR::Graphics_Component_Reconstructor
+    class TF_Graphics_Component_Reconstructor__Coordinates : public LR::Graphics_Component_Reconstructor
     {
     public:
-        INIT_VARIABLE(LMD::Graphics_Component_Reconstructor__Coordinates, LR::Graphics_Component_Reconstructor)
+        INIT_VARIABLE(LMD::TF_Graphics_Component_Reconstructor__Coordinates, LR::Graphics_Component_Reconstructor)
 
     private:
         glm::vec2 M_calculate_raw_size(const Text_Field_Settings& _settings) const;
@@ -27,10 +27,10 @@ namespace LMD
     };
 
 
-    class Graphics_Component_Reconstructor_Stub__Coordinates : public LR::Graphics_Component_Reconstructor_Stub
+    class TF_Graphics_Component_Reconstructor_Stub__Coordinates : public LR::Graphics_Component_Reconstructor_Stub
     {
     public:
-        INIT_VARIABLE(LMD::Graphics_Component_Reconstructor_Stub__Coordinates, LR::Graphics_Component_Reconstructor_Stub)
+        INIT_VARIABLE(LMD::TF_Graphics_Component_Reconstructor_Stub__Coordinates, LR::Graphics_Component_Reconstructor_Stub)
 
     protected:
         LV::Variable_Base* M_construct_product() const override;
