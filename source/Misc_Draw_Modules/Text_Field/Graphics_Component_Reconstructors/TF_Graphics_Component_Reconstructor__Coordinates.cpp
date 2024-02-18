@@ -1,4 +1,4 @@
-#include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Coordinates.h>
+#include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Coordinates.h>
 #include <Misc_Draw_Modules/Text_Field/Draw_Module__Text_Field.h>
 
 using namespace LMD;
@@ -42,7 +42,7 @@ float TF_Graphics_Component_Reconstructor__Coordinates::M_calculate_raw_scale(co
 
 
 
-void TF_Graphics_Component_Reconstructor__Coordinates::reconstruct_graphics_component()
+void TF_Graphics_Component_Reconstructor__Coordinates::update(float _dt)
 {
     L_ASSERT(LV::cast_variable<LMD::Draw_Module__Text_Field>(m_draw_module));
     L_ASSERT(m_graphics_component);

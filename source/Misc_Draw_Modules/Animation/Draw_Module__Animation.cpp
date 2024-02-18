@@ -3,13 +3,6 @@
 using namespace LMD;
 
 
-Draw_Module__Animation::Draw_Module__Animation() : Draw_Module()
-{
-
-}
-
-
-
 void Draw_Module__Animation::M_update_frame(float _dt)
 {
     if(m_is_paused)

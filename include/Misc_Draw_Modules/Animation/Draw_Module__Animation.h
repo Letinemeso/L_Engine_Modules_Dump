@@ -32,9 +32,6 @@ namespace LMD
         LR::Graphics_Component__Texture* m_texture = nullptr;
 
     public:
-        Draw_Module__Animation();
-
-    public:
         inline void set_texture(LR::Graphics_Component__Texture* _ptr) { m_texture = _ptr; }
 
     private:

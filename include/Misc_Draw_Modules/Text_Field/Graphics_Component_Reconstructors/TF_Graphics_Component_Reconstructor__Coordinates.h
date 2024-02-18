@@ -22,7 +22,7 @@ namespace LMD
         float M_calculate_raw_scale(const Text_Field_Settings& _settings, const glm::vec2& _raw_size) const;
 
     public:
-        void reconstruct_graphics_component() override;
+        void update(float _dt) override;
 
     };
 

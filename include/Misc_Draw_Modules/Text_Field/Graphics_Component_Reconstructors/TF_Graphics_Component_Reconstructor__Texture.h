@@ -18,7 +18,7 @@ namespace LMD
         INIT_VARIABLE(LMD::TF_Graphics_Component_Reconstructor__Texture, LR::Graphics_Component_Reconstructor)
 
     public:
-        void reconstruct_graphics_component() override;
+        void update(float _dt) override;
 
     };
 

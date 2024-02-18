@@ -1,10 +1,10 @@
-#include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Colors.h>
+#include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Colors.h>
 #include <Misc_Draw_Modules/Text_Field/Draw_Module__Text_Field.h>
 
 using namespace LMD;
 
 
-void TF_Graphics_Component_Reconstructor__Colors::reconstruct_graphics_component()
+void TF_Graphics_Component_Reconstructor__Colors::update(float _dt)
 {
     L_ASSERT(LV::cast_variable<LMD::Draw_Module__Text_Field>(m_draw_module));
     L_ASSERT(m_graphics_component);
