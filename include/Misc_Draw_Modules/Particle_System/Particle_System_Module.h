@@ -8,7 +8,7 @@
 
 #include <Module.h>
 
-#include <Draw_Modules/Draw_Module_Base.h>
+#include <Draw_Modules/Draw_Module.h>
 
 #include <Misc_Draw_Modules/Particle_System/Particle_Data.h>
 #include <Misc_Draw_Modules/Particle_System/Particle_Data_Reseter.h>
