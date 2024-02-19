@@ -86,7 +86,7 @@ namespace LMD
         FIELDS_END
 
     public:
-        const LR::Graphic_Resources_Manager* resources_manager = nullptr;
+        const LEti::Resources_Manager* resources_manager = nullptr;
 
     public:
         std::string font_name;
