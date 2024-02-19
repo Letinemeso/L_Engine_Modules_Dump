@@ -2,8 +2,9 @@
 
 #include <Math_Stuff.h>
 
+#include <Resources/Font.h>
+#include <Resources/Picture.h>
 #include <Draw_Modules/Draw_Module.h>
-#include <Picture/Font.h>
 #include <Components/Graphics_Component__Texture.h>
 
 
@@ -27,6 +28,7 @@ namespace LMD
         };
 
         const LR::Font* font = nullptr;
+        const LR::Picture* picture = nullptr;
 
         Horizontal_Alignment horizontal_alignment = Horizontal_Alignment::Left;
         Vertical_Alignment vertical_alignment = Vertical_Alignment::Bottom;
@@ -67,7 +69,6 @@ namespace LMD
     };
 
 
-
     class Draw_Module_Stub__Text_Field : public LR::Draw_Module_Stub
     {
     public:
@@ -75,6 +76,7 @@ namespace LMD
 
         INIT_FIELDS
         ADD_FIELD(std::string, font_name)
+        ADD_FIELD(std::string, picture_name)
         ADD_FIELD(unsigned int, horizontal_alignment)
         ADD_FIELD(unsigned int, vertical_alignment)
         ADD_FIELD(glm::vec3, raw_offset)
@@ -88,6 +90,7 @@ namespace LMD
 
     public:
         std::string font_name;
+        std::string picture_name;
         unsigned int horizontal_alignment = 0;
         unsigned int vertical_alignment = 0;
         glm::vec3 raw_offset{0.0f, 0.0f, 0.0f};

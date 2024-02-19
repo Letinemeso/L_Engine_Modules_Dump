@@ -17,8 +17,8 @@ void TF_Graphics_Component_Reconstructor__Texture::update(float /*_dt*/)
 
     const Text_Field_Settings& settings = tf->settings();
 
-    if(component->get_picture() != settings.font->picture())
-        component->set_picture(settings.font->picture());
+    if(component->get_picture() != settings.picture)
+        component->set_picture(settings.picture);
 
     const unsigned int fpv = component->buffer().floats_per_vertex();
     L_ASSERT(fpv > 1);    //  single-dimentional font is not supported :D

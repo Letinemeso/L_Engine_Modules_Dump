@@ -6,6 +6,7 @@ using namespace LMD;
 bool Text_Field_Settings::operator==(const Text_Field_Settings &_other) const
 {
     return  font == _other.font &&
+            picture == _other.picture &&
             horizontal_alignment == _other.horizontal_alignment &&
             vertical_alignment == _other.vertical_alignment &&
             LEti::Math::vecs_are_equal(raw_offset, _other.raw_offset) &&
@@ -65,7 +66,8 @@ void Draw_Module_Stub__Text_Field::M_init_constructed_product(LV::Variable_Base 
     Draw_Module__Text_Field* product = (Draw_Module__Text_Field*)_product;
 
     Text_Field_Settings& tfs = product->settings();
-    tfs.font = resources_manager->get_font(font_name);
+    tfs.font = resources_manager->get_resource<LR::Font>(font_name);
+    tfs.picture = resources_manager->get_resource<LR::Picture>(picture_name);
     tfs.text = text;
     tfs.raw_size_multiplier = raw_size_multiplier;
     tfs.raw_size = raw_size;
