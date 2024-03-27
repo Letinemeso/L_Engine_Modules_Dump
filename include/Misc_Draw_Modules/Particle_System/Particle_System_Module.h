@@ -30,6 +30,7 @@ namespace Particle_System
 
         float m_emission_frequency = 0.0f;
         LST::Timer m_emission_timer;
+        bool m_emission_is_paused = false;
 
     public:
         Particle_System_Module();
@@ -38,6 +39,7 @@ namespace Particle_System
     public:
         inline void set_particle_data_reseter(Particle_Data_Reseter* _ptr) { m_particle_data_reseter = _ptr; }
         inline void set_emission_frequency(float _value) { m_emission_frequency = _value; }
+        inline void pause_emission(bool _should_be_paused) { m_emission_is_paused = _should_be_paused; }
 
     public:
         inline Particle_Data_Reseter* particle_data_reseter() { return m_particle_data_reseter; }
@@ -75,6 +77,7 @@ namespace Particle_System
         INIT_FIELDS
         ADD_FIELD(unsigned int, max_particles)
         ADD_FIELD(float, emission_frequency)
+        ADD_FIELD(bool, autostart_emission)
         FIELDS_END
 
         INIT_CHILDS
@@ -88,6 +91,7 @@ namespace Particle_System
     public:
         unsigned int max_particles = 0;
         float emission_frequency = 0.0f;
+        bool autostart_emission = true;
 
         LV::Variable_Base::Childs_List particle_draw_modules;
         Particle_Data_Reseter_Stub* particle_data_reseter_stub = nullptr;

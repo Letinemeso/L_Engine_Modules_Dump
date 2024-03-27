@@ -114,7 +114,7 @@ void Particle_System_Module::update(float _dt)
 
     m_emission_timer.update(_dt);
 
-    if(!m_emission_timer.is_active() && m_emission_frequency > 0.000001f)
+    if(!m_emission_timer.is_active() && m_emission_frequency > 0.000001f && !m_emission_is_paused)
     {
         unsigned int ratio = _dt / m_emission_frequency;
         unsigned int amount = 1;
@@ -165,6 +165,7 @@ void Particle_System_Module_Stub::M_init_constructed_product(LV::Variable_Base* 
 
     product->set_particle_data_reseter((Particle_Data_Reseter*)particle_data_reseter_stub->construct());
     product->set_emission_frequency(emission_frequency);
+    product->pause_emission(!autostart_emission);
 
     product->set_max_particles(max_particles);
 
