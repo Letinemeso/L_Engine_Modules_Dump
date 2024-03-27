@@ -31,6 +31,9 @@ void Animation_Graphics_Component_Reconstructor__Texture::start(unsigned int _cy
 
     set_frame(_with_frame);
     unpause();
+
+    if(m_graphics_component)
+        update(0.0f);
 }
 
 void Animation_Graphics_Component_Reconstructor__Texture::pause()
