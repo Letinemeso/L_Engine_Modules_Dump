@@ -60,7 +60,7 @@ namespace Particle_System
     public:
         unsigned int alive_particles_amount() const;
 
-    public:
+    private:
         void M_draw_with_particle(float _dt, LR::Draw_Module* _particle_draw_module);
 
     public:
