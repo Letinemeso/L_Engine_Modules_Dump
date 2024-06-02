@@ -73,6 +73,11 @@ void Particle_System_Module::forcefully_emit_particles(unsigned int _amount)
     }
 }
 
+void Particle_System_Module::emit_particles(unsigned int _amount)
+{
+    m_requested_particles_amount += _amount;
+}
+
 
 
 unsigned int Particle_System_Module::alive_particles_amount() const
@@ -121,9 +126,13 @@ void Particle_System_Module::update(float _dt)
         if(ratio > 0)
             amount = ratio;
 
-        forcefully_emit_particles(amount);
+        emit_particles(amount);
+
         m_emission_timer.start(m_emission_frequency);
     }
+
+    forcefully_emit_particles(m_requested_particles_amount);
+    m_requested_particles_amount = 0;
 
     for(unsigned int i=0; i<m_particle_data.size(); ++i)
     {
@@ -175,4 +184,6 @@ void Particle_System_Module_Stub::M_init_constructed_product(LV::Variable_Base* 
         L_ASSERT(stub);
         product->add_particle_draw_module((LR::Draw_Module*)stub->construct());
     }
+
+    product->emit_particles(initial_particles);
 }

@@ -32,6 +32,8 @@ namespace Particle_System
         LST::Timer m_emission_timer;
         bool m_emission_is_paused = false;
 
+        unsigned int m_requested_particles_amount = 0;
+
     public:
         Particle_System_Module();
         ~Particle_System_Module();
@@ -55,7 +57,8 @@ namespace Particle_System
         void add_particle_draw_module(LR::Draw_Module* _ptr);
 
     public:
-        void forcefully_emit_particles(unsigned int _amount = 1);
+        void forcefully_emit_particles(unsigned int _amount);
+        void emit_particles(unsigned int _amount);
 
     public:
         unsigned int alive_particles_amount() const;
@@ -76,6 +79,7 @@ namespace Particle_System
 
         INIT_FIELDS
         ADD_FIELD(unsigned int, max_particles)
+        ADD_FIELD(unsigned int, initial_particles)
         ADD_FIELD(float, emission_frequency)
         ADD_FIELD(bool, autostart_emission)
         FIELDS_END
@@ -90,6 +94,7 @@ namespace Particle_System
 
     public:
         unsigned int max_particles = 0;
+        unsigned int initial_particles = 0;
         float emission_frequency = 0.0f;
         bool autostart_emission = true;
 
