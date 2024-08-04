@@ -21,12 +21,16 @@ void TF_Graphics_Component_Reconstructor__Colors::update(float _dt)
 
     constexpr unsigned int vertices_per_symbol = 6;
 
+    unsigned int lines_amount = calculate_lines_amount(settings.text);
+
     const unsigned int amount_per_symbol = m_graphics_component->buffer().floats_per_vertex() * vertices_per_symbol;
-    const unsigned int amount = amount_per_symbol * settings.text.size();
+    const unsigned int amount = amount_per_symbol * (settings.text.size() - (lines_amount - 1));
     float* buffer = new float[amount]{0.0f};
 
     for(unsigned int i=0; i<amount; ++i)
+    {
         buffer[i] = 1.0f;
+    }
 
     m_graphics_component->buffer().use_array(buffer, amount);
 }

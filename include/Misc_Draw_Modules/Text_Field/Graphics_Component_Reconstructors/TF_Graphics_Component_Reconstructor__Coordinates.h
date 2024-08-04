@@ -4,6 +4,9 @@
 #include <vec3.hpp>
 
 #include <Components/Graphics_Component_Reconstructor.h>
+#include <Resources/Font.h>
+
+#include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/String_Tools.h>
 
 
 namespace LMD
@@ -18,6 +21,11 @@ namespace LMD
         INIT_VARIABLE(LMD::TF_Graphics_Component_Reconstructor__Coordinates, LR::Graphics_Component_Reconstructor)
 
     private:
+        float m_highest_letter = 0.0f;
+
+    private:
+        float M_calculate_next_line_offset_x(const std::string& _text, unsigned int _offset, const glm::vec2& _raw_size, float _raw_scale, const Text_Field_Settings& _settings) const;
+        float M_get_highest_letter_size(const Text_Field_Settings& _settings) const;
         glm::vec2 M_calculate_raw_size(const Text_Field_Settings& _settings) const;
         float M_calculate_raw_scale(const Text_Field_Settings& _settings, const glm::vec2& _raw_size) const;
 

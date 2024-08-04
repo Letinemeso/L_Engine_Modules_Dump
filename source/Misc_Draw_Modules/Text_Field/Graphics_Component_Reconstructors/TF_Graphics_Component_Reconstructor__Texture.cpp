@@ -25,13 +25,26 @@ void TF_Graphics_Component_Reconstructor__Texture::update(float /*_dt*/)
 
     constexpr unsigned int vertices_per_symbol = 6;
 
+    unsigned int lines_amount = calculate_lines_amount(settings.text);
+
     const unsigned int amount_per_symbol = component->buffer().floats_per_vertex() * vertices_per_symbol;
-    const unsigned int amount = amount_per_symbol * settings.text.size();
+    const unsigned int amount = amount_per_symbol * (settings.text.size() - (lines_amount - 1));
     float* buffer = new float[amount]{0.0f};
+
+    unsigned int newline_symbols_met = 0;
 
     for(unsigned int i=0; i<settings.text.size(); ++i)
     {
-        float* array = &(buffer[i * amount_per_symbol]);
+        unsigned int offset_if_newline = offset_if_new_line(settings.text, i);
+
+        if(offset_if_newline > 0)
+        {
+            ++newline_symbols_met;
+            i += offset_if_newline - 1;
+            continue;
+        }
+
+        float* array = &(buffer[(i - newline_symbols_met) * amount_per_symbol]);
 
         const LR::Letter_Data& letter_data = settings.font->get_letter_data(settings.text[i]);
         float letter_right = letter_data.pos_x + letter_data.size_x;

@@ -4,6 +4,7 @@
 #include <vec3.hpp>
 
 #include <Components/Graphics_Component_Reconstructor.h>
+#include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/String_Tools.h>
 
 
 namespace LMD
