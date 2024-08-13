@@ -59,6 +59,7 @@ namespace Particle_System
     public:
         void forcefully_emit_particles(unsigned int _amount);
         void emit_particles(unsigned int _amount);
+        void destroy_particles();
 
     public:
         unsigned int alive_particles_amount() const;

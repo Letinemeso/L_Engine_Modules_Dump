@@ -17,6 +17,7 @@ namespace Particle_System
     public:
         virtual void update(float _dt) = 0;
         virtual void draw(LR::Draw_Module* _draw_module) = 0;
+        virtual void destroy() = 0;
 
     };
 

@@ -78,6 +78,12 @@ void Particle_System_Module::emit_particles(unsigned int _amount)
     m_requested_particles_amount += _amount;
 }
 
+void Particle_System_Module::destroy_particles()
+{
+    for(unsigned int i=0; i<m_particle_data.size(); ++i)
+        m_particle_data[i]->destroy();
+}
+
 
 
 unsigned int Particle_System_Module::alive_particles_amount() const
