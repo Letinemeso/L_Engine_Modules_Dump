@@ -25,6 +25,9 @@ bool Text_Field_Settings::operator!=(const Text_Field_Settings &_other) const
 
 void Draw_Module__Text_Field::update(float _dt)
 {
+    if(!visible())
+        return;
+
     if(m_configurable_settings.text.size() == 0)
         return;
 
