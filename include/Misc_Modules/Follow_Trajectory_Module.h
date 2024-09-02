@@ -21,7 +21,7 @@ namespace LMD
         bool m_should_run_in_loop = true;
         bool m_active = true;
         float m_speed = 0.0f;
-        glm::vec3 m_constant_offset;
+        glm::vec3 m_constant_offset{0.0f, 0.0f, 0.0f};
         Trajectory_KFA m_trajectory;
 
     public:
@@ -69,7 +69,7 @@ namespace LMD
         bool should_run_in_loop = true;
         bool autostart = true;
         float speed = 0.0f;
-        glm::vec3 constant_offset;
+        glm::vec3 constant_offset{0.0f, 0.0f, 0.0f};
         LDS::List<glm::vec3> trajectory;
 
     public:

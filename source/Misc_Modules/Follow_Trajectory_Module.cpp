@@ -52,10 +52,12 @@ void Follow_Trajectory_Module::setup_trajectory(const LDS::List<glm::vec3>& _poi
         it = next_it;
     }
 
-    float distance = LEti::Math::vector_length(*it - first_point);
-    time_offset += distance / m_speed;
-
-    m_trajectory.add_frame(time_offset, first_point);
+    if(m_should_run_in_loop)
+    {
+        float distance = LEti::Math::vector_length(*it - first_point);
+        time_offset += distance / m_speed;
+        m_trajectory.add_frame(time_offset, first_point);
+    }
 
     m_trajectory.set_run_in_loop(m_should_run_in_loop);
     m_trajectory.start();
