@@ -46,6 +46,7 @@ namespace LMD
 
     };
 
+
     class Draw_Module__Text_Field : public LR::Draw_Module
     {
     public:
@@ -98,12 +99,8 @@ namespace LMD
         float raw_size = -1.0f;     //  negative value means no limit
         std::string text;
 
-    public:
-        ~Draw_Module_Stub__Text_Field();
-
     protected:
-        LV::Variable_Base* M_construct_product() const override;
-        void M_init_constructed_product(LV::Variable_Base* _product) const override;
+        INIT_BUILDER_STUB(Draw_Module__Text_Field);
 
     };
 

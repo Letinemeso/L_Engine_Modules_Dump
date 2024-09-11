@@ -48,13 +48,6 @@ void Draw_Module__Text_Field::update(float _dt)
 
 
 
-Draw_Module_Stub__Text_Field::~Draw_Module_Stub__Text_Field()
-{
-
-}
-
-
-
 LV::Variable_Base* Draw_Module_Stub__Text_Field::M_construct_product() const
 {
     return new Draw_Module__Text_Field();
