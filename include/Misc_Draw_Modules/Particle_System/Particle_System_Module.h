@@ -14,6 +14,11 @@
 #include <Misc_Draw_Modules/Particle_System/Particle_Data_Reseter.h>
 
 
+namespace LR
+{
+    class Draw_Order_Controller;
+}
+
 namespace Particle_System
 {
 
@@ -21,6 +26,11 @@ namespace Particle_System
     {
     public:
         INIT_VARIABLE(Particle_System::Particle_System_Module, LEti::Module)
+
+    public:
+        LR::Draw_Order_Controller* m_draw_order_controller = nullptr;
+        bool m_draw_on_update = true;
+        std::string m_draw_layer;
 
     private:
         LDS::Vector<LR::Draw_Module*> m_particle_draw_modules;
@@ -37,6 +47,13 @@ namespace Particle_System
     public:
         Particle_System_Module();
         ~Particle_System_Module();
+
+    public:
+        void set_draw_layer(LR::Draw_Order_Controller* _draw_order_controller, const std::string& _layer_name);
+        void reset_draw_layer();
+
+        inline LR::Draw_Order_Controller* draw_order_controller() const { return m_draw_order_controller; }
+        inline const std::string& draw_layer() const { return m_draw_layer; }
 
     public:
         inline void set_particle_data_reseter(Particle_Data_Reseter* _ptr) { m_particle_data_reseter = _ptr; }
@@ -66,7 +83,10 @@ namespace Particle_System
         unsigned int alive_particles_amount() const;
 
     private:
-        void M_draw_with_particle(float _dt, LR::Draw_Module* _particle_draw_module);
+        void M_draw_with_particle(LR::Draw_Module* _particle_draw_module);
+
+    public:
+        void draw();
 
     public:
         void update(float _dt) override;
@@ -80,6 +100,7 @@ namespace Particle_System
         INIT_VARIABLE(Particle_System::Particle_System_Module_Stub, LEti::Module_Stub)
 
         INIT_FIELDS
+        ADD_FIELD(std::string, draw_layer)
         ADD_FIELD(unsigned int, max_particles)
         ADD_FIELD(unsigned int, initial_particles)
         ADD_FIELD(float, emission_frequency)
@@ -95,6 +116,11 @@ namespace Particle_System
         CHILDS_LISTS_END
 
     public:
+        LR::Draw_Order_Controller* draw_order_controller = nullptr;
+
+    public:
+        std::string draw_layer;
+
         unsigned int max_particles = 0;
         unsigned int initial_particles = 0;
         float emission_frequency = 0.0f;

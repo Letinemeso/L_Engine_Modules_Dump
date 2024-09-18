@@ -1,5 +1,7 @@
 #include <Misc_Draw_Modules/Particle_System/Particle_System_Module.h>
 
+#include <Draw_Order_Controller/Draw_Order_Controller.h>
+
 using namespace Particle_System;
 
 
@@ -17,6 +19,39 @@ Particle_System_Module::~Particle_System_Module()
 
     for(unsigned int i=0; i<m_particle_data.size(); ++i)
         delete m_particle_data[i];
+
+    if(m_draw_order_controller)
+        m_draw_order_controller->unregister_module(this);
+}
+
+
+
+void Particle_System_Module::set_draw_layer(LR::Draw_Order_Controller* _draw_order_controller, const std::string& _layer_name)
+{
+    reset_draw_layer();
+
+    m_draw_order_controller = _draw_order_controller;
+    m_draw_order_controller->register_module(_layer_name, this,
+                                             [this]()
+                                             {
+                                                 draw();
+                                             });
+
+    m_draw_on_update = false;
+
+    m_draw_layer = _layer_name;
+}
+
+void Particle_System_Module::reset_draw_layer()
+{
+    if(!m_draw_order_controller)
+        return;
+
+    m_draw_order_controller->unregister_module(this);
+    m_draw_order_controller = nullptr;
+    m_draw_layer.clear();
+
+    m_draw_on_update = true;
 }
 
 
@@ -103,17 +138,23 @@ unsigned int Particle_System_Module::alive_particles_amount() const
 
 
 
-void Particle_System_Module::M_draw_with_particle(float _dt, LR::Draw_Module* _particle_draw_module)
+void Particle_System_Module::M_draw_with_particle(LR::Draw_Module* _particle_draw_module)
 {
     L_ASSERT(_particle_draw_module);
-
-    _particle_draw_module->update(_dt);
 
     for(unsigned int i=0; i<m_particle_data.size(); ++i)
     {
         if(m_particle_data[i]->is_alive())
             m_particle_data[i]->draw(_particle_draw_module);
     }
+}
+
+
+
+void Particle_System_Module::draw()
+{
+    for(unsigned int i=0; i<m_particle_draw_modules.size(); ++i)
+        M_draw_with_particle(m_particle_draw_modules[i]);
 }
 
 
@@ -147,7 +188,10 @@ void Particle_System_Module::update(float _dt)
     }
 
     for(unsigned int i=0; i<m_particle_draw_modules.size(); ++i)
-        M_draw_with_particle(_dt, m_particle_draw_modules[i]);
+        m_particle_draw_modules[i]->update(_dt);
+
+    if(m_draw_on_update)
+        draw();
 }
 
 
@@ -188,4 +232,7 @@ BUILDER_STUB_INITIALIZATION_FUNC(Particle_System_Module_Stub)
     }
 
     product->emit_particles(initial_particles);
+
+    if(draw_order_controller && draw_layer.size() > 0)
+        product->set_draw_layer(draw_order_controller, draw_layer);
 }
