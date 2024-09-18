@@ -56,6 +56,8 @@ void Particle_System_Module::add_particle_draw_module(LR::Draw_Module* _ptr)
 {
     L_ASSERT(!M_draw_module_registred(_ptr));
 
+    _ptr->set_draw_on_update(false);
+
     m_particle_draw_modules.push(_ptr);
 }
 
@@ -105,9 +107,7 @@ void Particle_System_Module::M_draw_with_particle(float _dt, LR::Draw_Module* _p
 {
     L_ASSERT(_particle_draw_module);
 
-    _particle_draw_module->set_draw_on_update(false);
     _particle_draw_module->update(_dt);
-    _particle_draw_module->set_draw_on_update(true);
 
     for(unsigned int i=0; i<m_particle_data.size(); ++i)
     {
@@ -164,19 +164,15 @@ Particle_System_Module_Stub::~Particle_System_Module_Stub()
 
 
 
-LV::Variable_Base* Particle_System_Module_Stub::M_construct_product() const
-{
-    return new Particle_System_Module;
-}
+BUILDER_STUB_DEFAULT_CONSTRUCTION_FUNC(Particle_System_Module_Stub)
 
-void Particle_System_Module_Stub::M_init_constructed_product(LV::Variable_Base* _product) const
+BUILDER_STUB_INITIALIZATION_FUNC(Particle_System_Module_Stub)
 {
     L_ASSERT(particle_draw_modules.size() > 0);
     L_ASSERT(particle_data_reseter_stub);
 
-    LEti::Module_Stub::M_init_constructed_product(_product);
-
-    Particle_System_Module* product = (Particle_System_Module*)_product;
+    BUILDER_STUB_PARENT_INITIALIZATION;
+    BUILDER_STUB_CAST_PRODUCT;
 
     product->set_particle_data_reseter((Particle_Data_Reseter*)particle_data_reseter_stub->construct());
     product->set_emission_frequency(emission_frequency);

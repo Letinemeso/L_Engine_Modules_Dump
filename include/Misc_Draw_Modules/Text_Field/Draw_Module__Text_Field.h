@@ -64,8 +64,8 @@ namespace LMD
         inline const Text_Field_Settings& settings() const { return m_configurable_settings; }
         inline const Text_Field_Settings& current_settings() const { return m_current_settings; }
 
-    public:
-        void update(float _dt) override;
+    protected:
+        void M_update_internal(float _dt) override;
 
     };
 

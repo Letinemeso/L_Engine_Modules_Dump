@@ -23,7 +23,7 @@ bool Text_Field_Settings::operator!=(const Text_Field_Settings &_other) const
 
 
 
-void Draw_Module__Text_Field::update(float _dt)
+void Draw_Module__Text_Field::M_update_internal(float _dt)
 {
     if(!visible())
         return;
@@ -38,7 +38,7 @@ void Draw_Module__Text_Field::update(float _dt)
     else
         m_should_recalculate_vertices_before_draw = false;
 
-    Draw_Module::update(_dt);
+    Draw_Module::M_update_internal(_dt);
 
     if(needs_reconfiguration)
         m_current_settings = m_configurable_settings;
