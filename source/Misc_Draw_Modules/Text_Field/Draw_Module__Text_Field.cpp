@@ -44,6 +44,14 @@ void Draw_Module__Text_Field::M_update_internal(float _dt)
         m_current_settings = m_configurable_settings;
 }
 
+void Draw_Module__Text_Field::draw() const
+{
+    if(m_configurable_settings.text.size() == 0)
+        return;
+
+    Parent_Type::draw();
+}
+
 
 
 

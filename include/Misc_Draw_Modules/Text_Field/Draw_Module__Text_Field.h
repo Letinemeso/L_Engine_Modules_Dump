@@ -66,6 +66,7 @@ namespace LMD
 
     protected:
         void M_update_internal(float _dt) override;
+        void draw() const override;
 
     };
 
