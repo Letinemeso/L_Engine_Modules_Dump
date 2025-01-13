@@ -44,14 +44,16 @@ void Spline::M_remove_edge_control_points() const
 
 glm::vec3 Spline::M_calculate_point(const glm::vec3& _0, const glm::vec3& _1, const glm::vec3& _2, const glm::vec3& _3, float _t) const
 {
-    constexpr float normalizer = 0.5f;
+    float t2 = _t * _t;
+    float t3 = t2 * _t;
 
-    return normalizer * (
-               (2.0f * _1) +
-               (-_0 + _2) * _t +
-               (2.0f * _0 - 5.0f * _1 + 4.0f * _2 - _3) * _t * _t +
-               (-_0 + 3.0f * _1 - 3.0f * _2 + _3) * _t * _t * _t
-               );
+    float base_weight = (1.0f - m_tension) * 0.5f;
+    glm::vec3 term1 = base_weight * (-_0 + 3.0f * _1 - 3.0f * _2 + _3) * t3;
+    glm::vec3 term2 = base_weight * (2.0f * _0 - 5.0f * _1 + 4.0f * _2 - _3) * t2;
+    glm::vec3 term3 = base_weight * (-_0 + _2) * _t;
+    glm::vec3 term4 = _1;
+
+    return term1 + term2 + term3 + term4;
 }
 
 
@@ -78,20 +80,38 @@ Spline::Points_List Spline::interpolate() const
         const glm::vec3& p3 = *temp_point_it;
         ++temp_point_it;
 
-        float segment_length = LEti::Math::vector_length(p1 - p2);
+        glm::vec3 current_segment = p2 - p1;
+
+        float segment_length = LEti::Math::vector_length(current_segment);
         unsigned int points_amount = (unsigned int)(segment_length / m_interpolation_step_length);
 
+        Points_List interpolated_curve;
         for (unsigned int j = 0; j < points_amount; ++j)
         {
             float t = (float)j / (float)points_amount;
             glm::vec3 point = M_calculate_point(p0, p1, p2, p3, t);
-            result.push_back(point);
+            interpolated_curve.push_back(point);
         }
+
+        glm::vec3 missing_length = p2 - *interpolated_curve.end();
+        float step_ratio_multiplier = 1.0f / (float)interpolated_curve.size();
+
+        Points_List::Iterator curve_point_it = interpolated_curve.begin();
+        for(unsigned int c = 0; c < interpolated_curve.size(); ++c)
+        {
+            glm::vec3 additional_length = missing_length * (float)c * step_ratio_multiplier;
+            *curve_point_it += additional_length;
+            ++curve_point_it;
+        }
+
+        result.append((Points_List&&)interpolated_curve);
 
         ++point_it;
     }
 
     M_remove_edge_control_points();
+
+    result.push_back(*m_points.end());
 
     return result;
 }
