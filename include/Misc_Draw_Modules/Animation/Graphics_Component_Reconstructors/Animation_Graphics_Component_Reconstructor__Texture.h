@@ -40,6 +40,7 @@ namespace LMD
         void start(unsigned int _cycles = 0, unsigned int _with_frame = 0);
         void pause();
         void unpause();
+        void set_cycles(unsigned int _cycles);
 
     public:
         inline unsigned int frames_count() const { return m_frames_count; }

@@ -49,6 +49,12 @@ void Animation_Graphics_Component_Reconstructor__Texture::unpause()
     m_is_paused = false;
 }
 
+void Animation_Graphics_Component_Reconstructor__Texture::set_cycles(unsigned int _cycles)
+{
+    m_repetitions = _cycles;
+    m_repetitions = 0;
+}
+
 
 
 void Animation_Graphics_Component_Reconstructor__Texture::M_recalculate_frame_data(LR::Graphics_Component__Texture& _texture)
