@@ -58,8 +58,11 @@ void TF_Graphics_Component_Reconstructor__Texture::update(float /*_dt*/)
         array[(fpv * 5)] = letter_right;         array[(fpv * 5) + 1] = letter_top;
     }
 
-    component->buffer().use_array(buffer, amount);
+    component->buffer().resize(amount);
+    component->buffer().copy_array(buffer, amount);
     component->reconfigure_texture_coords();
+
+    delete[] buffer;
 }
 
 

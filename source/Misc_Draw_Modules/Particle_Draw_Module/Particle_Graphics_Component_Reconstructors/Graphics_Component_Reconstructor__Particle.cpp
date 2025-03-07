@@ -11,17 +11,7 @@ void Graphics_Component_Reconstructor__Particle::set_max_particles_amount(unsign
     m_max_particles_amount = _value;
 
     unsigned int scaled_size = m_default_data.size() * m_max_particles_amount;
-    float* scaled_data = new float[scaled_size];
-
-    for(unsigned int i=0; i<m_max_particles_amount; ++i)
-    {
-        unsigned int scaled_data_offset = m_default_data.size() * i;
-
-        for(unsigned int c=0; c<m_default_data.size(); ++c)
-            scaled_data[scaled_data_offset + c] = m_default_data[c];
-    }
-
-    m_graphics_component->buffer().use_array(scaled_data, scaled_size);
+    m_graphics_component->buffer().resize(scaled_size);
 
     m_expected_lifetimes.resize_and_fill(m_max_particles_amount, 0.0f);
     m_remaining_lifetimes.resize_and_fill(m_max_particles_amount, 0.0f);

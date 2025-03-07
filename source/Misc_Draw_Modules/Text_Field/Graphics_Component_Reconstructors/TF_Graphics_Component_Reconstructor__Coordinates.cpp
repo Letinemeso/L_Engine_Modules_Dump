@@ -200,7 +200,10 @@ void TF_Graphics_Component_Reconstructor__Coordinates::update(float _dt)
             buffer[vertex_i + i] += raw_offset[i];
     }
 
-    m_graphics_component->buffer().use_array(buffer, amount);
+    m_graphics_component->buffer().resize(amount);
+    m_graphics_component->buffer().copy_array(buffer, amount);
+
+    delete[] buffer;
 }
 
 

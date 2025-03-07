@@ -64,9 +64,14 @@ void Animation_Graphics_Component_Reconstructor__Texture::M_recalculate_frame_da
 
     float current_offset = m_current_frame * m_frame_offset_ratio;
     float needed_offset = m_requested_frame * m_frame_offset_ratio;
+    float modifier = needed_offset - current_offset;
 
-    for(unsigned int i=0; i<_texture.buffer().size(); i += 2)
-        _texture.buffer()[i] += needed_offset - current_offset;
+    LR::Buffer::Element_Modification_Func modification_func = [modifier](float& _element, unsigned int _index)
+    {
+        _element += modifier;
+    };
+
+    _texture.buffer().modify_buffer(modification_func, 0, _texture.buffer().size(), _texture.buffer().floats_per_vertex());
 
     m_current_frame = m_requested_frame;
 }

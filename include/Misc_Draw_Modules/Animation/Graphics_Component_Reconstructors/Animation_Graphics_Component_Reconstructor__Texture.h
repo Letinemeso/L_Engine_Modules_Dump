@@ -17,20 +17,20 @@ namespace LMD
     public:
         INIT_VARIABLE(LMD::Animation_Graphics_Component_Reconstructor__Texture, LR::Graphics_Component_Reconstructor)
 
-   private:
-       unsigned int m_frames_count = 0;
-       float m_fps = 0;
-       float m_time_before_next_frame = 0.0f;
-       float m_frame_offset_ratio = 0.0f;
+    private:
+        unsigned int m_frames_count = 0;
+        float m_fps = 0;
+        float m_time_before_next_frame = 0.0f;
+        float m_frame_offset_ratio = 0.0f;
 
-       unsigned int m_current_frame = 0;
-       unsigned int m_requested_frame = 0;
+        unsigned int m_current_frame = 0;
+        unsigned int m_requested_frame = 0;
 
-   private:
-       bool m_is_paused = true;
-       LST::Timer m_frame_update_timer;
-       unsigned int m_times_to_repeat = 0;
-       unsigned int m_repetitions = 0;
+    private:
+        bool m_is_paused = true;
+        LST::Timer m_frame_update_timer;
+        unsigned int m_times_to_repeat = 0;
+        unsigned int m_repetitions = 0;
 
     public:
         void set_animation_data(unsigned int _frames_count);
@@ -50,7 +50,7 @@ namespace LMD
         inline bool paused() const { return m_is_paused; }
 
     private:
-       void M_recalculate_frame_data(LR::Graphics_Component__Texture& _texture);
+        void M_recalculate_frame_data(LR::Graphics_Component__Texture& _texture);
 
     public:
         void update(float _dt) override;
@@ -63,14 +63,14 @@ namespace LMD
     public:
         INIT_VARIABLE(LMD::Animation_Graphics_Component_Reconstructor_Stub__Texture, LR::Graphics_Component_Reconstructor_Stub)
 
-        INIT_FIELDS
-        ADD_FIELD(float, frames_per_second)
+    INIT_FIELDS
+    ADD_FIELD(float, frames_per_second)
         ADD_FIELD(unsigned int, frames_count)
         ADD_FIELD(unsigned int, times_to_repeat)
         FIELDS_END
 
-    public:
-        float frames_per_second = 0;
+        public:
+                 float frames_per_second = 0;
         unsigned int frames_count = 0;
         unsigned int times_to_repeat = 0;
 
