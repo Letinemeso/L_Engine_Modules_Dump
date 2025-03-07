@@ -100,7 +100,7 @@ void Particle_System_Module::add_particle_draw_module(LR::Draw_Module* _ptr)
 
 void Particle_System_Module::forcefully_emit_particles(unsigned int _amount)
 {
-    for(unsigned int i=0; i<m_particle_data.size() && _amount > 0; ++i)
+    for(unsigned int i=0; (i<m_particle_data.size()) && (_amount > 0); ++i)
     {
         if(m_particle_data[i]->is_alive())
             continue;
