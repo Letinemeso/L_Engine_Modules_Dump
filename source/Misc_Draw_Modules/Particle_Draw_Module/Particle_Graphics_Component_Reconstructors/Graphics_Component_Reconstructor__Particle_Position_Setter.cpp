@@ -9,9 +9,9 @@
 using namespace LMD;
 
 
-void Graphics_Component_Reconstructor__Particle_Position_Setter::create_particle(unsigned int _particle_index, float _lifetime)
+void Graphics_Component_Reconstructor__Particle_Position_Setter::create_particle(unsigned int _particle_index)
 {
-    Parent_Type::create_particle(_particle_index, _lifetime);
+    Parent_Type::create_particle(_particle_index);
 
     const LEti::Transformation_Data& transformation = m_draw_module->parent_object()->current_state();
 

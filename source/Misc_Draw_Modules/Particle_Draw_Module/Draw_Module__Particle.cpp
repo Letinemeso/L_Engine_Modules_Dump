@@ -76,7 +76,7 @@ void Draw_Module__Particle::M_create_particle(unsigned int _index)
         LR::Graphics_Component* component = *it;
         Graphics_Component_Reconstructor__Particle* reconstructor = (Graphics_Component_Reconstructor__Particle*)component->reconstructor();
 
-        reconstructor->create_particle(_index, lifetime);
+        reconstructor->create_particle(_index);
     }
 
     m_particle_lifetimes[_index].start(lifetime);

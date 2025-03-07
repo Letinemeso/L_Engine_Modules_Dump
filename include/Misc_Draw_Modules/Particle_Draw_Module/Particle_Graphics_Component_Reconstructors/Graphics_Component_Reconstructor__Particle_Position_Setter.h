@@ -12,7 +12,7 @@ namespace LMD
         INIT_VARIABLE(LMD::Graphics_Component_Reconstructor__Particle_Position_Setter, LMD::Graphics_Component_Reconstructor__Particle)
 
     public:
-        void create_particle(unsigned int _particle_index, float _lifetime) override;
+        void create_particle(unsigned int _particle_index) override;
         void destroy_particle(unsigned int _particle_index) override;
 
     };
