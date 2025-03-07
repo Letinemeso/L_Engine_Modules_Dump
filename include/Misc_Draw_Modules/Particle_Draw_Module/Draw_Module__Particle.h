@@ -46,6 +46,7 @@ namespace LMD
         inline void set_vertices_per_particle(unsigned int _value) { m_vertices_per_particle = _value; }
 
         inline unsigned int alive_particles_amount() const { return m_alive_particles_amount; }
+        inline unsigned int max_particles_amount() const { return m_particle_lifetimes.size(); }
 
         inline const LEti::Transformation_Data* parent_transformation_data() const { return m_parent_transformation_data; }
         inline const LEti::Transformation_Data* parent_transformation_data_prev_state() const { return m_parent_transformation_data; }
