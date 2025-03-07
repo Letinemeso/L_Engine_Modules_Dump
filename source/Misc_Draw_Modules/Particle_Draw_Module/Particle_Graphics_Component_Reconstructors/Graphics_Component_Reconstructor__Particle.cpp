@@ -1,6 +1,7 @@
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle.h>
 
 #include <Components/Graphics_Component.h>
+#include <Draw_Modules/Draw_Module.h>
 
 using namespace LMD;
 
@@ -21,6 +22,39 @@ void Graphics_Component_Reconstructor__Particle::set_max_particles_amount(unsign
     }
 
     m_graphics_component->buffer().use_array(scaled_data, scaled_size);
+
+    m_expected_lifetimes.resize_and_fill(m_max_particles_amount, 0.0f);
+    m_remaining_lifetimes.resize_and_fill(m_max_particles_amount, 0.0f);
+}
+
+
+
+void Graphics_Component_Reconstructor__Particle::create_particle(unsigned int _particle_index, float _lifetime)
+{
+    m_expected_lifetimes[_particle_index] = _lifetime;
+    m_remaining_lifetimes[_particle_index] = _lifetime;
+
+    unsigned int offset = _particle_index * m_default_data.size();
+    m_draw_module->bind_vertex_array();
+    m_graphics_component->buffer().copy_array(m_default_data.raw_data(), m_default_data.size(), offset);
+}
+
+void Graphics_Component_Reconstructor__Particle::destroy_particle(unsigned int _particle_index)
+{
+    m_remaining_lifetimes[_particle_index] = 0.0f;
+}
+
+
+
+void Graphics_Component_Reconstructor__Particle::update(float _dt)
+{
+    for(unsigned int i=0; i<m_max_particles_amount; ++i)
+    {
+        if(m_remaining_lifetimes[i] <= 0.0f)
+            continue;
+
+        m_remaining_lifetimes[i] -= _dt;
+    }
 }
 
 

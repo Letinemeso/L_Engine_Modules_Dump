@@ -7,11 +7,23 @@
 using namespace LMD;
 
 
+Draw_Module__Particle::Draw_Module__Particle()
+{
+    glGenBuffers(1, &m_element_array_buffer);
+}
+
+Draw_Module__Particle::~Draw_Module__Particle()
+{
+    glDeleteBuffers(1, &m_element_array_buffer);
+}
+
+
+
 void Draw_Module__Particle::set_max_particles(unsigned int _amount)
 {
-    m_particle_lifetimes.resize(_amount);
+    m_particle_lifetimes.resize_and_fill(_amount, {});
 
-    for(LR::Draw_Module::Graphics_Component_List::Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
+    for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
     {
         LR::Graphics_Component* component = *it;
         L_ASSERT(LV::cast_variable<Graphics_Component_Reconstructor__Particle>(component->reconstructor()));
@@ -19,6 +31,20 @@ void Draw_Module__Particle::set_max_particles(unsigned int _amount)
 
         reconstructor->set_max_particles_amount(_amount);
     }
+}
+
+
+void Draw_Module__Particle::set_transformation_data(LEti::Transformation_Data* _data)
+{
+    m_initial_transformation = *_data;
+    m_parent_transformation_data = _data;
+    Parent_Type::set_transformation_data(&m_initial_transformation);
+}
+
+void Draw_Module__Particle::set_transformation_data_prev_state(const LEti::Transformation_Data* _data)
+{
+    m_parent_transformation_data_prev_state = _data;
+    Parent_Type::set_transformation_data_prev_state(&m_initial_transformation);
 }
 
 
@@ -41,9 +67,9 @@ void Draw_Module__Particle::M_update_emission_timer(float _dt)
 
 void Draw_Module__Particle::M_create_particle(unsigned int _index)
 {
-    float lifetime = LEti::Math::random_number_float(m_min_particles_lifetime, m_particles_lifetime_max_difference);
+    float lifetime = LEti::Math::random_number_float(m_min_particles_lifetime, m_max_particles_lifetime);
 
-    for(LR::Draw_Module::Graphics_Component_List::Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
+    for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
     {
         LR::Graphics_Component* component = *it;
         Graphics_Component_Reconstructor__Particle* reconstructor = (Graphics_Component_Reconstructor__Particle*)component->reconstructor();
@@ -58,7 +84,7 @@ void Draw_Module__Particle::M_create_particle(unsigned int _index)
 
 void Draw_Module__Particle::M_destroy_particle(unsigned int _index)
 {
-    for(LR::Draw_Module::Graphics_Component_List::Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
+    for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
     {
         LR::Graphics_Component* component = *it;
         Graphics_Component_Reconstructor__Particle* reconstructor = (Graphics_Component_Reconstructor__Particle*)component->reconstructor();
@@ -69,6 +95,22 @@ void Draw_Module__Particle::M_destroy_particle(unsigned int _index)
     m_particle_lifetimes[_index].reset();
 
     --m_alive_particles_amount;
+}
+
+
+LDS::Vector<unsigned int> Draw_Module__Particle::M_calculate_active_vertices() const
+{
+    LDS::Vector<unsigned int> result(m_alive_particles_amount * m_vertices_per_particle);
+    for(unsigned int i=0; i<m_particle_lifetimes.size(); ++i)
+    {
+        if(!m_particle_lifetimes[i].is_active())
+            continue;
+
+        unsigned int vertex_offset = i * m_vertices_per_particle;
+        for(unsigned int stride = 0; stride < m_vertices_per_particle; ++stride)
+            result.push(vertex_offset + stride);
+    }
+    return result;
 }
 
 
@@ -89,6 +131,24 @@ void Draw_Module__Particle::emit_particles(unsigned int _amount)
 
         --_amount;
     }
+}
+
+
+
+void Draw_Module__Particle::M_draw_internal() const
+{
+    if(m_alive_particles_amount == 0)
+        return;
+
+    LDS::Vector<unsigned int> active_vertices = M_calculate_active_vertices();
+
+    glBindVertexArray(vertex_array());
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_array_buffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, active_vertices.size() * sizeof(unsigned int), active_vertices.raw_data(), GL_STATIC_DRAW);
+
+    glDrawElements(draw_mode(), active_vertices.size(), GL_UNSIGNED_INT, 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 
@@ -119,5 +179,38 @@ BUILDER_STUB_INITIALIZATION_FUNC(Draw_Module_Stub__Particle)
 
     product->set_emission_frequency(emission_frequency);
     product->set_particles_lifetime(min_particles_lifetime, max_particles_lifetime);
+    product->set_vertices_per_particle(M_calculate_vertices_per_particle());
     product->set_max_particles(max_particles_amount);
+}
+
+
+
+unsigned int Draw_Module_Stub__Particle::M_calculate_vertices_per_particle() const
+{
+    LV::Variable_Base::Childs_List::Const_Iterator it = graphics_component_stubs.begin();
+    L_ASSERT(LV::cast_variable<LR::Graphics_Component_Stub>(it->child_ptr));
+    LR::Graphics_Component_Stub* component_stub = (LR::Graphics_Component_Stub*)(it->child_ptr);
+    L_ASSERT(LV::cast_variable<Graphics_Component_Reconstructor_Stub__Particle>(component_stub->reconstructor_stub));
+    Graphics_Component_Reconstructor_Stub__Particle* reconstructor_stub = (Graphics_Component_Reconstructor_Stub__Particle*)(component_stub->reconstructor_stub);
+
+    unsigned int result = reconstructor_stub->default_data.size() / component_stub->floats_per_vertex;
+
+    L_DEBUG_FUNC_NOARG([&]()
+    {
+        ++it;
+        while(!it.end_reached())
+        {
+            L_ASSERT(LV::cast_variable<LR::Graphics_Component_Stub>(it->child_ptr));
+            component_stub = (LR::Graphics_Component_Stub*)(it->child_ptr);
+            L_ASSERT(LV::cast_variable<Graphics_Component_Reconstructor_Stub__Particle>(component_stub->reconstructor_stub));
+            reconstructor_stub = (Graphics_Component_Reconstructor_Stub__Particle*)(component_stub->reconstructor_stub);
+
+            unsigned int check_result = reconstructor_stub->default_data.size() / component_stub->floats_per_vertex;
+            L_ASSERT(check_result == result);
+
+            ++it;
+        }
+    });
+
+    return result;
 }
