@@ -47,6 +47,9 @@ namespace LMD
 
         inline unsigned int alive_particles_amount() const { return m_alive_particles_amount; }
 
+        inline const LEti::Transformation_Data* parent_transformation_data() const { return m_parent_transformation_data; }
+        inline const LEti::Transformation_Data* parent_transformation_data_prev_state() const { return m_parent_transformation_data; }
+
     public:
         void set_max_particles(unsigned int _amount);
 

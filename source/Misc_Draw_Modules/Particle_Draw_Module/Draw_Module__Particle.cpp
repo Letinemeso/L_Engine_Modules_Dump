@@ -31,6 +31,8 @@ void Draw_Module__Particle::set_max_particles(unsigned int _amount)
 
         reconstructor->set_max_particles_amount(_amount);
     }
+
+    recalculate_vertices_amount();
 }
 
 
@@ -161,6 +163,20 @@ void Draw_Module__Particle::update(float _dt)
     {
         emit_particles(m_requested_particles_amount);
         m_requested_particles_amount = 0;
+    }
+
+    for(unsigned int i=0; i<m_particle_lifetimes.size(); ++i)
+    {
+        LST::Timer& timer = m_particle_lifetimes[i];
+        if(!timer.is_active())
+            continue;
+
+        timer.update(_dt);
+
+        if(timer.is_active())
+            continue;
+
+        M_destroy_particle(i);
     }
 
     Parent_Type::update(_dt);
