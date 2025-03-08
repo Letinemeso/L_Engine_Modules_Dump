@@ -38,15 +38,19 @@ void Draw_Module__Particle::set_max_particles(unsigned int _amount)
 
 void Draw_Module__Particle::set_transformation_data(LEti::Transformation_Data* _data)
 {
-    m_initial_transformation = *_data;
-    m_parent_transformation_data = _data;
     Parent_Type::set_transformation_data(&m_initial_transformation);
+    if(_data)
+    {
+        m_initial_transformation.set_rotation(_data->rotation());
+        m_initial_transformation.set_scale(_data->scale());
+    }
+    m_parent_transformation_data = _data;
 }
 
 void Draw_Module__Particle::set_transformation_data_prev_state(const LEti::Transformation_Data* _data)
 {
-    m_parent_transformation_data_prev_state = _data;
     Parent_Type::set_transformation_data_prev_state(&m_initial_transformation);
+    m_parent_transformation_data_prev_state = _data;
 }
 
 
