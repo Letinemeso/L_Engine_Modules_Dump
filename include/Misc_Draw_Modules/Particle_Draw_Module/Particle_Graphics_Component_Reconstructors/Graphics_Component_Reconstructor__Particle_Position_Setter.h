@@ -23,13 +23,6 @@ namespace LMD
     public:
         INIT_VARIABLE(LMD::Graphics_Component_Reconstructor_Stub__Particle_Position_Setter, LMD::Graphics_Component_Reconstructor_Stub__Particle)
 
-        // INIT_FIELDS
-        // ADD_FIELD(LDS::Vector<float>, default_data)
-        // FIELDS_END
-
-    public:
-        // LDS::Vector<float> default_data;
-
     public:
         INIT_BUILDER_STUB(Graphics_Component_Reconstructor__Particle_Position_Setter)
 
