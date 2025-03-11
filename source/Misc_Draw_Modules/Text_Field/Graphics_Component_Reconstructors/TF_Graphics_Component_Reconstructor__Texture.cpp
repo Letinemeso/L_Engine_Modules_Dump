@@ -1,6 +1,8 @@
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Texture.h>
 #include <Misc_Draw_Modules/Text_Field/Draw_Module__Text_Field.h>
 
+#include <Texture/Texture__Preloaded.h>
+
 using namespace LMD;
 
 
@@ -15,10 +17,13 @@ void TF_Graphics_Component_Reconstructor__Texture::update(float /*_dt*/)
     if(tf->settings() == tf->current_settings())
         return;
 
+    L_ASSERT(LV::cast_variable<LR::Texture__Preloaded>(component->texture()));
+    LR::Texture__Preloaded* texture = (LR::Texture__Preloaded*)component->texture();
+
     const Text_Field_Settings& settings = tf->settings();
 
-    if(component->get_picture() != settings.picture)
-        component->set_picture(settings.picture);
+    if(texture->picture() != settings.picture)
+        texture->set_picture(settings.picture);
 
     const unsigned int fpv = component->buffer().floats_per_vertex();
     L_ASSERT(fpv > 1);    //  single-dimentional font is not supported :D

@@ -2,6 +2,8 @@
 
 #include <Math_Stuff.h>
 
+#include <Resources_Manager.h>
+
 #include <Resources/Font.h>
 #include <Resources/Picture.h>
 #include <Draw_Modules/Draw_Module.h>
@@ -101,7 +103,7 @@ namespace LMD
         std::string text;
 
     protected:
-        INIT_BUILDER_STUB(Draw_Module__Text_Field);
+        INIT_BUILDER_STUB(Draw_Module__Text_Field)
 
     };
 
