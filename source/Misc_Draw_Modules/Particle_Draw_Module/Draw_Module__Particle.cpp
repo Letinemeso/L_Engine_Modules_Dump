@@ -2,6 +2,10 @@
 
 #include <Math_Stuff.h>
 
+#include <glew.h>
+
+#include <Binds_Controller/Binds_Controller.h>
+
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle.h>
 
 using namespace LMD;
@@ -148,7 +152,7 @@ void Draw_Module__Particle::M_draw_internal() const
 
     LDS::Vector<unsigned int> active_vertices = M_calculate_active_vertices();
 
-    glBindVertexArray(vertex_array());
+    LR::Binds_Controller::instance().bind_vertex_array(vertex_array());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_element_array_buffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, active_vertices.size() * sizeof(unsigned int), active_vertices.raw_data(), GL_STATIC_DRAW);
 

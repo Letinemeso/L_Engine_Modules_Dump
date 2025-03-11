@@ -1,5 +1,7 @@
 #include <Tools/Physical_Model_Renderer.h>
 
+#include <glew.h>
+
 using namespace LMD;
 
 
