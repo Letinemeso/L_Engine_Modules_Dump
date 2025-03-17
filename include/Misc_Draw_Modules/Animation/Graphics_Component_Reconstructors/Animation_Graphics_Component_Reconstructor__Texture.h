@@ -63,14 +63,14 @@ namespace LMD
     public:
         INIT_VARIABLE(LMD::Animation_Graphics_Component_Reconstructor_Stub__Texture, LR::Graphics_Component_Reconstructor_Stub)
 
-    INIT_FIELDS
-    ADD_FIELD(float, frames_per_second)
+        INIT_FIELDS
+        ADD_FIELD(float, frames_per_second)
         ADD_FIELD(unsigned int, frames_count)
         ADD_FIELD(unsigned int, times_to_repeat)
         FIELDS_END
 
-        public:
-                 float frames_per_second = 0;
+    public:
+        float frames_per_second = 0;
         unsigned int frames_count = 0;
         unsigned int times_to_repeat = 0;
 
