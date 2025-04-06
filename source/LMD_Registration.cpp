@@ -18,7 +18,8 @@ using namespace LMD;
 
 void LMD::register_types(LV::Object_Constructor& _object_constructor,
                          const LST::Function<const LEti::Resources_Manager*()>& _resources_manager_getter,
-                         LR::Renderer& _renderer)
+                         LR::Renderer& _renderer,
+                         LR::Draw_Order_Controller* _draw_order_controller)
 {
     L_ASSERT(_resources_manager_getter);
 
@@ -39,7 +40,12 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
 
     _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Particle_Position_Setter>();
 
-    _object_constructor.register_type<Particle_System::Particle_System_Module_Stub>();
+    _object_constructor.register_type<Particle_System::Particle_System_Module_Stub>().override_initialization_func([_draw_order_controller](LV::Variable_Base* _product)
+    {
+        Particle_System::Particle_System_Module_Stub* product = (Particle_System::Particle_System_Module_Stub*)_product;
+
+        product->draw_order_controller = _draw_order_controller;
+    });
 
     _object_constructor.register_type<LMD::Draw_Module_Stub__Text_Field>().override_initialization_func([renderer, _resources_manager_getter](LV::Variable_Base* _product)
     {
