@@ -1,5 +1,7 @@
 #include <Misc_Draw_Modules/Animation/Graphics_Component_Reconstructors/Animation_Graphics_Component_Reconstructor__Texture.h>
 
+#include <Draw_Modules/Draw_Module.h>
+
 using namespace LMD;
 
 
@@ -71,6 +73,7 @@ void Animation_Graphics_Component_Reconstructor__Texture::M_recalculate_frame_da
         _element += modifier;
     };
 
+    m_draw_module->bind_vertex_array();
     _texture.buffer().modify_buffer(modification_func, 0, _texture.buffer().size(), _texture.buffer().floats_per_vertex());
 
     m_current_frame = m_requested_frame;
