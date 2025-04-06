@@ -30,8 +30,7 @@ namespace LMD
         INIT_VARIABLE(LMD::TF_Graphics_Component_Reconstructor_Stub__Colors, LR::Graphics_Component_Reconstructor_Stub)
 
     protected:
-        LV::Variable_Base* M_construct_product() const override;
-        void M_init_constructed_product(LV::Variable_Base* _product) const override;
+        INIT_BUILDER_STUB(TF_Graphics_Component_Reconstructor__Colors)
 
     };
 
