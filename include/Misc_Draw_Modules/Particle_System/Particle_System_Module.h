@@ -64,6 +64,7 @@ namespace Particle_System
         inline Particle_Data_Reseter* particle_data_reseter() { return m_particle_data_reseter; }
         inline const Particle_Data_Reseter* particle_data_reseter() const { return m_particle_data_reseter; }
         inline float emission_frequency() const { return m_emission_frequency; }
+        inline bool emission_is_paused() const { return m_emission_is_paused; }
         inline const LDS::Vector<LR::Draw_Module*>& particle_draw_modules() const { return m_particle_draw_modules; }
 
     private:
