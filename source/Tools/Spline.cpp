@@ -84,6 +84,8 @@ Spline::Points_List Spline::interpolate() const
 
         float segment_length = LEti::Math::vector_length(current_segment);
         unsigned int points_amount = (unsigned int)(segment_length / m_interpolation_step_length);
+        if(points_amount == 0)
+            points_amount = 1;
 
         Points_List interpolated_curve;
         for (unsigned int j = 0; j < points_amount; ++j)
