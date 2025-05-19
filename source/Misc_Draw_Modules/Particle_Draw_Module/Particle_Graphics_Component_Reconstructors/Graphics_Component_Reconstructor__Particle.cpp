@@ -33,7 +33,7 @@ void Graphics_Component_Reconstructor__Particle::M_apply_random_increments(unsig
     for(unsigned int i=0; i<increments_amount; ++i)
         modifiers[i] = LEti::Math::random_number_float(m_random_increments_min[i], m_random_increments_max[i]);
 
-    LR::Buffer::Element_Modification_Func modification_func = [&modifiers, this](float& _element, unsigned int _index)
+    LR::Buffer::Element_Modification_Func modification_func = [&modifiers](float& _element, unsigned int _index)
     {
         float* elements_array = &_element;
         for(unsigned int i=0; i<modifiers.size(); ++i)
