@@ -100,10 +100,9 @@ void Draw_Module__Particle::emit_particles(unsigned int _amount)
 
         create_particle(i);
 
+        --_amount;
         if(_amount == 0)
             break;
-
-        --_amount;
     }
 }
 
