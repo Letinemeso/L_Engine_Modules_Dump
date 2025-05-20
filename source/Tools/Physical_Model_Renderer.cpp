@@ -22,7 +22,8 @@ void Physical_Model_Renderer::set_draw_module(LR::Draw_Module* _ptr, unsigned in
     delete m_draw_module;
     m_draw_module = _ptr;
 
-    m_coordinates_graphic_component = m_draw_module->get_graphics_component_with_buffer_index(_coordinates_graphics_component_index);
+    m_coordinates_graphic_component = (LR::Graphics_Component__Default*)m_draw_module->get_graphics_component_with_buffer_index(_coordinates_graphics_component_index);
+    L_ASSERT(LV::cast_variable<LR::Graphics_Component__Default>(m_coordinates_graphic_component));
     L_ASSERT(m_coordinates_graphic_component);
     L_ASSERT(m_coordinates_graphic_component->buffer().floats_per_vertex() == 3);
     L_ASSERT(m_coordinates_graphic_component->buffer().size() == 9);

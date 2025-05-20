@@ -12,6 +12,7 @@
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Colors.h>
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Texture.h>
 #include <Misc_Draw_Modules/Utility_Reconstructors/Graphics_Component_Reconstructor__Filler.h>
+#include <Misc_Draw_Modules/Utility_Draw_Modules/Static_Draw_Module.h>
 #include <Misc_Modules/Follow_Trajectory_Module.h>
 #include <Resources/Animation.h>
 
@@ -66,6 +67,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::TF_Graphics_Component_Reconstructor_Stub__Texture>();
 
     _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Filler>();
+
+    _object_constructor.register_type<LMD::Static_Draw_Module_Stub>();
 
     _object_constructor.register_type<LMD::Follow_Trajectory_Module_Stub>();
 

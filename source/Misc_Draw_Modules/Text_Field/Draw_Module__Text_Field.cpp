@@ -31,17 +31,9 @@ void Draw_Module__Text_Field::M_update_internal(float _dt)
     if(m_configurable_settings.text.size() == 0)
         return;
 
-    bool needs_reconfiguration = m_current_settings != m_configurable_settings;
-
-    if(needs_reconfiguration)
-        m_should_recalculate_vertices_before_draw = true;
-    else
-        m_should_recalculate_vertices_before_draw = false;
-
     Draw_Module::M_update_internal(_dt);
 
-    if(needs_reconfiguration)
-        m_current_settings = m_configurable_settings;
+    m_current_settings = m_configurable_settings;
 }
 
 void Draw_Module__Text_Field::draw() const

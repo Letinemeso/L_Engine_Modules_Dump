@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Draw_Modules/Draw_Module.h>
+#include <Components/Graphics_Component__Default.h>
+
 #include <Physical_Models/Physical_Model_2D.h>
 
 

@@ -25,18 +25,21 @@ Draw_Module__Particle::~Draw_Module__Particle()
 
 void Draw_Module__Particle::set_max_particles(unsigned int _amount)
 {
+    L_ASSERT(_amount > 0);
+
     m_max_particles_amount = _amount;
     m_alive_particles.resize_and_fill(m_max_particles_amount, false);
 
     for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
     {
-        LR::Graphics_Component__Default* component = *it;
+        LR::Graphics_Component* base_component_ptr = *it;
+        L_ASSERT(LV::cast_variable<LR::Graphics_Component__Default>(base_component_ptr));
+        LR::Graphics_Component__Default* component = (LR::Graphics_Component__Default*)base_component_ptr;
+        L_ASSERT(LV::cast_variable<Graphics_Component_Reconstructor__Particle>(component->reconstructor()));
         Graphics_Component_Reconstructor__Particle* reconstructor = (Graphics_Component_Reconstructor__Particle*)component->reconstructor();
 
         reconstructor->set_max_particles_amount(_amount);
     }
-
-    recalculate_vertices_amount();
 }
 
 
@@ -65,7 +68,8 @@ void Draw_Module__Particle::create_particle(unsigned int _index)
 
     for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
     {
-        LR::Graphics_Component__Default* component = *it;
+        LR::Graphics_Component* base_component_ptr = *it;
+        LR::Graphics_Component__Default* component = (LR::Graphics_Component__Default*)base_component_ptr;
         Graphics_Component_Reconstructor__Particle* reconstructor = (Graphics_Component_Reconstructor__Particle*)component->reconstructor();
 
         reconstructor->create_particle(_index);
@@ -80,7 +84,8 @@ void Draw_Module__Particle::destroy_particle(unsigned int _index)
 
     for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
     {
-        LR::Graphics_Component__Default* component = *it;
+        LR::Graphics_Component* base_component_ptr = *it;
+        LR::Graphics_Component__Default* component = (LR::Graphics_Component__Default*)base_component_ptr;
         Graphics_Component_Reconstructor__Particle* reconstructor = (Graphics_Component_Reconstructor__Particle*)component->reconstructor();
 
         reconstructor->destroy_particle(_index);
