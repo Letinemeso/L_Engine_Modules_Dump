@@ -4,6 +4,8 @@
 #include <vec3.hpp>
 
 #include <Components/Graphics_Component_Reconstructor.h>
+#include <Components/Graphics_Component__Default.h>
+
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/String_Tools.h>
 
 
@@ -17,6 +19,9 @@ namespace LMD
     {
     public:
         INIT_VARIABLE(LMD::TF_Graphics_Component_Reconstructor__Colors, LR::Graphics_Component_Reconstructor)
+
+    private:
+        LR::Graphics_Component__Default* graphics_component() const { L_ASSERT(LV::cast_variable<LR::Graphics_Component__Default>(m_graphics_component)); return (LR::Graphics_Component__Default*)m_graphics_component; }
 
     public:
         void update(float _dt) override;

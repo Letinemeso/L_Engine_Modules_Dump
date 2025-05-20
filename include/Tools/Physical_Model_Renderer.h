@@ -11,7 +11,7 @@ namespace LMD
     {
     private:
         LR::Draw_Module* m_draw_module = nullptr;
-        LR::Graphics_Component* m_coordinates_graphic_component = nullptr;
+        LR::Graphics_Component__Default* m_coordinates_graphic_component = nullptr;
 
     public:
         Physical_Model_Renderer();

@@ -14,20 +14,22 @@ void TF_Graphics_Component_Reconstructor__Colors::update(float _dt)
     if(tf->settings() == tf->current_settings())
         return;
 
+    LR::Graphics_Component__Default* component = graphics_component();
+
     const Text_Field_Settings& settings = tf->settings();
 
-    const unsigned int fpv = m_graphics_component->buffer().floats_per_vertex();
+    const unsigned int fpv = component->buffer().floats_per_vertex();
     L_ASSERT(fpv > 1);    //  single-dimentional font is not supported :D
 
     constexpr unsigned int vertices_per_symbol = 6;
 
     unsigned int lines_amount = calculate_lines_amount(settings.text);
 
-    const unsigned int amount_per_symbol = m_graphics_component->buffer().floats_per_vertex() * vertices_per_symbol;
+    const unsigned int amount_per_symbol = component->buffer().floats_per_vertex() * vertices_per_symbol;
     const unsigned int amount = amount_per_symbol * (settings.text.size() - (lines_amount - 1));
 
-    m_graphics_component->buffer().resize(amount);
-    m_graphics_component->buffer().modify_buffer([](float& _element, unsigned int _index)
+    component->buffer().resize(amount);
+    component->buffer().modify_buffer([](float& _element, unsigned int _index)
     {
         _element = 1.0f;
     });

@@ -3,7 +3,6 @@
 #include <Math_Stuff.h>
 #include <Object.h>
 
-#include <Components/Graphics_Component.h>
 #include <Draw_Modules/Draw_Module.h>
 
 using namespace LMD;
@@ -15,14 +14,17 @@ void Graphics_Component_Reconstructor__Particle_Position_Setter::create_particle
 
     const LEti::Transformation_Data& transformation = m_draw_module->parent_object()->current_state();
 
-    LR::Buffer::Element_Modification_Func modification_func = [&transformation, this](float& _element, unsigned int _index)
+    LR::Graphics_Component__Default* component = graphics_component();
+    unsigned int floats_per_vertex = component->buffer().floats_per_vertex();
+
+    LR::Buffer::Element_Modification_Func modification_func = [&transformation, floats_per_vertex](float& _element, unsigned int _index)
     {
-        unsigned int component_index = _index % m_graphics_component->buffer().floats_per_vertex();
+        unsigned int component_index = _index % floats_per_vertex;
         _element += transformation.position()[component_index];
     };
 
     unsigned int offset = _particle_index * default_data().size();
-    m_graphics_component->buffer().modify_buffer(modification_func, offset, default_data().size());
+    component->buffer().modify_buffer(modification_func, offset, default_data().size());
 }
 
 void Graphics_Component_Reconstructor__Particle_Position_Setter::destroy_particle(unsigned int _particle_index)

@@ -4,6 +4,7 @@
 #include <vec3.hpp>
 
 #include <Components/Graphics_Component_Reconstructor.h>
+#include <Components/Graphics_Component__Default.h>
 #include <Resources/Font.h>
 
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/String_Tools.h>
@@ -22,6 +23,9 @@ namespace LMD
 
     private:
         float m_highest_letter = 0.0f;
+
+    private:
+        LR::Graphics_Component__Default* graphics_component() const { L_ASSERT(LV::cast_variable<LR::Graphics_Component__Default>(m_graphics_component)); return (LR::Graphics_Component__Default*)m_graphics_component; }
 
     private:
         float M_calculate_next_line_offset_x(const std::string& _text, unsigned int _offset, const glm::vec2& _raw_size, float _raw_scale, const Text_Field_Settings& _settings) const;

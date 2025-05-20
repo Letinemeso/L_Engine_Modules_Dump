@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Components/Graphics_Component__Default.h>
+
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle.h>
 
 
@@ -10,6 +12,9 @@ namespace LMD
     {
     public:
         INIT_VARIABLE(LMD::Graphics_Component_Reconstructor__Particle_Position_Setter, LMD::Graphics_Component_Reconstructor__Particle)
+
+    private:
+        LR::Graphics_Component__Default* graphics_component() const { L_ASSERT(LV::cast_variable<LR::Graphics_Component__Default>(m_graphics_component)); return (LR::Graphics_Component__Default*)m_graphics_component; }
 
     public:
         void create_particle(unsigned int _particle_index) override;

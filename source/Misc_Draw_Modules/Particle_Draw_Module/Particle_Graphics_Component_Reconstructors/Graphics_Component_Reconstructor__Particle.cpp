@@ -2,7 +2,7 @@
 
 #include <Math_Stuff.h>
 
-#include <Components/Graphics_Component.h>
+#include <Components/Graphics_Component__Default.h>
 #include <Draw_Modules/Draw_Module.h>
 
 using namespace LMD;
@@ -12,8 +12,10 @@ void Graphics_Component_Reconstructor__Particle::set_max_particles_amount(unsign
 {
     m_max_particles_amount = _value;
 
+    LR::Graphics_Component__Default* component = graphics_component();
+
     unsigned int scaled_size = m_default_data.size() * m_max_particles_amount;
-    m_graphics_component->buffer().resize(scaled_size);
+    component->buffer().resize(scaled_size);
 }
 
 
@@ -28,6 +30,8 @@ void Graphics_Component_Reconstructor__Particle::M_apply_random_increments(unsig
     unsigned int increments_amount = m_random_increments_min.size();
     L_ASSERT(m_default_data.size() % increments_amount == 0);
 
+    LR::Graphics_Component__Default* component = graphics_component();
+
     Data_Vector modifiers(increments_amount, 0.0f);
 
     for(unsigned int i=0; i<increments_amount; ++i)
@@ -40,7 +44,7 @@ void Graphics_Component_Reconstructor__Particle::M_apply_random_increments(unsig
             elements_array[i] += modifiers[i];
     };
 
-    m_graphics_component->buffer().modify_buffer(modification_func, _offset, default_data().size(), modifiers.size());
+    component->buffer().modify_buffer(modification_func, _offset, default_data().size(), modifiers.size());
 }
 
 void Graphics_Component_Reconstructor__Particle::M_apply_random_multipliers(unsigned int _offset)
@@ -53,28 +57,32 @@ void Graphics_Component_Reconstructor__Particle::M_apply_random_multipliers(unsi
     unsigned int multipliers_amount = m_random_multipliers_min.size();
     L_ASSERT(m_default_data.size() % multipliers_amount == 0);
 
+    LR::Graphics_Component__Default* component = graphics_component();
+
     Data_Vector modifiers(multipliers_amount, 0.0f);
 
     for(unsigned int i=0; i<multipliers_amount; ++i)
         modifiers[i] = LEti::Math::random_number_float(m_random_multipliers_min[i], m_random_multipliers_max[i]);
 
-    LR::Buffer::Element_Modification_Func modification_func = [&modifiers, this](float& _element, unsigned int _index)
+    LR::Buffer::Element_Modification_Func modification_func = [&modifiers](float& _element, unsigned int _index)
     {
         float* elements_array = &_element;
         for(unsigned int i=0; i<modifiers.size(); ++i)
             elements_array[i] *= modifiers[i];
     };
 
-    m_graphics_component->buffer().modify_buffer(modification_func, _offset, default_data().size(), modifiers.size());
+    component->buffer().modify_buffer(modification_func, _offset, default_data().size(), modifiers.size());
 }
 
 
 
 void Graphics_Component_Reconstructor__Particle::create_particle(unsigned int _particle_index)
 {
+    LR::Graphics_Component__Default* component = graphics_component();
+
     unsigned int offset = _particle_index * m_default_data.size();
     m_draw_module->bind_vertex_array();
-    m_graphics_component->buffer().copy_array(m_default_data.raw_data(), m_default_data.size(), offset);
+    component->buffer().copy_array(m_default_data.raw_data(), m_default_data.size(), offset);
 
     M_apply_random_increments(offset);
     M_apply_random_multipliers(offset);

@@ -128,14 +128,16 @@ void TF_Graphics_Component_Reconstructor__Coordinates::update(float _dt)
     if(settings.font != tf->current_settings().font)
         m_highest_letter = M_get_highest_letter_size(settings);
 
-    const unsigned int fpv = m_graphics_component->buffer().floats_per_vertex();
+    LR::Graphics_Component__Default* component = graphics_component();
+
+    const unsigned int fpv = component->buffer().floats_per_vertex();
     L_ASSERT(fpv > 1);    //  single-dimentional font is not supported :D
 
     constexpr unsigned int vertices_per_symbol = 6;
 
     unsigned int lines_amount = calculate_lines_amount(settings.text);
 
-    const unsigned int amount_per_symbol = m_graphics_component->buffer().floats_per_vertex() * vertices_per_symbol;
+    const unsigned int amount_per_symbol = component->buffer().floats_per_vertex() * vertices_per_symbol;
     const unsigned int amount = amount_per_symbol * (settings.text.size() - (lines_amount - 1));
 
     float* buffer = new float[amount]{0.0f};
@@ -200,8 +202,8 @@ void TF_Graphics_Component_Reconstructor__Coordinates::update(float _dt)
             buffer[vertex_i + i] += raw_offset[i];
     }
 
-    m_graphics_component->buffer().resize(amount);
-    m_graphics_component->buffer().copy_array(buffer, amount);
+    component->buffer().resize(amount);
+    component->buffer().copy_array(buffer, amount);
 
     delete[] buffer;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Components/Graphics_Component_Reconstructor.h>
+#include <Components/Graphics_Component__Default.h>
 
 
 namespace LMD
@@ -32,6 +33,9 @@ namespace LMD
 
         inline const Data_Vector& default_data() const { return m_default_data; }
         inline unsigned int max_particles_amount() const { return m_max_particles_amount; }
+
+    private:
+        LR::Graphics_Component__Default* graphics_component() const { L_ASSERT(LV::cast_variable<LR::Graphics_Component__Default>(m_graphics_component)); return (LR::Graphics_Component__Default*)m_graphics_component; }
 
     public:
         void set_max_particles_amount(unsigned int _value);

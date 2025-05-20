@@ -4,17 +4,17 @@
 
 #include <Resources_Manager.h>
 
-#include <Components/Graphics_Component.h>
+#include <Components/Graphics_Component__Default.h>
 #include <Texture/Texture__Preloaded.h>
 
 
 namespace LMD
 {
 
-    class Graphics_Component__Animation : public LR::Graphics_Component
+    class Graphics_Component__Animation : public LR::Graphics_Component__Default
     {
     public:
-        INIT_VARIABLE(LMD::Graphics_Component__Animation, LR::Graphics_Component)
+        INIT_VARIABLE(LMD::Graphics_Component__Animation, LR::Graphics_Component__Default)
 
     public:
         using Frame_Textures = LDS::Vector<LR::Texture__Preloaded*>;
@@ -65,10 +65,10 @@ namespace LMD
     };
 
 
-    class Graphics_Component_Stub__Animation : public LR::Graphics_Component_Stub
+    class Graphics_Component_Stub__Animation : public LR::Graphics_Component_Stub__Default
     {
     public:
-        INIT_VARIABLE(LMD::Graphics_Component_Stub__Animation, LR::Graphics_Component_Stub)
+        INIT_VARIABLE(LMD::Graphics_Component_Stub__Animation, LR::Graphics_Component_Stub__Default)
 
         INIT_FIELDS
         ADD_FIELD(std::string, animation_name)

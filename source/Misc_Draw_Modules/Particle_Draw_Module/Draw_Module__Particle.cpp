@@ -29,7 +29,7 @@ void Draw_Module__Particle::set_max_particles(unsigned int _amount)
 
     for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
     {
-        LR::Graphics_Component* component = *it;
+        LR::Graphics_Component__Default* component = *it;
         L_ASSERT(LV::cast_variable<Graphics_Component_Reconstructor__Particle>(component->reconstructor()));
         Graphics_Component_Reconstructor__Particle* reconstructor = (Graphics_Component_Reconstructor__Particle*)component->reconstructor();
 
@@ -81,7 +81,7 @@ void Draw_Module__Particle::M_create_particle(unsigned int _index)
 
     for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
     {
-        LR::Graphics_Component* component = *it;
+        LR::Graphics_Component__Default* component = *it;
         Graphics_Component_Reconstructor__Particle* reconstructor = (Graphics_Component_Reconstructor__Particle*)component->reconstructor();
 
         reconstructor->create_particle(_index);
@@ -96,7 +96,7 @@ void Draw_Module__Particle::M_destroy_particle(unsigned int _index)
 {
     for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
     {
-        LR::Graphics_Component* component = *it;
+        LR::Graphics_Component__Default* component = *it;
         Graphics_Component_Reconstructor__Particle* reconstructor = (Graphics_Component_Reconstructor__Particle*)component->reconstructor();
 
         reconstructor->destroy_particle(_index);
@@ -150,6 +150,8 @@ void Draw_Module__Particle::M_draw_internal() const
     if(m_alive_particles_amount == 0)
         return;
 
+    //  idea for optimization: store uint array with size == total_particles_amount. when removing particle,
+    //  replace its index with last index in array, decrease alive_particles_amount by 1
     LDS::Vector<unsigned int> active_vertices = M_calculate_active_vertices();
 
     LR::Binds_Controller::instance().bind_vertex_array(vertex_array());
@@ -212,8 +214,8 @@ BUILDER_STUB_INITIALIZATION_FUNC(Draw_Module_Stub__Particle)
 unsigned int Draw_Module_Stub__Particle::M_calculate_vertices_per_particle() const
 {
     LV::Variable_Base::Childs_List::Const_Iterator it = graphics_component_stubs.begin();
-    L_ASSERT(LV::cast_variable<LR::Graphics_Component_Stub>(it->child_ptr));
-    LR::Graphics_Component_Stub* component_stub = (LR::Graphics_Component_Stub*)(it->child_ptr);
+    L_ASSERT(LV::cast_variable<LR::Graphics_Component_Stub__Default>(it->child_ptr));
+    LR::Graphics_Component_Stub__Default* component_stub = (LR::Graphics_Component_Stub__Default*)(it->child_ptr);
     L_ASSERT(LV::cast_variable<Graphics_Component_Reconstructor_Stub__Particle>(component_stub->reconstructor_stub));
     Graphics_Component_Reconstructor_Stub__Particle* reconstructor_stub = (Graphics_Component_Reconstructor_Stub__Particle*)(component_stub->reconstructor_stub);
 
@@ -224,8 +226,8 @@ unsigned int Draw_Module_Stub__Particle::M_calculate_vertices_per_particle() con
         ++it;
         while(!it.end_reached())
         {
-            L_ASSERT(LV::cast_variable<LR::Graphics_Component_Stub>(it->child_ptr));
-            component_stub = (LR::Graphics_Component_Stub*)(it->child_ptr);
+            L_ASSERT(LV::cast_variable<LR::Graphics_Component_Stub__Default>(it->child_ptr));
+            component_stub = (LR::Graphics_Component_Stub__Default*)(it->child_ptr);
             L_ASSERT(LV::cast_variable<Graphics_Component_Reconstructor_Stub__Particle>(component_stub->reconstructor_stub));
             reconstructor_stub = (Graphics_Component_Reconstructor_Stub__Particle*)(component_stub->reconstructor_stub);
 
