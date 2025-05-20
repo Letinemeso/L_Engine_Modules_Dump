@@ -37,6 +37,9 @@ namespace LMD
     private:
         LR::Graphics_Component__Default* graphics_component() const { L_ASSERT(LV::cast_variable<LR::Graphics_Component__Default>(m_graphics_component)); return (LR::Graphics_Component__Default*)m_graphics_component; }
 
+    protected:
+        virtual void M_on_max_particles_amount_set() {}
+
     public:
         void set_max_particles_amount(unsigned int _value);
 

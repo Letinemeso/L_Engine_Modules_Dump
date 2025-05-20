@@ -16,6 +16,8 @@ void Graphics_Component_Reconstructor__Particle::set_max_particles_amount(unsign
 
     unsigned int scaled_size = m_default_data.size() * m_max_particles_amount;
     component->buffer().resize(scaled_size);
+
+    M_on_max_particles_amount_set();
 }
 
 

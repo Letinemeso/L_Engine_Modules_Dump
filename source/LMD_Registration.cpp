@@ -5,11 +5,13 @@
 #include <Misc_Draw_Modules/Particle_Draw_Module/Draw_Module__Particle.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle_Position_Setter.h>
+#include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Lifetime_Setter.h>
 #include <Misc_Draw_Modules/Particle_System/Particle_System_Module.h>
 #include <Misc_Draw_Modules/Text_Field/Draw_Module__Text_Field.h>
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Coordinates.h>
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Colors.h>
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Texture.h>
+#include <Misc_Draw_Modules/Utility_Reconstructors/Graphics_Component_Reconstructor__Filler.h>
 #include <Misc_Modules/Follow_Trajectory_Module.h>
 #include <Resources/Animation.h>
 
@@ -40,6 +42,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
 
     _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Particle_Position_Setter>();
 
+    _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Lifetime_Setter>();
+
     _object_constructor.register_type<Particle_System::Particle_System_Module_Stub>().override_initialization_func([_draw_order_controller](LV::Variable_Base* _product)
     {
         Particle_System::Particle_System_Module_Stub* product = (Particle_System::Particle_System_Module_Stub*)_product;
@@ -60,6 +64,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::TF_Graphics_Component_Reconstructor_Stub__Colors>();
 
     _object_constructor.register_type<LMD::TF_Graphics_Component_Reconstructor_Stub__Texture>();
+
+    _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Filler>();
 
     _object_constructor.register_type<LMD::Follow_Trajectory_Module_Stub>();
 
