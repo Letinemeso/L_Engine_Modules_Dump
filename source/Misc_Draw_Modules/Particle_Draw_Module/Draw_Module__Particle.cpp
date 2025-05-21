@@ -156,4 +156,5 @@ BUILDER_STUB_INITIALIZATION_FUNC(Draw_Module_Stub__Particle)
 
     product->set_emission_frequency(emission_frequency);
     product->set_max_particles(max_particles_amount);
+    product->pause_emission(!autostart_emission);
 }
