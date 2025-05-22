@@ -6,6 +6,7 @@
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle_Position_Setter.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Lifetime_Setter.h>
+#include <Misc_Draw_Modules/Particle_Draw_Module/Graphics_Components/Graphics_Component__Particles_Amount_Reader.h>
 #include <Misc_Draw_Modules/Particle_System/Particle_System_Module.h>
 #include <Misc_Draw_Modules/Text_Field/Draw_Module__Text_Field.h>
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Coordinates.h>
@@ -44,6 +45,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Particle_Position_Setter>();
 
     _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Lifetime_Setter>();
+
+    _object_constructor.register_type<LMD::Graphics_Component_Stub__Particles_Amount_Reader>();
 
     _object_constructor.register_type<Particle_System::Particle_System_Module_Stub>().override_initialization_func([_draw_order_controller](LV::Variable_Base* _product)
     {
