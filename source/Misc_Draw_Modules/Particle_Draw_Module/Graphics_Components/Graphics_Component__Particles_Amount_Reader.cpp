@@ -13,11 +13,12 @@ Graphics_Component__Particles_Amount_Reader::Graphics_Component__Particles_Amoun
 {
     glGenBuffers(1, &m_counter_buffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_counter_buffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GLuint), nullptr, GL_DYNAMIC_COPY);
+    unsigned int initial_data[2] = { 0, 0 };
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GLuint) * 2, initial_data, GL_DYNAMIC_COPY);
 
     glGenBuffers(1, &m_read_buffer);
     glBindBuffer(GL_COPY_READ_BUFFER, m_read_buffer);
-    glBufferData(GL_COPY_READ_BUFFER, sizeof(GLuint), nullptr, GL_STREAM_READ);
+    glBufferData(GL_COPY_READ_BUFFER, sizeof(GLuint) * 2, nullptr, GL_STREAM_READ);
 }
 
 Graphics_Component__Particles_Amount_Reader::~Graphics_Component__Particles_Amount_Reader()
@@ -32,12 +33,22 @@ void Graphics_Component__Particles_Amount_Reader::M_extract_data() const
 {
     glBindBuffer(GL_COPY_READ_BUFFER, m_read_buffer);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_counter_buffer);
-    glCopyBufferSubData(GL_SHADER_STORAGE_BUFFER, GL_COPY_READ_BUFFER, 0, 0, sizeof(GLuint));
+    glCopyBufferSubData(GL_SHADER_STORAGE_BUFFER, GL_COPY_READ_BUFFER, 0, 0, sizeof(GLuint) * 2);
 
-    unsigned int data = 0;
-    glGetBufferSubData(GL_COPY_READ_BUFFER, 0, sizeof(GLuint), &data);
+    unsigned int alive_particles = 0;
+    glGetBufferSubData(GL_COPY_READ_BUFFER, 0, sizeof(GLuint), &alive_particles);
 
-    std::cout << data << std::endl;
+    draw_module()->update_alive_particles_amount(alive_particles);
+}
+
+void Graphics_Component__Particles_Amount_Reader::M_fill_requested_particles() const
+{
+    unsigned int requested_amount = draw_module()->requested_particles_amount();
+    if(requested_amount == 0)
+        return;
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_counter_buffer);
+    glBufferSubData(GL_SHADER_STORAGE_BUFFER, sizeof(GLuint), sizeof(GLuint), &requested_amount);
 }
 
 
@@ -84,6 +95,9 @@ void Graphics_Component__Particles_Amount_Reader::prepare_to_draw() const
 void Graphics_Component__Particles_Amount_Reader::bind_for_computation() const
 {
     L_ASSERT(m_binding_point_index != 0xFFFFFFFF);
+
+    M_fill_requested_particles();
+
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, m_binding_point_index, m_counter_buffer);
 }
 

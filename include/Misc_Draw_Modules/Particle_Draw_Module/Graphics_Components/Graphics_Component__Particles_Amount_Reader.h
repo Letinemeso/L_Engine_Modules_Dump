@@ -4,6 +4,8 @@
 
 #include <Components/Graphics_Component.h>
 
+#include <Misc_Draw_Modules/Particle_Draw_Module/Draw_Module__Particle.h>
+
 
 namespace LMD
 {
@@ -31,7 +33,11 @@ namespace LMD
         inline void set_update_frequency(float _value) { m_update_frequency = _value; m_timer.start(m_update_frequency); }
 
     private:
+        Draw_Module__Particle* draw_module() const { L_ASSERT(LV::cast_variable<Draw_Module__Particle>(m_parent_draw_module)); return (Draw_Module__Particle*)m_parent_draw_module; }
+
+    private:
         void M_extract_data() const;
+        void M_fill_requested_particles() const;
 
     public:
         unsigned int layout_index() const override;

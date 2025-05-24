@@ -5,46 +5,21 @@
 #include <glew.h>
 
 #include <Binds_Controller/Binds_Controller.h>
-
-#include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle.h>
+#include <Shader/Shader_Manager.h>
 
 using namespace LMD;
 
 
 Draw_Module__Particle::Draw_Module__Particle()
 {
-    glGenBuffers(1, &m_element_array_buffer);
+
 }
 
 Draw_Module__Particle::~Draw_Module__Particle()
 {
-    glDeleteBuffers(1, &m_element_array_buffer);
+
 }
 
-
-
-void Draw_Module__Particle::set_max_particles(unsigned int _amount)
-{
-    L_ASSERT(_amount > 0);
-
-    m_max_particles_amount = _amount;
-    m_alive_particles.resize_and_fill(m_max_particles_amount, false);
-
-    for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
-    {
-        LR::Graphics_Component* base_component_ptr = *it;
-
-        LR::Graphics_Component__Default* component = LV::cast_variable<LR::Graphics_Component__Default>(base_component_ptr);
-        if(!component)
-            continue;
-
-        Graphics_Component_Reconstructor__Particle* reconstructor = LV::cast_variable<Graphics_Component_Reconstructor__Particle>(component->reconstructor());
-        if(!reconstructor)
-            continue;
-
-        reconstructor->set_max_particles_amount(_amount);
-    }
-}
 
 
 void Draw_Module__Particle::set_transformation_data(LEti::Transformation_Data* _data)
@@ -66,61 +41,11 @@ void Draw_Module__Particle::set_transformation_data_prev_state(const LEti::Trans
 
 
 
-void Draw_Module__Particle::create_particle(unsigned int _index)
-{
-    m_alive_particles[_index] = true;
-
-    for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
-    {
-        LR::Graphics_Component* base_component_ptr = *it;
-        LR::Graphics_Component__Default* component = LV::cast_variable<LR::Graphics_Component__Default>(base_component_ptr);
-        if(!component)
-            continue;
-        Graphics_Component_Reconstructor__Particle* reconstructor = LV::cast_variable<Graphics_Component_Reconstructor__Particle>(component->reconstructor());
-        if(!reconstructor)
-            continue;
-
-        reconstructor->create_particle(_index);
-    }
-
-    ++m_alive_particles_amount;
-}
-
-void Draw_Module__Particle::destroy_particle(unsigned int _index)
-{
-    m_alive_particles[_index] = false;
-
-    for(LR::Draw_Module::Graphics_Component_List::Const_Iterator it = graphics_components().begin(); !it.end_reached(); ++it)
-    {
-        LR::Graphics_Component* base_component_ptr = *it;
-        LR::Graphics_Component__Default* component = LV::cast_variable<LR::Graphics_Component__Default>(base_component_ptr);
-        if(!component)
-            continue;
-        Graphics_Component_Reconstructor__Particle* reconstructor = LV::cast_variable<Graphics_Component_Reconstructor__Particle>(component->reconstructor());
-        if(!reconstructor)
-            continue;
-
-        reconstructor->destroy_particle(_index);
-    }
-
-    --m_alive_particles_amount;
-}
-
-void Draw_Module__Particle::emit_particles(unsigned int _amount)
+void Draw_Module__Particle::request_particles(unsigned int _amount)
 {
     L_ASSERT(_amount > 0);
 
-    for(unsigned int i=0; i<m_alive_particles.size(); ++i)
-    {
-        if(m_alive_particles[i])
-            continue;
-
-        create_particle(i);
-
-        --_amount;
-        if(_amount == 0)
-            break;
-    }
+    m_requested_particles_amount += _amount;
 }
 
 
@@ -146,13 +71,15 @@ void Draw_Module__Particle::update(float _dt)
 {
     M_update_emission_timer(_dt);
 
+    Parent_Type::update(_dt);
+
     if(m_requested_particles_amount > 0)
     {
-        emit_particles(m_requested_particles_amount);
+        set_compute_shader_program(m_initialization_shader);
+        M_dispatch_compute_shader_if_any();
+        set_compute_shader_program(m_update_shader);
         m_requested_particles_amount = 0;
     }
-
-    Parent_Type::update(_dt);
 }
 
 
@@ -169,4 +96,7 @@ BUILDER_STUB_INITIALIZATION_FUNC(Draw_Module_Stub__Particle)
     product->set_emission_frequency(emission_frequency);
     product->set_max_particles(max_particles_amount);
     product->pause_emission(!autostart_emission);
+
+    product->set_initialization_shader(shader_manager->get_shader_program(particle_initialization_compute_shader));
+    product->set_update_shader(shader_manager->get_shader_program(particle_update_compute_shader));
 }

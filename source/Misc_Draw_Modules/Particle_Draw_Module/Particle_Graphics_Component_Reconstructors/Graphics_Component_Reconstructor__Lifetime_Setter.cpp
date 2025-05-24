@@ -42,7 +42,7 @@ void Graphics_Component_Reconstructor__Lifetime_Setter::destroy_particle(unsigne
 void Graphics_Component_Reconstructor__Lifetime_Setter::M_destroy_particle_naturally(unsigned int _index)
 {
     Draw_Module__Particle* module = draw_module();
-    module->destroy_particle(_index);
+    // module->destroy_particle(_index);
 }
 
 
