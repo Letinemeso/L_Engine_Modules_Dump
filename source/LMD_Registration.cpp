@@ -3,9 +3,6 @@
 #include <Misc_Draw_Modules/Animation/Graphics_Component__Animation/Graphics_Component__Animation.h>
 #include <Misc_Draw_Modules/Animation/Graphics_Component_Reconstructors/Animation_Graphics_Component_Reconstructor__Texture.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Draw_Module__Particle.h>
-#include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle.h>
-#include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Particle_Position_Setter.h>
-#include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Lifetime_Setter.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Buffer_Resizer.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Graphics_Components/Graphics_Component__Particles_Amount_Reader.h>
 #include <Misc_Draw_Modules/Particle_System/Particle_System_Module.h>
@@ -40,12 +37,6 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Animation_Graphics_Component_Reconstructor_Stub__Texture>();
 
     _object_constructor.register_type<LMD::Draw_Module_Stub__Particle>();
-
-    _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Particle>();
-
-    _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Particle_Position_Setter>();
-
-    _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Lifetime_Setter>();
 
     _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Buffer_Resizer>();
 
