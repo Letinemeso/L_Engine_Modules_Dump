@@ -26,6 +26,7 @@ Follow_Trajectory_Module::~Follow_Trajectory_Module()
 void Follow_Trajectory_Module::setup_trajectory(const LDS::List<glm::vec3>& _points_list)
 {
     L_ASSERT(_points_list.size() > 1);
+    L_ASSERT(m_speed > 0.0f);
 
     m_trajectory.clear();
 
