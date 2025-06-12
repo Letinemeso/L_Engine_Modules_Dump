@@ -82,7 +82,7 @@ void Graphics_Component__Animation::reconfigure_texture_coords()
 
     const LR::Texture* first_frame_texture = m_frame_textures[0];
 
-    LR::Buffer::Element_Modification_Func modification_func = [this, first_frame_texture](float& _element, unsigned int _index)
+    LR::Buffer::Element_Modification_Func modification_func = [first_frame_texture](float& _element, unsigned int _index)
     {
         float* elements_as_array = &_element;
         elements_as_array[0] /= first_frame_texture->width();
