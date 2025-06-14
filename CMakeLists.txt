@@ -21,5 +21,6 @@ target_include_directories(L_Engine_Modules_Dump PUBLIC
                             "${PROJECT_SOURCE_DIR}/../L_Renderer/include"
                             "${PROJECT_SOURCE_DIR}/../L_Renderer/OpenGL/include"
                             "${PROJECT_SOURCE_DIR}/../L_Physics/include"
+                            "${PROJECT_SOURCE_DIR}/../L_Sound/include"
 )
 
