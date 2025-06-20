@@ -24,8 +24,6 @@ void Graphics_Component__Animation::set_frame_textures(Frame_Textures&& _frame_t
         delete m_frame_textures[i];
 
     m_frame_textures = (Frame_Textures&&)_frame_textures;
-
-    m_frame_offset_ratio = 1.0f / (float)frames_amount();
 }
 
 

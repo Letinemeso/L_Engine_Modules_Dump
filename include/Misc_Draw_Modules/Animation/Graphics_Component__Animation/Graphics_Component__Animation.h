@@ -25,7 +25,6 @@ namespace LMD
     private:
         float m_fps = 0;
         float m_time_before_next_frame = 0.0f;
-        float m_frame_offset_ratio = 0.0f;
 
         unsigned int m_current_frame = 0;
         bool m_is_paused = true;
