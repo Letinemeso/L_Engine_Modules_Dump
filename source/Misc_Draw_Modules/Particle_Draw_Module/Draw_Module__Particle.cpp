@@ -22,6 +22,31 @@ Draw_Module__Particle::~Draw_Module__Particle()
 
 
 
+void Draw_Module__Particle::add_initialization_compute_uniform_setter(LR::Uniform_Setter* _ptr)
+{
+    L_ASSERT(!m_initialization_uniform_setters.find(_ptr).is_ok());
+
+    m_initialization_uniform_setters.push_back(_ptr);
+
+    if(m_initialization_shader)
+        _ptr->init(m_initialization_shader);
+}
+
+
+
+LR::Uniform_Setter* Draw_Module__Particle::get_initialization_compute_uniform_setter_with_name(const std::string& _name) const
+{
+    for(Uniform_Setter_List::Const_Iterator it = m_initialization_uniform_setters.begin(); !it.end_reached(); ++it)
+    {
+        LR::Uniform_Setter* setter = *it;
+        if(setter->uniform_name() == _name)
+            return setter;
+    }
+    return nullptr;
+}
+
+
+
 void Draw_Module__Particle::set_transformation_data(LEti::Transformation_Data* _data)
 {
     Parent_Type::set_transformation_data(&m_initial_transformation);
@@ -54,7 +79,7 @@ void Draw_Module__Particle::M_update_emission_timer(float _dt)
 {
     m_emission_timer.update(_dt);
 
-    if( ! (!m_emission_timer.is_active() && m_emission_frequency > 0.000001f && !m_emission_is_paused))
+    if( ! (!m_emission_timer.is_active() && m_emission_frequency > 0.000001f && !m_emission_is_paused && _dt > 0.0f))
         return;
 
     unsigned int ratio = _dt / m_emission_frequency;
@@ -75,9 +100,7 @@ void Draw_Module__Particle::update(float _dt)
 
     if(m_requested_particles_amount > 0)
     {
-        set_compute_shader_program(m_initialization_shader);
-        M_dispatch_compute_shader_if_any();
-        set_compute_shader_program(m_update_shader);
+        M_dispatch_compute_shader(m_initialization_shader, m_initialization_uniform_setters);
         m_requested_particles_amount = 0;
     }
 }
@@ -98,5 +121,18 @@ BUILDER_STUB_INITIALIZATION_FUNC(Draw_Module_Stub__Particle)
     product->pause_emission(!autostart_emission);
 
     product->set_initialization_shader(shader_manager->get_shader_program(particle_initialization_compute_shader));
-    product->set_update_shader(shader_manager->get_shader_program(particle_update_compute_shader));
+
+    for(LV::Variable_Base::Childs_List::Const_Iterator it = initialization_compute_uniform_setter_stubs.begin(); !it.end_reached(); ++it)
+    {
+        L_ASSERT(LV::cast_variable<LR::Uniform_Setter_Stub>(it->child_ptr));
+        LR::Uniform_Setter_Stub* stub = (LR::Uniform_Setter_Stub*)(it->child_ptr);
+        product->add_initialization_compute_uniform_setter(LR::Uniform_Setter_Stub::construct_from(stub));
+    }
+}
+
+
+
+Draw_Module_Stub__Particle::~Draw_Module_Stub__Particle()
+{
+    clear_childs_list(initialization_compute_uniform_setter_stubs);
 }

@@ -23,6 +23,8 @@ namespace LMD
         LR::Shader_Program* m_initialization_shader = nullptr;
         LR::Shader_Program* m_update_shader = nullptr;
 
+        LR::Draw_Module::Uniform_Setter_List m_initialization_uniform_setters;
+
         unsigned int m_max_particles = 0;
         float m_emission_frequency = 0.0f;
         bool m_emission_is_paused = false;
@@ -36,8 +38,7 @@ namespace LMD
         ~Draw_Module__Particle();
 
     public:
-        inline void set_initialization_shader(LR::Shader_Program* _ptr) { m_initialization_shader = _ptr; }
-        inline void set_update_shader(LR::Shader_Program* _ptr) { m_update_shader = _ptr; set_compute_shader_program(m_update_shader); }
+        inline void set_initialization_shader(LR::Shader_Program* _ptr) { m_initialization_shader = _ptr; M_init_uniform_setters(m_initialization_uniform_setters, m_initialization_shader); }
 
         inline void set_max_particles(unsigned int _value) { m_max_particles = _value; }
         inline void set_emission_frequency(float _value) { m_emission_frequency = _value; }
@@ -46,11 +47,18 @@ namespace LMD
         inline void update_alive_particles_amount(unsigned int _value) { m_alive_particles_amount = _value; }
 
         inline unsigned int max_particles() const { return m_max_particles; }
+        inline float emission_frequency() const { return m_emission_frequency; }
         inline unsigned int alive_particles_amount() const { return m_alive_particles_amount; }
         inline unsigned int requested_particles_amount() const { return m_requested_particles_amount; }
 
         inline const LEti::Transformation_Data* parent_transformation_data() const { return m_parent_transformation_data; }
         inline const LEti::Transformation_Data* parent_transformation_data_prev_state() const { return m_parent_transformation_data; }
+
+    public:
+        void add_initialization_compute_uniform_setter(LR::Uniform_Setter* _ptr);
+
+    public:
+        LR::Uniform_Setter* get_initialization_compute_uniform_setter_with_name(const std::string& _name) const;
 
     public:
         void set_transformation_data(LEti::Transformation_Data* _data) override;
@@ -78,8 +86,11 @@ namespace LMD
         ADD_FIELD(float, emission_frequency)
         ADD_FIELD(bool, autostart_emission)
         ADD_FIELD(std::string, particle_initialization_compute_shader)
-        ADD_FIELD(std::string, particle_update_compute_shader)
         FIELDS_END
+
+        INIT_CHILDS_LISTS
+        ADD_CHILDS_LIST("Initialization_Compute_Uniform_Setter_Stub__*", &initialization_compute_uniform_setter_stubs)
+        CHILDS_LISTS_END
 
     public:
         unsigned int max_particles_amount = 0;
@@ -87,10 +98,15 @@ namespace LMD
         bool autostart_emission = true;
 
         std::string particle_initialization_compute_shader;
-        std::string particle_update_compute_shader;
+
+    public:
+        LV::Variable_Base::Childs_List initialization_compute_uniform_setter_stubs;
 
     public:
         INIT_BUILDER_STUB(Draw_Module__Particle)
+
+    public:
+        ~Draw_Module_Stub__Particle();
 
     };
 
