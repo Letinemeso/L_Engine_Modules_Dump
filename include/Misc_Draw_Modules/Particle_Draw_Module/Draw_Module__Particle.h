@@ -50,6 +50,7 @@ namespace LMD
         inline float emission_frequency() const { return m_emission_frequency; }
         inline unsigned int alive_particles_amount() const { return m_alive_particles_amount; }
         inline unsigned int requested_particles_amount() const { return m_requested_particles_amount; }
+        inline bool emission_is_paused() const { return m_emission_is_paused; }
 
         inline const LEti::Transformation_Data* parent_transformation_data() const { return m_parent_transformation_data; }
         inline const LEti::Transformation_Data* parent_transformation_data_prev_state() const { return m_parent_transformation_data; }
