@@ -28,7 +28,7 @@ namespace LMD
         LR::Graphics_Component__Default* graphics_component() const { L_ASSERT(LV::cast_variable<LR::Graphics_Component__Default>(m_graphics_component)); return (LR::Graphics_Component__Default*)m_graphics_component; }
 
     private:
-        float M_calculate_next_line_offset_x(const std::string& _text, unsigned int _offset, const glm::vec2& _raw_size, float _raw_scale, const Text_Field_Settings& _settings) const;
+        float M_calculate_next_line_offset_x(const std::string& _text, unsigned int _offset, float _raw_scale, const Text_Field_Settings& _settings) const;
         float M_get_highest_letter_size(const Text_Field_Settings& _settings) const;
         glm::vec2 M_calculate_raw_size(const Text_Field_Settings& _settings) const;
         float M_calculate_raw_scale(const Text_Field_Settings& _settings, const glm::vec2& _raw_size) const;

@@ -4,7 +4,7 @@
 using namespace LMD;
 
 
-float TF_Graphics_Component_Reconstructor__Coordinates::M_calculate_next_line_offset_x(const std::string& _text, unsigned int _offset, const glm::vec2& _raw_size, float _raw_scale, const Text_Field_Settings& _settings) const
+float TF_Graphics_Component_Reconstructor__Coordinates::M_calculate_next_line_offset_x(const std::string& _text, unsigned int _offset, float _raw_scale, const Text_Field_Settings& _settings) const
 {
     if(_offset >= _text.size())
         return 0.0f;
@@ -24,7 +24,7 @@ float TF_Graphics_Component_Reconstructor__Coordinates::M_calculate_next_line_of
 
     line_size *= _raw_scale;
 
-    float result = _raw_size.x - line_size;
+    float result = -line_size;
 
     if(_settings.horizontal_alignment == Text_Field_Settings::Horizontal_Alignment::Center)
         result *= 0.5f;
@@ -93,6 +93,8 @@ glm::vec2 TF_Graphics_Component_Reconstructor__Coordinates::M_calculate_raw_size
     if(widest_line > result.x)
         result.x = widest_line;
 
+    result *= _settings.raw_size_multiplier;
+
     return result;
 }
 
@@ -146,8 +148,13 @@ void TF_Graphics_Component_Reconstructor__Coordinates::update(float _dt)
     float raw_scale = M_calculate_raw_scale(settings, raw_size);
 
     float offset_per_line = m_highest_letter * raw_scale;
-    float current_offset_x = M_calculate_next_line_offset_x(settings.text, 0, raw_size, raw_scale, settings);
+    float current_offset_x = M_calculate_next_line_offset_x(settings.text, 0, raw_scale, settings);
     float current_offset_y = offset_per_line * (float)(lines_amount - 1);
+
+    if(settings.vertical_alignment == Text_Field_Settings::Vertical_Alignment::Center)
+        current_offset_y -= raw_size.y / 2.0f;
+    else if(settings.vertical_alignment == Text_Field_Settings::Vertical_Alignment::Top)
+        current_offset_y -= raw_size.y;
 
     unsigned int newline_symbols_met = 0;
 
@@ -158,7 +165,7 @@ void TF_Graphics_Component_Reconstructor__Coordinates::update(float _dt)
         if(offset_if_newline > 0)
         {
             ++newline_symbols_met;
-            current_offset_x = M_calculate_next_line_offset_x(settings.text, i + offset_if_newline, raw_size, raw_scale, settings);
+            current_offset_x = M_calculate_next_line_offset_x(settings.text, i + offset_if_newline, raw_scale, settings);
             current_offset_y -= offset_per_line;
             i += offset_if_newline - 1;
             continue;
@@ -182,16 +189,6 @@ void TF_Graphics_Component_Reconstructor__Coordinates::update(float _dt)
     }
 
     glm::vec3 raw_offset = settings.raw_offset;
-
-    if(settings.horizontal_alignment == Text_Field_Settings::Horizontal_Alignment::Center)
-        raw_offset.x -= raw_size.x / 2.0f;
-    else if(settings.horizontal_alignment == Text_Field_Settings::Horizontal_Alignment::Right)
-        raw_offset.x -= raw_size.x;
-
-    if(settings.vertical_alignment == Text_Field_Settings::Vertical_Alignment::Center)
-        raw_offset.y -= raw_size.y / 2.0f;
-    else if(settings.vertical_alignment == Text_Field_Settings::Vertical_Alignment::Top)
-        raw_offset.y -= raw_size.y;
 
     raw_offset *= raw_scale;
 
