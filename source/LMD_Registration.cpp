@@ -16,6 +16,7 @@
 #include <Misc_Draw_Modules/Utility_Draw_Modules/Draw_Module_Storage.h>
 #include <Misc_Modules/Follow_Trajectory_Module.h>
 #include <Misc_Modules/Following_Sound_Module.h>
+#include <Misc_Modules/Command_Queue_Module.h>
 #include <Resources/Animation.h>
 
 using namespace LMD;
@@ -77,6 +78,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Follow_Trajectory_Module_Stub>();
 
     _object_constructor.register_type<LMD::Following_Sound_Module_Stub>();
+
+    _object_constructor.register_type<LMD::Command_Queue_Module_Stub>();
 
     _object_constructor.register_type<LMD::Animation_Stub>();
 }
