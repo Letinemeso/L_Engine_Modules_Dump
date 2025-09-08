@@ -51,11 +51,6 @@ LR::Uniform_Setter* Draw_Module__Particle::get_initialization_compute_uniform_se
 void Draw_Module__Particle::set_transformation_data(LEti::Transformation_Data* _data)
 {
     Parent_Type::set_transformation_data(&m_initial_transformation);
-    if(_data)
-    {
-        m_initial_transformation.set_rotation(_data->rotation());
-        m_initial_transformation.set_scale(_data->scale());
-    }
     m_parent_transformation_data = _data;
 }
 
