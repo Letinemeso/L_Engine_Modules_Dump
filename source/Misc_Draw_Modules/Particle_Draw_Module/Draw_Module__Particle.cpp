@@ -17,7 +17,8 @@ Draw_Module__Particle::Draw_Module__Particle()
 
 Draw_Module__Particle::~Draw_Module__Particle()
 {
-
+    for(LR::Draw_Module::Uniform_Setter_List::Iterator it = m_initialization_uniform_setters.begin(); !it.end_reached(); ++it)
+        delete *it;
 }
 
 
