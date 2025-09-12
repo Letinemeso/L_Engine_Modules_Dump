@@ -41,6 +41,7 @@ namespace LMD
         inline void set_constant_offset(const glm::vec3& _value) { m_constant_offset = _value; }
         inline const glm::vec3& constant_offset() const { return m_constant_offset; }
 
+        inline void reset_trajectory() { m_trajectory.stop(); }
         inline bool trajectory_active() const { return m_trajectory.active(); }
 
     public:
