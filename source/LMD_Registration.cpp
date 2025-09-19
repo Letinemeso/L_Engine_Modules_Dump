@@ -18,6 +18,7 @@
 #include <Misc_Modules/Following_Sound_Module.h>
 #include <Misc_Modules/Command_Queue_Module.h>
 #include <Misc_Modules/Timer_Module.h>
+#include <Misc_Modules/Module_Container.h>
 #include <Resources/Animation.h>
 
 using namespace LMD;
@@ -83,6 +84,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Command_Queue_Module_Stub>();
 
     _object_constructor.register_type<LMD::Timer_Module_Stub>();
+
+    _object_constructor.register_type<LMD::Module_Container_Stub>();
 
     _object_constructor.register_type<LMD::Animation_Stub>();
 }
