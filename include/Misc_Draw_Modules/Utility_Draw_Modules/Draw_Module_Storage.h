@@ -34,6 +34,9 @@ namespace LMD
         void switch_to_module(const std::string& _name);
         void reset_selected_module();
 
+    public:
+        inline LR::Draw_Module* current_module() const { return m_current_module; }
+
     protected:
         void M_on_parent_object_set() override;
 
