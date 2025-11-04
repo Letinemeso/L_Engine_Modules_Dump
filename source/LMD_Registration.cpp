@@ -20,6 +20,7 @@
 #include <Misc_Modules/Timer_Module.h>
 #include <Misc_Modules/Module_Container.h>
 #include <Resources/Animation.h>
+#include <Resources/Model.h>
 #include <Tools/Objects_Storage.h>
 
 using namespace LMD;
@@ -89,6 +90,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Module_Container_Stub>();
 
     _object_constructor.register_type<LMD::Animation_Stub>();
+
+    _object_constructor.register_type<LMD::Model_Stub>();
 
     _object_constructor.register_type<LMD::Objects_Storage>();
 }
