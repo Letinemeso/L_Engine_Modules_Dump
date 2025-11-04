@@ -22,6 +22,7 @@
 #include <Resources/Animation.h>
 #include <Resources/Model.h>
 #include <Tools/Objects_Storage.h>
+#include <Tools/Model_Data_Provider.h>
 
 using namespace LMD;
 
@@ -94,4 +95,11 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Model_Stub>();
 
     _object_constructor.register_type<LMD::Objects_Storage>();
+
+    _object_constructor.register_type<LMD::Model_Data_Provider>().override_initialization_func([_resources_manager_getter](LV::Variable_Base* _product)
+    {
+        LMD::Model_Data_Provider* product = (LMD::Model_Data_Provider*)_product;
+
+        product->inject_resources_manager(_resources_manager_getter());
+    });
 }
