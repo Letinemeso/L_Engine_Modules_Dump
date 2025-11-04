@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Data_Structures/Vector.h>
+
 #include <Variable_Base.h>
 #include <Builder_Stub.h>
 
@@ -13,26 +15,18 @@ namespace LMD
         INIT_VARIABLE(LMD::Model, LV::Variable_Base)
 
     private:
-        float* m_geometry_data = nullptr;
-        unsigned int m_geometry_data_size = 0;
-        float* m_texture_data = nullptr;
-        unsigned int m_texture_data_size = 0;
+        LDS::Vector<float> m_geometry_data;
+        LDS::Vector<float> m_texture_data;
 
     public:
-        Model();
-        ~Model();
+        void set_geometry_data(const LDS::Vector<float>& _data);
+        void set_geometry_data(LDS::Vector<float>&& _data);
+        void set_texture_data(const LDS::Vector<float>& _data);
+        void set_texture_data(LDS::Vector<float>&& _data);
 
     public:
-        void copy_geometry_data(const float* _raw_data, unsigned int _raw_data_size);
-        void use_geometry_data(float* _raw_data, unsigned int _raw_data_size);
-        void copy_texture_data(const float* _raw_data, unsigned int _raw_data_size);
-        void use_texture_data(float* _raw_data, unsigned int _raw_data_size);
-
-    public:
-        const float* geometry_data() const { return m_geometry_data; }
-        unsigned int geometry_data_size() const { return m_geometry_data_size; }
-        const float* texture_data() const { return m_texture_data; }
-        unsigned int texture_data_size() const { return m_texture_data_size; }
+        const LDS::Vector<float>& geometry_data() const { return m_geometry_data; }
+        const LDS::Vector<float>& texture_data() const { return m_texture_data; }
 
     };
 
@@ -52,13 +46,8 @@ namespace LMD
         std::string file_path;
 
     public:
-        float* geometry_data = nullptr;
-        unsigned int geometry_data_size = 0;
-        float* texture_data = nullptr;
-        unsigned int texture_data_size = 0;
-
-    public:
-        ~Model_Stub();
+        LDS::Vector<float> geometry_data;
+        LDS::Vector<float> texture_data;
 
     public:
         INIT_BUILDER_STUB(Model)

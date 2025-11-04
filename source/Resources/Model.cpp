@@ -9,53 +9,24 @@
 using namespace LMD;
 
 
-Model::Model()
+void Model::set_geometry_data(const LDS::Vector<float>& _data)
 {
-
+    m_geometry_data = _data;
 }
 
-Model::~Model()
+void Model::set_geometry_data(LDS::Vector<float>&& _data)
 {
-    delete[] m_geometry_data;
-    delete[] m_texture_data;
+    m_geometry_data = (LDS::Vector<float>&&)_data;
 }
 
-
-
-void Model::copy_geometry_data(const float* _raw_data, unsigned int _raw_data_size)
+void Model::set_texture_data(const LDS::Vector<float>& _data)
 {
-    delete[] m_geometry_data;
-
-    m_geometry_data_size = _raw_data_size;
-    m_geometry_data = new float[m_geometry_data_size];
-    for(unsigned int i = 0; i < m_geometry_data_size; ++i)
-        m_geometry_data[i] = _raw_data[i];
+    m_texture_data = _data;
 }
 
-void Model::use_geometry_data(float* _raw_data, unsigned int _raw_data_size)
+void Model::set_texture_data(LDS::Vector<float>&& _data)
 {
-    delete[] m_geometry_data;
-
-    m_geometry_data_size = _raw_data_size;
-    m_geometry_data = _raw_data;
-}
-
-void Model::copy_texture_data(const float* _raw_data, unsigned int _raw_data_size)
-{
-    delete[] m_texture_data;
-
-    m_texture_data_size = _raw_data_size;
-    m_texture_data = new float[m_texture_data_size];
-    for(unsigned int i = 0; i < m_texture_data_size; ++i)
-        m_texture_data[i] = _raw_data[i];
-}
-
-void Model::use_texture_data(float* _raw_data, unsigned int _raw_data_size)
-{
-    delete[] m_texture_data;
-
-    m_texture_data_size = _raw_data_size;
-    m_texture_data = _raw_data;
+    m_texture_data = (LDS::Vector<float>&&)_data;
 }
 
 
@@ -196,16 +167,15 @@ ON_VALUES_ASSIGNED_IMPLEMENTATION(Model_Stub)
     constexpr unsigned int Coords_Per_Polygon = 3 * 3;
     constexpr unsigned int Texture_Coords_Per_Polygon = 3 * 2;
 
-    delete[] geometry_data;
-    geometry_data_size = model_data.polygons.size() * Coords_Per_Polygon;
-    geometry_data = new float[geometry_data_size];
+    unsigned int geometry_data_size = model_data.polygons.size() * Coords_Per_Polygon;
+    geometry_data.resize_and_fill(geometry_data_size, 0.0f);
 
     for(unsigned int polygon_i = 0; polygon_i < model_data.polygons.size(); ++polygon_i)
     {
         const Polygon_Data& polygon_data = model_data.polygons[polygon_i];
 
         unsigned int gd_offset = Coords_Per_Polygon * polygon_i;
-        float* gd_w_offset = geometry_data + gd_offset;
+        float* gd_w_offset = geometry_data.raw_data() + gd_offset;
 
         for(unsigned int vertex_i = 0; vertex_i < 3; ++vertex_i)
         {
@@ -218,20 +188,20 @@ ON_VALUES_ASSIGNED_IMPLEMENTATION(Model_Stub)
         }
     }
 
-    delete[] texture_data;
+    texture_data.clear();
 
     if(model_data.texture_coords.size() == 0)
         return;
 
-    texture_data_size = model_data.polygons.size() * Texture_Coords_Per_Polygon;
-    texture_data = new float[texture_data_size];
+    unsigned int texture_data_size = model_data.polygons.size() * Texture_Coords_Per_Polygon;
+    texture_data.resize_and_fill(texture_data_size, 0.0f);
 
     for(unsigned int polygon_i = 0; polygon_i < model_data.polygons.size(); ++polygon_i)
     {
         const Polygon_Data& polygon_data = model_data.polygons[polygon_i];
 
         unsigned int tcd_offset = Texture_Coords_Per_Polygon * polygon_i;
-        float* tcd_w_offset = texture_data + tcd_offset;
+        float* tcd_w_offset = texture_data.raw_data() + tcd_offset;
 
         for(unsigned int vertex_i = 0; vertex_i < 3; ++vertex_i)
         {
@@ -247,14 +217,6 @@ ON_VALUES_ASSIGNED_IMPLEMENTATION(Model_Stub)
 
 
 
-Model_Stub::~Model_Stub()
-{
-    delete[] geometry_data;
-    delete[] texture_data;
-}
-
-
-
 BUILDER_STUB_DEFAULT_CONSTRUCTION_FUNC(Model_Stub)
 
 BUILDER_STUB_INITIALIZATION_FUNC(Model_Stub)
@@ -262,16 +224,12 @@ BUILDER_STUB_INITIALIZATION_FUNC(Model_Stub)
     BUILDER_STUB_PARENT_INITIALIZATION;
     BUILDER_STUB_CAST_PRODUCT;
 
-    L_ASSERT(geometry_data);
-    L_ASSERT(geometry_data_size > 0);
+    L_ASSERT(geometry_data.size() > 0);
 
-    product->copy_geometry_data(geometry_data, geometry_data_size);
+    product->set_geometry_data(geometry_data);
 
-    if(texture_data_size == 0 && !texture_data)
+    if(texture_data.size() == 0)
         return;
 
-    L_ASSERT(texture_data);
-    L_ASSERT(texture_data_size > 0);
-
-    product->copy_texture_data(texture_data, texture_data_size);
+    product->set_texture_data(texture_data);
 }
