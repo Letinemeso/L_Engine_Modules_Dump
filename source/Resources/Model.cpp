@@ -190,7 +190,7 @@ ON_VALUES_ASSIGNED_IMPLEMENTATION(Model_Stub)
 
     texture_data.clear();
 
-    if(model_data.texture_coords.size() == 0)
+    if(model_data.texture_coords.size() < 2)
         return;
 
     unsigned int texture_data_size = model_data.polygons.size() * Texture_Coords_Per_Polygon;
