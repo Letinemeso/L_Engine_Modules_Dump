@@ -14,6 +14,8 @@ ON_VALUES_ASSIGNED_IMPLEMENTATION(Model_Data_Provider)
         m_extraction_type = Extraction_Type::Geometry;
     else if(m_data_extraction_type_str == "Texture")
         m_extraction_type = Extraction_Type::Texture;
+    else if(m_data_extraction_type_str == "Normals")
+        m_extraction_type = Extraction_Type::Normals;
 
     L_ASSERT(m_extraction_type != Extraction_Type::Unknown);
 }
@@ -28,6 +30,8 @@ const LDS::Vector<float>& Model_Data_Provider::get_data() const
         return m_model->geometry_data();
     else if(m_extraction_type == Extraction_Type::Texture)
         return m_model->texture_data();
+    else if(m_extraction_type == Extraction_Type::Normals)
+        return m_model->normals_data();
 
     L_ASSERT(false && "unknown model extraction type");
 

@@ -30,6 +30,7 @@ namespace LMD
     public:
         const LDS::Vector<float>& geometry_data() const { return m_geometry_data; }
         const LDS::Vector<float>& texture_data() const { return m_texture_data; }
+        const LDS::Vector<float>& normals_data() const { return m_normals_data; }
 
     };
 

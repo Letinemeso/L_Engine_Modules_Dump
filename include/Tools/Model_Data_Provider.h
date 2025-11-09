@@ -26,7 +26,8 @@ namespace LMD
         {
             Unknown,
             Geometry,
-            Texture
+            Texture,
+            Normals
         };
 
     private:

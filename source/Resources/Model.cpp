@@ -232,7 +232,7 @@ BUILDER_STUB_INITIALIZATION_FUNC(Model_Stub)
     L_ASSERT(geometry_data.size() > 0);
 
     product->set_geometry_data(geometry_data);
-    product->set_normals_data(geometry_data);
+    product->set_normals_data(normals_data);
 
     if(texture_data.size() == 0)
         return;
