@@ -17,12 +17,15 @@ namespace LMD
     private:
         LDS::Vector<float> m_geometry_data;
         LDS::Vector<float> m_texture_data;
+        LDS::Vector<float> m_normals_data;
 
     public:
         void set_geometry_data(const LDS::Vector<float>& _data);
         void set_geometry_data(LDS::Vector<float>&& _data);
         void set_texture_data(const LDS::Vector<float>& _data);
         void set_texture_data(LDS::Vector<float>&& _data);
+        void set_normals_data(const LDS::Vector<float>& _data);
+        void set_normals_data(LDS::Vector<float>&& _data);
 
     public:
         const LDS::Vector<float>& geometry_data() const { return m_geometry_data; }
@@ -48,6 +51,7 @@ namespace LMD
     public:
         LDS::Vector<float> geometry_data;
         LDS::Vector<float> texture_data;
+        LDS::Vector<float> normals_data;
 
     public:
         INIT_BUILDER_STUB(Model)
