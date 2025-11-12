@@ -28,9 +28,9 @@ namespace LMD
         void set_normals_data(LDS::Vector<float>&& _data);
 
     public:
-        const LDS::Vector<float>& geometry_data() const { return m_geometry_data; }
-        const LDS::Vector<float>& texture_data() const { return m_texture_data; }
-        const LDS::Vector<float>& normals_data() const { return m_normals_data; }
+        inline const LDS::Vector<float>& geometry_data() const { return m_geometry_data; }
+        inline const LDS::Vector<float>& texture_data() const { return m_texture_data; }
+        inline const LDS::Vector<float>& normals_data() const { return m_normals_data; }
 
     };
 

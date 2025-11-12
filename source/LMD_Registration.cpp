@@ -14,6 +14,8 @@
 #include <Misc_Draw_Modules/Utility_Reconstructors/Graphics_Component_Reconstructor__Filler.h>
 #include <Misc_Draw_Modules/Utility_Draw_Modules/Static_Draw_Module.h>
 #include <Misc_Draw_Modules/Utility_Draw_Modules/Draw_Module_Storage.h>
+#include <Misc_Draw_Modules/Vertex_Animation/Draw_Module__Vertex_Animation.h>
+#include <Misc_Draw_Modules/Vertex_Animation/Shader_Component__Vertex_Animation.h>
 #include <Misc_Modules/Follow_Trajectory_Module.h>
 #include <Misc_Modules/Following_Sound_Module.h>
 #include <Misc_Modules/Command_Queue_Module.h>
@@ -22,6 +24,7 @@
 #include <Misc_Modules/Directional_Movement_Module.h>
 #include <Resources/Animation.h>
 #include <Resources/Model.h>
+#include <Resources/Vertex_Animation.h>
 #include <Tools/Objects_Storage.h>
 #include <Tools/Model_Data_Provider.h>
 
@@ -81,6 +84,15 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
 
     _object_constructor.register_type<LMD::Draw_Module_Storage_Stub>();
 
+    _object_constructor.register_type<LMD::Draw_Module_Stub__Vertex_Animation>().override_initialization_func([_resources_manager_getter](LV::Variable_Base* _product)
+    {
+        LMD::Draw_Module_Stub__Vertex_Animation* product = (LMD::Draw_Module_Stub__Vertex_Animation*)_product;
+
+        product->resources_manager = _resources_manager_getter();
+    });
+
+    _object_constructor.register_type<LMD::Shader_Component_Stub__Vertex_Animation>();
+
     _object_constructor.register_type<LMD::Follow_Trajectory_Module_Stub>();
 
     _object_constructor.register_type<LMD::Following_Sound_Module_Stub>();
@@ -96,6 +108,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Animation_Stub>();
 
     _object_constructor.register_type<LMD::Model_Stub>();
+
+    _object_constructor.register_type<LMD::Vertex_Animation_Stub>();
 
     _object_constructor.register_type<LMD::Objects_Storage>();
 
