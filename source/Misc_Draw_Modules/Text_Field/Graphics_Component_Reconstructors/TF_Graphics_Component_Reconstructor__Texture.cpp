@@ -65,7 +65,7 @@ void TF_Graphics_Component_Reconstructor__Texture::update(float /*_dt*/)
 
     component->buffer().resize(amount);
     component->buffer().copy_array(buffer, amount);
-    component->reconfigure_texture_coords();
+    component->reconfigure_texture_coords({settings.picture->width(), settings.picture->height()});
 
     delete[] buffer;
 }

@@ -72,19 +72,17 @@ void Graphics_Component__Animation::set_cycles(unsigned int _cycles)
 
 
 
-void Graphics_Component__Animation::reconfigure_texture_coords()
+void Graphics_Component__Animation::reconfigure_texture_coords(const glm::vec2& _expected_texture_size)
 {
     L_ASSERT(frames_amount());
     L_ASSERT(m_buffer.size() > 0);
     L_ASSERT(m_buffer.floats_per_vertex() >= 2);
 
-    const LR::Texture* first_frame_texture = m_frame_textures[0];
-
-    LR::Buffer::Element_Modification_Func modification_func = [first_frame_texture](float& _element, unsigned int _index)
+    LR::Buffer::Element_Modification_Func modification_func = [&_expected_texture_size](float& _element, unsigned int _index)
     {
         float* elements_as_array = &_element;
-        elements_as_array[0] /= first_frame_texture->width();
-        elements_as_array[1] /= first_frame_texture->height();
+        elements_as_array[0] /= _expected_texture_size.x;
+        elements_as_array[1] /= _expected_texture_size.y;
     };
 
     m_buffer.modify_buffer(modification_func, 0, LR::Buffer::All_Elements, m_buffer.floats_per_vertex());
@@ -148,7 +146,7 @@ BUILDER_STUB_INITIALIZATION_FUNC(Graphics_Component_Stub__Animation)
     product->set_fps(frames_per_second);
 
     if(texture_coords_in_pixels)
-        product->reconfigure_texture_coords();
+        product->reconfigure_texture_coords(expected_texture_size);
 
     product->start(times_to_repeat);
 }

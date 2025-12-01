@@ -55,7 +55,7 @@ namespace LMD
         void set_cycles(unsigned int _cycles);
 
     public:
-        void reconfigure_texture_coords();
+        void reconfigure_texture_coords(const glm::vec2& _expected_texture_size);
 
     public:
         void update(float _dt) override;
@@ -74,6 +74,7 @@ namespace LMD
         ADD_FIELD(float, frames_per_second)
         ADD_FIELD(unsigned int, times_to_repeat)
         ADD_FIELD(bool, texture_coords_in_pixels)
+        ADD_FIELD(glm::vec2, expected_texture_size)
         FIELDS_END
 
         INIT_CHILDS
@@ -88,11 +89,12 @@ namespace LMD
         float frames_per_second = 0;
         unsigned int times_to_repeat = 0;
         bool texture_coords_in_pixels = true;
+        glm::vec2 expected_texture_size = { 0.0f, 0.0f };
 
-        LR::Texture_Stub texture_settings;
+        LR::Texture_Stub__Preloaded texture_settings;
 
     private:
-        LR::Texture_Stub* texture_stub_ptr = &texture_settings;
+        LR::Texture_Stub__Preloaded* texture_stub_ptr = &texture_settings;
 
     public:
         INIT_BUILDER_STUB(Graphics_Component__Animation)
