@@ -36,10 +36,10 @@ namespace LMD
     };
 
 
-    class Shader_Component_Stub__Vertex_Animation : public LR::Shader_Component_Stub
+    class Shader_Component_Stub__Vertex_Animation : public LR::Predefined_Shader_Component_Stub
     {
     public:
-        INIT_VARIABLE(LMD::Shader_Component_Stub__Vertex_Animation, LR::Shader_Component_Stub)
+        INIT_VARIABLE(LMD::Shader_Component_Stub__Vertex_Animation, LR::Predefined_Shader_Component_Stub)
 
         INIT_FIELDS
         ADD_FIELD(std::string, frames_amount_uniform_name)
@@ -49,10 +49,10 @@ namespace LMD
         FIELDS_END
 
     public:
-        std::string frames_amount_uniform_name;
-        std::string current_frame_uniform_name;
-        std::string vertices_per_frame_uniform_name;
-        std::string mix_ratio_uniform_name;
+        std::string frames_amount_uniform_name = "frames_amount";
+        std::string current_frame_uniform_name = "current_frame";
+        std::string vertices_per_frame_uniform_name = "vertices_per_frame";
+        std::string mix_ratio_uniform_name = "mix_ratio";
 
     public:
         INIT_BUILDER_STUB(Shader_Component__Vertex_Animation)
