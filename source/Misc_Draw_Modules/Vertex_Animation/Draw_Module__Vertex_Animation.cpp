@@ -8,6 +8,37 @@
 using namespace LMD;
 
 
+void Draw_Module__Vertex_Animation::set_frames_amount(unsigned int _value)
+{
+    L_ASSERT(_value > 0);
+
+    m_frames_amount = _value;
+
+    if(m_fps < 0.0001f)
+        m_time_per_frame = LDS::Vector<float>(m_frames_amount, 0.0f);
+    else
+        m_time_per_frame = LDS::Vector<float>(m_frames_amount, (float)m_frames_amount / m_fps);
+}
+
+void Draw_Module__Vertex_Animation::set_fps(float _value)
+{
+    L_ASSERT(_value > 0);
+
+    m_fps = _value;
+
+    if(m_frames_amount > 0)
+        m_time_per_frame = LDS::Vector<float>(m_frames_amount, (float)m_frames_amount / m_fps);
+}
+
+void Draw_Module__Vertex_Animation::set_frame_durations(const LDS::Vector<float>& _values)
+{
+    L_ASSERT(_values.size() == m_frames_amount);
+
+    m_time_per_frame = _values;
+}
+
+
+
 void Draw_Module__Vertex_Animation::start(unsigned int _cycles, unsigned int _with_frame)
 {
     m_times_to_repeat = _cycles;
@@ -59,10 +90,12 @@ void Draw_Module__Vertex_Animation::M_update_internal(float _dt)
         return;
     }
 
-    m_time_before_next_frame += _dt;
-    m_frame_ratio = m_time_before_next_frame / m_time_per_frame;
+    float current_time_per_frame = m_time_per_frame[m_current_frame];
 
-    if(m_time_before_next_frame > m_time_per_frame)
+    m_time_before_next_frame += _dt;
+    m_frame_ratio = m_time_before_next_frame / current_time_per_frame;
+
+    if(m_time_before_next_frame > current_time_per_frame)
         set_frame((m_current_frame + 1) % frames_amount());
 }
 
@@ -84,13 +117,24 @@ BUILDER_STUB_INITIALIZATION_FUNC(Draw_Module_Stub__Vertex_Animation)
 
     L_ASSERT(resources_manager);
     L_ASSERT(animation_name.size() > 0);
-    L_ASSERT(frames_per_second > 0.0f);
 
     const Vertex_Animation* animation = resources_manager->get_resource<Vertex_Animation>(animation_name);
 
     product->set_frames_amount(animation->frames_amount());
     product->set_vertices_per_frame(animation->vertices_per_frame());
-    product->set_fps(frames_per_second);
+
+    if(frame_durations.size() > 0)
+    {
+        L_ASSERT(frame_durations.size() == animation->frames_amount());
+
+        product->set_frame_durations(frame_durations);
+    }
+    else
+    {
+        L_ASSERT(frames_per_second > 0.0f);
+
+        product->set_fps(frames_per_second);
+    }
 
     product->start(times_to_repeat);
 }

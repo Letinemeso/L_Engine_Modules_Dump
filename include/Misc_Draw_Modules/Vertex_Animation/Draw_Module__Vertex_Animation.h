@@ -17,7 +17,7 @@ namespace LMD
         unsigned int m_frames_amount = 0;
         unsigned int m_vertices_per_frame = 0;
         float m_fps = 0.0f;
-        float m_time_per_frame = 0.0f;
+        LDS::Vector<float> m_time_per_frame;
         unsigned int m_times_to_repeat = 0;
 
     private:
@@ -28,10 +28,12 @@ namespace LMD
         unsigned int m_repetitions = 0;
 
     public:
-        inline void set_frames_amount(unsigned int _value) { m_frames_amount = _value; m_time_per_frame = (float)m_frames_amount / m_fps; }
         inline void set_vertices_per_frame(unsigned int _value) { m_vertices_per_frame = _value; }
-        inline void set_fps(float _value) { m_fps = _value; m_time_per_frame = (float)m_frames_amount / m_fps; }
         inline void set_times_to_repeat(unsigned int _value) { m_times_to_repeat = _value; }
+
+        void set_frames_amount(unsigned int _value);
+        void set_fps(float _value);
+        void set_frame_durations(const LDS::Vector<float>& _values);
 
     public:
         void start(unsigned int _cycles = 0, unsigned int _with_frame = 0);
@@ -41,10 +43,11 @@ namespace LMD
         void set_frame(unsigned int _frame);
 
     public:
-        inline unsigned int frames_amount() const { return m_frames_amount; }
         inline unsigned int vertices_per_frame() const { return m_vertices_per_frame; }
-        inline float fps() const { return m_fps; }
         inline unsigned int current_frame() const { return m_current_frame; }
+        inline unsigned int frames_amount() const { return m_frames_amount; }
+        inline float fps() const { return m_fps; }
+        inline const LDS::Vector<float>& frame_durations() const { return m_time_per_frame; }
         inline unsigned int repetitions() const { return m_repetitions; }
         inline bool paused() const { return m_is_paused; }
         inline float frame_ratio() const { return m_frame_ratio; }
@@ -65,6 +68,7 @@ namespace LMD
         ADD_FIELD(std::string, animation_name)
         ADD_FIELD(float, frames_per_second)
         ADD_FIELD(unsigned int, times_to_repeat)
+        ADD_FIELD(LDS::Vector<float>, frame_durations)
         FIELDS_END
 
     public:
@@ -74,6 +78,7 @@ namespace LMD
         std::string animation_name;
         float frames_per_second = 0.0f;
         unsigned int times_to_repeat = 0;
+        LDS::Vector<float> frame_durations;
 
     public:
         INIT_BUILDER_STUB(Draw_Module__Vertex_Animation)
