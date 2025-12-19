@@ -40,7 +40,7 @@ void Physical_Model_Renderer::draw(const float* _data, unsigned int _size, const
 
     LR::Buffer& buffer = m_coordinates_graphic_component->buffer();
 
-    m_draw_module->bind_vertex_array();
+    m_draw_module->apply_draw_rule();
 
     LEti::Transformation_Data transformation_data_plug = _transformation_data;
 

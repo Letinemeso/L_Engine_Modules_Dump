@@ -73,7 +73,7 @@ void Animation_Graphics_Component_Reconstructor__Texture::M_recalculate_frame_da
         _element += modifier;
     };
 
-    m_draw_module->bind_vertex_array();
+    m_draw_module->apply_draw_rule();
     _texture.buffer().modify_buffer(modification_func, 0, _texture.buffer().size(), _texture.buffer().floats_per_vertex());
 
     m_current_frame = m_requested_frame;
