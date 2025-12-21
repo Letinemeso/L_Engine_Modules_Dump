@@ -5,7 +5,7 @@
 #include <Resources_Manager.h>
 
 #include <Components/Graphics_Component__Default.h>
-#include <Texture/Texture__Preloaded.h>
+#include <Texture/Texture__Default.h>
 
 
 namespace LMD
@@ -17,7 +17,7 @@ namespace LMD
         INIT_VARIABLE(LMD::Graphics_Component__Animation, LR::Graphics_Component__Default)
 
     public:
-        using Frame_Textures = LDS::Vector<LR::Texture__Preloaded*>;
+        using Frame_Textures = LDS::Vector<LR::Texture__Default*>;
 
     private:
         Frame_Textures m_frame_textures;
@@ -91,10 +91,10 @@ namespace LMD
         bool texture_coords_in_pixels = true;
         glm::vec2 expected_texture_size = { 0.0f, 0.0f };
 
-        LR::Texture_Stub__Preloaded texture_settings;
+        LR::Texture_Stub__Default texture_settings;
 
     private:
-        LR::Texture_Stub__Preloaded* texture_stub_ptr = &texture_settings;
+        LR::Texture_Stub__Default* texture_stub_ptr = &texture_settings;
 
     public:
         INIT_BUILDER_STUB(Graphics_Component__Animation)

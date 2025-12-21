@@ -136,7 +136,7 @@ BUILDER_STUB_INITIALIZATION_FUNC(Graphics_Component_Stub__Animation)
     Graphics_Component__Animation::Frame_Textures textures(animation->frames_amount(), nullptr);
     for(unsigned int i = 0; i < animation->frames_amount(); ++i)
     {
-        LR::Texture__Preloaded* texture = new LR::Texture__Preloaded;
+        LR::Texture__Default* texture = new LR::Texture__Default;
         textures[i] = texture;
         texture_settings.apply_settings(texture);
         texture->set_picture(animation->get_frame(i));

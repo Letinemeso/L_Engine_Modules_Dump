@@ -1,7 +1,7 @@
 #include <Misc_Draw_Modules/Text_Field/Graphics_Component_Reconstructors/TF_Graphics_Component_Reconstructor__Texture.h>
 #include <Misc_Draw_Modules/Text_Field/Draw_Module__Text_Field.h>
 
-#include <Texture/Texture__Preloaded.h>
+#include <Texture/Texture__Default.h>
 
 using namespace LMD;
 
@@ -17,8 +17,8 @@ void TF_Graphics_Component_Reconstructor__Texture::update(float /*_dt*/)
     if(tf->settings() == tf->current_settings())
         return;
 
-    L_ASSERT(LV::cast_variable<LR::Texture__Preloaded>(component->texture()));
-    LR::Texture__Preloaded* texture = (LR::Texture__Preloaded*)component->texture();
+    L_ASSERT(LV::cast_variable<LR::Texture__Default>(component->texture()));
+    LR::Texture__Default* texture = (LR::Texture__Default*)component->texture();
 
     const Text_Field_Settings& settings = tf->settings();
 
