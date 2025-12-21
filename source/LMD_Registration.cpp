@@ -27,6 +27,7 @@
 #include <Resources/Vertex_Animation.h>
 #include <Tools/Objects_Storage.h>
 #include <Tools/Model_Data_Provider.h>
+#include <Tools/Objects_Controller/Objects_Controller_Extension__Removal.h>
 
 using namespace LMD;
 
@@ -36,6 +37,9 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
                          LR::Renderer& _renderer,
                          LR::Draw_Order_Controller* _draw_order_controller)
 {
+    LST::Message_Translator::instance().register_message_type<Message__Request_Entity_Death>();
+
+
     L_ASSERT(_resources_manager_getter);
 
     LR::Renderer* renderer = &_renderer;
