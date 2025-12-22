@@ -37,7 +37,7 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
                          LR::Renderer& _renderer,
                          LR::Draw_Order_Controller* _draw_order_controller)
 {
-    LST::Message_Translator::instance().register_message_type<Message__Request_Entity_Death>();
+    LST::Message_Translator::instance().register_message_type<Message__Request_Object_Deletion>();
 
 
     L_ASSERT(_resources_manager_getter);

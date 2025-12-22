@@ -9,15 +9,15 @@
 namespace LMD
 {
 
-    MESSAGE_TYPE_DECLARATION_START(Message__Request_Entity_Death)
-    LEti::Object* should_be_dead_entity = nullptr;
+    MESSAGE_TYPE_DECLARATION_START(Message__Request_Object_Deletion)
+    LEti::Object* object = nullptr;
     MESSAGE_TYPE_DECLARATION_END
 
 
     class Objects_Controller_Extension__Removal : public Objects_Controller_Extension
     {
     private:
-        LST::Message_Translator::Handle<Message__Request_Entity_Death> m_message_handle;
+        LST::Message_Translator::Handle<Message__Request_Object_Deletion> m_message_handle;
 
     private:
         using Entity_Set = LDS::AVL_Tree<LEti::Object*>;
