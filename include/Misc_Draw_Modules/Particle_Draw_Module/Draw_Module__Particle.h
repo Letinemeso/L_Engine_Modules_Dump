@@ -86,6 +86,7 @@ namespace LMD
         ADD_FIELD(unsigned int, max_particles_amount)
         ADD_FIELD(float, emission_frequency)
         ADD_FIELD(bool, autostart_emission)
+        ADD_FIELD(unsigned int, initial_particles_amount)
         ADD_FIELD(std::string, particle_initialization_compute_shader)
         FIELDS_END
 
@@ -97,6 +98,7 @@ namespace LMD
         unsigned int max_particles_amount = 0;
         float emission_frequency = 0.0f;
         bool autostart_emission = true;
+        unsigned int initial_particles_amount = 0;
 
         std::string particle_initialization_compute_shader;
 

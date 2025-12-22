@@ -116,6 +116,9 @@ BUILDER_STUB_INITIALIZATION_FUNC(Draw_Module_Stub__Particle)
     product->set_max_particles(max_particles_amount);
     product->pause_emission(!autostart_emission);
 
+    if(initial_particles_amount > 0)
+        product->request_particles(initial_particles_amount);
+
     product->set_initialization_shader(shader_manager->get_shader_program(particle_initialization_compute_shader));
 
     for(LV::Variable_Base::Childs_List::Const_Iterator it = initialization_compute_uniform_setter_stubs.begin(); !it.end_reached(); ++it)
