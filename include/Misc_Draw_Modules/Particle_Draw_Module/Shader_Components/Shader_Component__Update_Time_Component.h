@@ -6,6 +6,17 @@
 namespace LMD
 {
 
+    class Shader_Component__Update_Time_Component : public LR::Shader_Component
+    {
+    public:
+        INIT_VARIABLE(LMD::Shader_Component__Update_Time_Component, LR::Shader_Component)
+
+    public:
+        Dependencies get_dependencies() const override;
+
+    };
+
+
     class Shader_Component_Stub__Update_Time_Component : public LR::Predefined_Shader_Component_Stub
     {
     public:
@@ -30,7 +41,7 @@ namespace LMD
         //  - LMD::Shader_Component__Particle_Settings
 
     public:
-        INIT_BUILDER_STUB(LR::Shader_Component)
+        INIT_BUILDER_STUB(Shader_Component__Update_Time_Component)
 
     };
 
