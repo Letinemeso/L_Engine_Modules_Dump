@@ -1,4 +1,4 @@
-#include <Misc_Draw_Modules/Particle_Draw_Module/Shader_Components/Shader_Component__Update_Time_Component.h>
+#include <Misc_Draw_Modules/Particle_Draw_Module/Shader_Components/Shader_Component__Update_Time.h>
 
 #include <glew.h>
 #include <Shader/Shader_Components/Shader_Dt_Component.h>
@@ -8,7 +8,7 @@
 using namespace LMD;
 
 
-LR::Shader_Component::Dependencies Shader_Component__Update_Time_Component::get_dependencies() const
+LR::Shader_Component::Dependencies Shader_Component__Update_Time::get_dependencies() const
 {
     LR::Shader_Component::Dependencies result = Parent_Type::get_dependencies();
     result.push(LR::Shader_Dt_Component::get_estimated_type());
@@ -21,9 +21,9 @@ LR::Shader_Component::Dependencies Shader_Component__Update_Time_Component::get_
 
 
 
-BUILDER_STUB_DEFAULT_CONSTRUCTION_FUNC(Shader_Component_Stub__Update_Time_Component)
+BUILDER_STUB_DEFAULT_CONSTRUCTION_FUNC(Shader_Component_Stub__Update_Time)
 
-BUILDER_STUB_INITIALIZATION_FUNC(Shader_Component_Stub__Update_Time_Component)
+BUILDER_STUB_INITIALIZATION_FUNC(Shader_Component_Stub__Update_Time)
 {
     BUILDER_STUB_PARENT_INITIALIZATION;
     BUILDER_STUB_CAST_PRODUCT;
