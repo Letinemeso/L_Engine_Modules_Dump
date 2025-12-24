@@ -8,6 +8,7 @@
 #include <Misc_Draw_Modules/Particle_Draw_Module/Shader_Components/Shader_Component__Particle_Settings.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Shader_Components/Shader_Component__Initialization_Counter.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Shader_Components/Shader_Component__Update_Counter.h>
+#include <Misc_Draw_Modules/Particle_Draw_Module/Shader_Components/Shader_Component__Initialization_Time.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Buffer_Resizer.h>
 #include <Misc_Draw_Modules/Particle_Draw_Module/Graphics_Components/Graphics_Component__Particles_Amount_Reader.h>
 #include <Misc_Draw_Modules/Particle_System/Particle_System_Module.h>
@@ -68,6 +69,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Shader_Component_Stub__Initialization_Counter>();
 
     _object_constructor.register_type<LMD::Shader_Component_Stub__Update_Counter>();
+
+    _object_constructor.register_type<LMD::Shader_Component_Stub__Initialization_Time>();
 
     _object_constructor.register_type<LMD::Graphics_Component_Reconstructor_Stub__Buffer_Resizer>();
 
