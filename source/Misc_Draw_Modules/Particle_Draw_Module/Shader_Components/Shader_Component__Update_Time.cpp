@@ -5,6 +5,8 @@
 
 #include <Stuff/String_With_Parameters.h>
 
+#include <Misc_Draw_Modules/Particle_Draw_Module/Shader_Components/Shader_Component__Particle_Settings.h>
+
 using namespace LMD;
 
 
@@ -12,8 +14,7 @@ LR::Shader_Component::Dependencies Shader_Component__Update_Time::get_dependenci
 {
     LR::Shader_Component::Dependencies result = Parent_Type::get_dependencies();
     result.push(LR::Shader_Dt_Component::get_estimated_type());
-    // result.push(LR::)
-
+    result.push(LMD::Shader_Component__Particle_Settings::get_estimated_type());
     return result;
 }
 
