@@ -41,6 +41,47 @@ uint current_time_buffer_offset_index()
     return current_particle_index() * 2;
 }
 
+float get_remaining_time()
+{
+    uint index = current_time_buffer_offset_index();
+    if (index >= {1}.length())
+        return -1.0f;
+
+    return {1}[index];
+}
+
+float get_expected_time()
+{
+    uint index = current_time_buffer_offset_index() + 1;
+    if (index >= {1}.length())
+        return -1.0f;
+
+    return {1}[index];
+}
+
+float calculate_lifetime_ratio()
+{
+    return get_remaining_time() / get_expected_time();
+}
+
+void set_remaining_time(float _value)
+{
+    uint index = current_time_buffer_offset_index();
+    if (index >= {1}.length())
+        return;
+
+    {1}[index] = _value;
+}
+
+void set_expected_time(float _value)
+{
+    uint index = current_time_buffer_offset_index() + 1;
+    if (index >= {1}.length())
+        return;
+
+    {1}[index] = _value;
+}
+
 bool should_be_alive()
 {
     uint index = current_time_buffer_offset_index();
