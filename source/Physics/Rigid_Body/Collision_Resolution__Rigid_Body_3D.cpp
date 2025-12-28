@@ -5,12 +5,14 @@
 using namespace LMD;
 
 
-float Collision_Resolution__Rigid_Body_3D::M_calculate_kinetic_energy(const glm::vec3& _velocity, float _angular_velocity, float _mass, float _moment_of_inertia) const
+float Collision_Resolution__Rigid_Body_3D::M_calculate_kinetic_energy(const glm::vec3& _velocity, const glm::vec3& _angular_velocity, float _mass, float _moment_of_inertia) const
 {
     float velocity = LEti::Math::vector_length(_velocity);
 
-    float movemental = (_mass * velocity * velocity) / 2.0f;
-    float rotational = (_moment_of_inertia * _angular_velocity * _angular_velocity) / 2.0f;
+    float angular_velocity_squared = LEti::Math::vector_length_squared(_angular_velocity);
+
+    float movemental = (_mass * velocity * velocity) * 0.5f;
+    float rotational = (_moment_of_inertia * angular_velocity_squared) / 2.0f;
 
     return movemental + rotational;
 }
@@ -77,35 +79,37 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     if(!rb)
         return false;
 
-    if(!m_default_collision_resolution.resolve(_id, _dt))
-        return false;
+    glm::vec3 normal = _id.normal;
+    if(dynamic_pm == _id.second)
+        normal *= -1.0f;
+
+    float ke_before = M_calculate_kinetic_energy(rb->velocity(), rb->angular_velocity(), rb->mass(), rb->moment_of_inertia());
 
     const glm::vec3& center_of_mass = rb->center_of_mass();
-
     const glm::vec3 vec_to_point = _id.point - center_of_mass;
 
     const glm::vec3 velocity_at_contact = rb->velocity() +
                                           LEti::Math::cross_product(rb->angular_velocity(), vec_to_point);
 
-    const float relative_velocity_normal = LEti::Math::dot_product(velocity_at_contact, _id.normal);
+    const float relative_velocity_normal = LEti::Math::dot_product(velocity_at_contact, normal);
 
     if (relative_velocity_normal > -0.001f)
         return false;
 
-    const glm::vec3 perpendicular = LEti::Math::cross_product(vec_to_point, _id.normal);
+    const glm::vec3 perpendicular = LEti::Math::cross_product(vec_to_point, normal);
     const float effectiveMassDenom = rb->mass_inverse() +
                                      LEti::Math::dot_product(perpendicular, rb->inertia_tensor_inverse() * perpendicular);
 
     if (effectiveMassDenom <= 0.0f)
         return false;
 
-    const float impulse_along_normal = -1.0f * relative_velocity_normal / effectiveMassDenom;
+    const float impulse_along_normal = -2.0f * relative_velocity_normal / effectiveMassDenom;
 
-    glm::vec3 total_impulse = _id.normal * impulse_along_normal;
+    glm::vec3 total_impulse = normal * impulse_along_normal;
 
     if (fabsf(impulse_along_normal) > 0.0001f)
     {
-        glm::vec3 tangent_velocity = velocity_at_contact - _id.normal * relative_velocity_normal;
+        glm::vec3 tangent_velocity = velocity_at_contact - normal * relative_velocity_normal;
         const float tangent_speed = length(tangent_velocity);
 
         if (tangent_speed > 0.0001f)
@@ -133,6 +137,18 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
 
     rb->set_velocity(velocity);
     rb->set_angular_velocity(angular_velocity);
+
+    float ke_after = M_calculate_kinetic_energy(rb->velocity(), rb->angular_velocity(), rb->mass(), rb->moment_of_inertia());
+
+    if(ke_after > 0.0f)
+    {
+        float ratio_sqrt = sqrtf(ke_before / ke_after);
+
+        rb->set_velocity( rb->velocity() * ratio_sqrt );
+        rb->set_angular_velocity( rb->angular_velocity() * ratio_sqrt );
+    }
+
+    m_default_collision_resolution.resolve(_id, _dt);
 
     return true;
 }

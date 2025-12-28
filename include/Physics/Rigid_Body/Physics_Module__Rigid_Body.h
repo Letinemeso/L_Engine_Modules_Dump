@@ -17,11 +17,15 @@ namespace LMD
         glm::vec3 m_velocity{0.0f, 0.0f, 0.0f};
         glm::vec3 m_angular_velocity = {0.0f, 0.0f, 0.0f};
 
+        glm::vec3 m_center_of_mass_position = {0.0f, 0.0f, 0.0f};
+
     private:
         LPhys::Physical_Model* M_create_physical_model() const override;
 
     public:
         void set_mass(float _mass);
+        void recalculate_raw_center_of_mass();
+        void set_center_of_mass_position(const glm::vec3& _position);
 
         inline void set_velocity(const glm::vec3& _value) { m_velocity = _value; }
         inline void set_angular_velocity(const glm::vec3& _value) { m_angular_velocity = _value; }
@@ -38,11 +42,19 @@ namespace LMD
         const glm::mat3x3& inertia_tensor_inverse() const;
         const glm::vec3& center_of_mass() const;
 
+        inline Rigid_Body_Physical_Model* cast_physical_model() { return (Rigid_Body_Physical_Model*)get_physical_model(); }
+        inline const Rigid_Body_Physical_Model* cast_physical_model() const { return (Rigid_Body_Physical_Model*)get_physical_model(); }
+
         inline const glm::vec3& velocity() const { return m_velocity; }
         inline const glm::vec3& angular_velocity() const { return m_angular_velocity; }
 
+    private:
+        glm::vec3 M_calculate_world_position() const;
+
     public:
         void update(float _dt) override;
+
+        void apply_data_after_collisions() override;
 
 	};
 

@@ -35,13 +35,13 @@ float Rigid_Body_Physical_Model::M_calculate_polygon_area(const LPhys::Polygon& 
     return LEti::Math::vector_length(cross) * 0.5f;
 }
 
-LDS::Vector<float> Rigid_Body_Physical_Model::M_calculate_polygons_areas() const
+LDS::Vector<float> Rigid_Body_Physical_Model::M_calculate_polygons_areas(const LPhys::Polygon_Holder_Base& _polygons) const
 {
-    LDS::Vector<float> result(get_polygons()->amount());
+    LDS::Vector<float> result(_polygons.amount());
 
-    for(unsigned int i = 0; i < get_polygons()->amount(); ++i)
+    for(unsigned int i = 0; i < _polygons.amount(); ++i)
     {
-        const LPhys::Polygon& polygon = *get_polygons()->get_polygon(i);
+        const LPhys::Polygon& polygon = *_polygons.get_polygon(i);
         result.push( M_calculate_polygon_area(polygon) );
     }
 
@@ -51,7 +51,7 @@ LDS::Vector<float> Rigid_Body_Physical_Model::M_calculate_polygons_areas() const
 float Rigid_Body_Physical_Model::M_calculate_total_area(const LDS::Vector<float>& _polygons_areas) const
 {
     float result = 0.0f;
-    for(unsigned int i = 0; i < get_polygons()->amount(); ++i)
+    for(unsigned int i = 0; i < _polygons_areas.size(); ++i)
         result += _polygons_areas[i];
     return result;
 }
@@ -72,44 +72,55 @@ glm::vec3 Rigid_Body_Physical_Model::M_calculate_central_point() const
     return result;
 }
 
-glm::vec3 Rigid_Body_Physical_Model::M_calculate_center_of_mass() const
+glm::vec3 Rigid_Body_Physical_Model::M_calculate_center_of_mass(const LPhys::Polygon_Holder_Base& _polygons, const LDS::Vector<float>& _polygons_areas, float _total_area) const
 {
-    LDS::Vector<float> polygons_areas = M_calculate_polygons_areas();
-    float total_area = M_calculate_total_area(polygons_areas);
+    // LDS::Vector<float> polygons_areas = M_calculate_polygons_areas();
+    // float total_area = M_calculate_total_area(polygons_areas);
 
-    glm::vec3 center_point = M_calculate_central_point();
+    // glm::vec3 center_point = M_calculate_central_point();
+
+    // glm::vec3 total_center_of_mass_stride = {0.0f, 0.0f, 0.0f};
+
+    // for(unsigned int i = 0; i < get_polygons()->amount(); ++i)
+    // {
+    //     const LPhys::Polygon& polygon = *get_polygons()->get_polygon(i);
+
+    //     float weight_ratio = polygons_areas[i] / total_area;
+
+    //     glm::vec3 vec_to_polygon = polygon.center() - center_point;
+    //     vec_to_polygon *= weight_ratio;
+
+    //     total_center_of_mass_stride += vec_to_polygon;
+    // }
+
+    // return center_point + total_center_of_mass_stride;
 
     glm::vec3 total_center_of_mass_stride = {0.0f, 0.0f, 0.0f};
 
-    for(unsigned int i = 0; i < get_polygons()->amount(); ++i)
+    for(unsigned int i = 0; i < _polygons.amount(); ++i)
     {
-        const LPhys::Polygon& polygon = *get_polygons()->get_polygon(i);
+        const LPhys::Polygon& polygon = *_polygons.get_polygon(i);
 
-        float weight_ratio = polygons_areas[i] / total_area;
+        float weight_ratio = _polygons_areas[i] / _total_area;
 
-        glm::vec3 vec_to_polygon = polygon.center() - center_point;
-        vec_to_polygon *= weight_ratio;
-
+        glm::vec3 vec_to_polygon = polygon.center() * weight_ratio;
         total_center_of_mass_stride += vec_to_polygon;
     }
 
-    return center_point + total_center_of_mass_stride;
+    return total_center_of_mass_stride;
 }
 
-float Rigid_Body_Physical_Model::M_calculate_moment_of_inertia() const
+float Rigid_Body_Physical_Model::M_calculate_moment_of_inertia(const LPhys::Polygon_Holder_Base& _polygons, const LDS::Vector<float>& _polygons_areas, float _total_area) const
 {
     constexpr float Point_Mass_Multiplier = 1.0f / 3.0f;
 
-    LDS::Vector<float> polygons_areas = M_calculate_polygons_areas();
-    float total_area = M_calculate_total_area(polygons_areas);
-
     float result = 0.0f;
 
-    for(unsigned int p_i = 0; p_i < get_polygons()->amount(); ++p_i)
+    for(unsigned int p_i = 0; p_i < _polygons.amount(); ++p_i)
     {
-        const LPhys::Polygon& polygon = *get_polygons()->get_polygon(p_i);
+        const LPhys::Polygon& polygon = *_polygons.get_polygon(p_i);
 
-        float polygon_mass = (polygons_areas[p_i] / total_area) * m_mass;
+        float polygon_mass = (_polygons_areas[p_i] / _total_area) * m_mass;
         float point_mass = polygon_mass * Point_Mass_Multiplier;
 
         for(unsigned int i = 0; i < 3; ++i)
@@ -125,12 +136,9 @@ float Rigid_Body_Physical_Model::M_calculate_moment_of_inertia() const
     return result;
 }
 
-glm::mat3x3 Rigid_Body_Physical_Model::M_calculate_inertia_tensor() const
+glm::mat3x3 Rigid_Body_Physical_Model::M_calculate_inertia_tensor(const LPhys::Polygon_Holder_Base& _polygons, const LDS::Vector<float>& _polygons_areas, float _total_area) const
 {
     constexpr float Point_Mass_Multiplier = 1.0f / 3.0f;
-
-    LDS::Vector<float> polygons_areas = M_calculate_polygons_areas();
-    float total_area = M_calculate_total_area(polygons_areas);
 
     glm::mat3x3 result = {
         0.0f, 0.0f, 0.0f,
@@ -138,11 +146,11 @@ glm::mat3x3 Rigid_Body_Physical_Model::M_calculate_inertia_tensor() const
         0.0f, 0.0f, 0.0f
     };
 
-    for(unsigned int p_i = 0; p_i < get_polygons()->amount(); ++p_i)
+    for(unsigned int p_i = 0; p_i < _polygons.amount(); ++p_i)
     {
-        const LPhys::Polygon& polygon = *get_polygons()->get_polygon(p_i);
+        const LPhys::Polygon& polygon = *_polygons.get_polygon(p_i);
 
-        float polygon_mass = (polygons_areas[p_i] / total_area) * m_mass;
+        float polygon_mass = (_polygons_areas[p_i] / _total_area) * m_mass;
         float point_mass = polygon_mass * Point_Mass_Multiplier;
 
         for(unsigned int i = 0; i < 3; ++i)
@@ -176,9 +184,12 @@ void Rigid_Body_Physical_Model::update(const glm::mat4x4 &_matrix)
 {
     Physical_Model::update(_matrix);
 
-    m_center_of_mass = M_calculate_center_of_mass();
-    m_moment_of_inertia = M_calculate_moment_of_inertia();
-    m_inertia_tensor = M_calculate_inertia_tensor();
+    LDS::Vector<float> polygons_areas = M_calculate_polygons_areas(*get_polygons());
+    float total_area = M_calculate_total_area(polygons_areas);
+
+    m_center_of_mass = M_calculate_center_of_mass(*get_polygons(), polygons_areas, total_area);
+    m_moment_of_inertia = M_calculate_moment_of_inertia(*get_polygons(), polygons_areas, total_area);
+    m_inertia_tensor = M_calculate_inertia_tensor(*get_polygons(), polygons_areas, total_area);
     m_inertia_tensor_inverse = glm::inverse((m_inertia_tensor));
 }
 
@@ -186,6 +197,24 @@ void Rigid_Body_Physical_Model::update(const glm::mat4x4 &_matrix)
 void Rigid_Body_Physical_Model::set_mass(float _mass)
 {
     m_mass = _mass;
+}
 
+void Rigid_Body_Physical_Model::recalculate_raw_center_of_mass()
+{
+    constexpr glm::mat4x4 Default_Matrix = {
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
 
+    LPhys::Physical_Model_Imprint* imprint = create_imprint();
+    imprint->update_with_single_matrix(Default_Matrix);
+
+    LDS::Vector<float> polygons_areas = M_calculate_polygons_areas(*imprint->get_polygons());
+    float total_area = M_calculate_total_area(polygons_areas);
+
+    m_raw_center_of_mass = M_calculate_center_of_mass(*imprint->get_polygons(), polygons_areas, total_area);
+
+    delete imprint;
 }
