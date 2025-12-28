@@ -117,10 +117,55 @@ float Rigid_Body_Physical_Model::M_calculate_moment_of_inertia() const
             if(!polygon.segment_can_collide(i))
                 continue;
 
-            float distance_squared = LEti::Math::vector_length_squared(center_of_mass() - polygon[i]);
+            float distance_squared = LEti::Math::vector_length_squared(polygon[i] - center_of_mass());
             result += distance_squared * point_mass;
         }
     }
+
+    return result;
+}
+
+glm::mat3x3 Rigid_Body_Physical_Model::M_calculate_inertia_tensor() const
+{
+    constexpr float Point_Mass_Multiplier = 1.0f / 3.0f;
+
+    LDS::Vector<float> polygons_areas = M_calculate_polygons_areas();
+    float total_area = M_calculate_total_area(polygons_areas);
+
+    glm::mat3x3 result = {
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f
+    };
+
+    for(unsigned int p_i = 0; p_i < get_polygons()->amount(); ++p_i)
+    {
+        const LPhys::Polygon& polygon = *get_polygons()->get_polygon(p_i);
+
+        float polygon_mass = (polygons_areas[p_i] / total_area) * m_mass;
+        float point_mass = polygon_mass * Point_Mass_Multiplier;
+
+        for(unsigned int i = 0; i < 3; ++i)
+        {
+            if(!polygon.segment_can_collide(i))
+                continue;
+
+            glm::vec3 point_wo_offset = polygon[i] - center_of_mass();
+            glm::vec3 point_squared = point_wo_offset * point_wo_offset;
+
+            result[0][0] += point_mass * (point_squared.y * point_squared.z);
+            result[1][1] += point_mass * (point_squared.x * point_squared.z);
+            result[2][2] += point_mass * (point_squared.x * point_squared.y);
+
+            result[0][1] -= point_mass * point_wo_offset.x * point_wo_offset.y;
+            result[0][2] -= point_mass * point_wo_offset.x * point_wo_offset.z;
+            result[1][2] -= point_mass * point_wo_offset.y * point_wo_offset.z;
+        }
+    }
+
+    result[1][0] = result[0][1];
+    result[2][0] = result[0][2];
+    result[2][1] = result[1][2];
 
     return result;
 }
@@ -133,6 +178,8 @@ void Rigid_Body_Physical_Model::update(const glm::mat4x4 &_matrix)
 
     m_center_of_mass = M_calculate_center_of_mass();
     m_moment_of_inertia = M_calculate_moment_of_inertia();
+    m_inertia_tensor = M_calculate_inertia_tensor();
+    m_inertia_tensor_inverse = glm::inverse((m_inertia_tensor));
 }
 
 

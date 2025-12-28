@@ -35,8 +35,8 @@ bool Collision_Resolution__Rigid_Body_2D::resolve(const LPhys::Intersection_Data
 
     const glm::vec3& A_velocity = pm1->velocity();
     const glm::vec3& B_velocity = pm2->velocity();
-    float A_angular_velocity = pm1->angular_velocity();
-    float B_angular_velocity = pm2->angular_velocity();
+    float A_angular_velocity = pm1->angular_velocity().z;
+    float B_angular_velocity = pm2->angular_velocity().z;
 
     float ke_before = M_calculate_kinetic_energy(A_velocity, A_angular_velocity, pm1->mass(), A_moment_of_inertia) + M_calculate_kinetic_energy(B_velocity, B_angular_velocity, pm2->mass(), B_moment_of_inertia);
 
@@ -90,12 +90,12 @@ bool Collision_Resolution__Rigid_Body_2D::resolve(const LPhys::Intersection_Data
 //    pm2->transformation_data()->move(-separation_vec * masses_ratio);
 
     pm1->apply_linear_impulse(-impulse / pm1->mass());
-    pm1->set_angular_velocity(-avA / pm1->mass());
+    pm1->set_angular_velocity({0.0f, 0.0f, -avA / pm1->mass()});
     pm2->apply_linear_impulse(impulse / pm2->mass());
-    pm2->set_angular_velocity(avB / pm2->mass());
+    pm2->set_angular_velocity({0.0f, 0.0f, avB / pm2->mass()});
 
     //  attempt to fix increase of models' velocities after some collisions. and it seems to work fine!
-    float ke_after = M_calculate_kinetic_energy(pm1->velocity(), pm1->angular_velocity(), pm1->mass(), A_moment_of_inertia) + M_calculate_kinetic_energy(pm2->velocity(), pm2->angular_velocity(), pm2->mass(), B_moment_of_inertia);
+    float ke_after = M_calculate_kinetic_energy(pm1->velocity(), pm1->angular_velocity().z, pm1->mass(), A_moment_of_inertia) + M_calculate_kinetic_energy(pm2->velocity(), pm2->angular_velocity().z, pm2->mass(), B_moment_of_inertia);
 
     if(!LEti::Math::floats_are_equal(ke_after, 0.0f) && !LEti::Math::floats_are_equal(ke_before, 0.0f))
     {

@@ -15,7 +15,7 @@ namespace LMD
 
     private:
         glm::vec3 m_velocity{0.0f, 0.0f, 0.0f};
-        float m_angular_velocity = 0.0f;
+        glm::vec3 m_angular_velocity = {0.0f, 0.0f, 0.0f};
 
     private:
         LPhys::Physical_Model* M_create_physical_model() const override;
@@ -23,19 +23,23 @@ namespace LMD
     public:
         void set_mass(float _mass);
 
-        inline void set_velocity(const glm::vec3& _v) { m_velocity = _v; }
-        inline void set_angular_velocity(float _av) { m_angular_velocity = _av; }
+        inline void set_velocity(const glm::vec3& _value) { m_velocity = _value; }
+        inline void set_angular_velocity(const glm::vec3& _value) { m_angular_velocity = _value; }
 
-        inline void apply_linear_impulse(const glm::vec3& _imp) { m_velocity += _imp; }
-        inline void apply_rotation(float _av) { m_angular_velocity += _av; }
+        inline void apply_linear_impulse(const glm::vec3& _value) { m_velocity += _value; }
+        inline void apply_rotation(const glm::vec3& _value) { m_angular_velocity += _value; }
 
     public:
         float mass() const;
+        float mass_inverse() const;
         float moment_of_inertia() const;
+        float moment_of_inertia_inverse() const;
+        const glm::mat3x3& inertia_tensor() const;
+        const glm::mat3x3& inertia_tensor_inverse() const;
         const glm::vec3& center_of_mass() const;
 
         inline const glm::vec3& velocity() const { return m_velocity; }
-        inline float angular_velocity() const { return m_angular_velocity; }
+        inline const glm::vec3& angular_velocity() const { return m_angular_velocity; }
 
     public:
         void update(float _dt) override;
