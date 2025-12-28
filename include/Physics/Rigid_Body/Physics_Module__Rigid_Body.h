@@ -14,6 +14,8 @@ namespace LMD
         INIT_VARIABLE(LMD::Physics_Module__Rigid_Body, LPhys::Physics_Module__Mesh)
 
     private:
+        float m_restitution = 1.0f;
+
         glm::vec3 m_velocity{0.0f, 0.0f, 0.0f};
         glm::vec3 m_angular_velocity = {0.0f, 0.0f, 0.0f};
 
@@ -26,6 +28,8 @@ namespace LMD
         void set_mass(float _mass);
         void recalculate_raw_center_of_mass();
         void set_center_of_mass_position(const glm::vec3& _position);
+
+        inline void set_restitution(float _value) { m_restitution = _value; }
 
         inline void set_velocity(const glm::vec3& _value) { m_velocity = _value; }
         inline void set_angular_velocity(const glm::vec3& _value) { m_angular_velocity = _value; }
@@ -44,6 +48,8 @@ namespace LMD
 
         inline Rigid_Body_Physical_Model* cast_physical_model() { return (Rigid_Body_Physical_Model*)get_physical_model(); }
         inline const Rigid_Body_Physical_Model* cast_physical_model() const { return (Rigid_Body_Physical_Model*)get_physical_model(); }
+
+        inline float restitution() const { return m_restitution; }
 
         inline const glm::vec3& velocity() const { return m_velocity; }
         inline const glm::vec3& angular_velocity() const { return m_angular_velocity; }
@@ -67,10 +73,12 @@ namespace LMD
 
         INIT_FIELDS
         ADD_FIELD(float, mass)
+        ADD_FIELD(float, restitution)
         FIELDS_END
 
     public:
         float mass = 1.0f;
+        float restitution = 1.0f;
 
     protected:
         INIT_BUILDER_STUB(Physics_Module__Rigid_Body)

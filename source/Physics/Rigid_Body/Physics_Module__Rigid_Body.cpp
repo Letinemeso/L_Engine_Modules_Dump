@@ -168,6 +168,7 @@ BUILDER_STUB_INITIALIZATION_FUNC(Physics_Module_Stub__Rigid_Body)
     BUILDER_STUB_CAST_PRODUCT;
 
     product->set_mass(mass);
+    product->set_restitution(restitution);
 
     product->recalculate_raw_center_of_mass();
 }

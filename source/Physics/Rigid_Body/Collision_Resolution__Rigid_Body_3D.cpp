@@ -29,6 +29,9 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_dynamic(const LPh
     if(!m_default_collision_resolution.resolve(_id, _dt))
         return false;
 
+    float ke_before = M_calculate_kinetic_energy(pm1->velocity(), pm1->angular_velocity(), pm1->mass(), pm1->moment_of_inertia())
+                      + M_calculate_kinetic_energy(pm2->velocity(), pm2->angular_velocity(), pm2->mass(), pm2->moment_of_inertia());
+
     glm::vec3 vec_to_point_1 = _id.point - pm1->center_of_mass();
     glm::vec3 vec_to_point_2 = _id.point - pm2->center_of_mass();
 
@@ -67,6 +70,19 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_dynamic(const LPh
     pm1->set_angular_velocity(new_angular_velocity_1);
     pm2->set_angular_velocity(new_angular_velocity_2);
 
+    float ke_after = M_calculate_kinetic_energy(pm1->velocity(), pm1->angular_velocity(), pm1->mass(), pm1->moment_of_inertia())
+                      + M_calculate_kinetic_energy(pm2->velocity(), pm2->angular_velocity(), pm2->mass(), pm2->moment_of_inertia());
+
+    if(!LEti::Math::floats_are_equal(ke_after, 0.0f) && !LEti::Math::floats_are_equal(ke_before, 0.0f))
+    {
+        float ratio_sqrt = sqrtf(ke_before / ke_after);
+
+        pm1->set_velocity(pm1->velocity() * ratio_sqrt);
+        pm1->set_angular_velocity(pm1->angular_velocity() * ratio_sqrt);
+        pm2->set_velocity(pm2->velocity() * ratio_sqrt);
+        pm2->set_angular_velocity(pm2->angular_velocity() * ratio_sqrt);
+    }
+
     return true;
 }
 
@@ -79,76 +95,67 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     if(!rb)
         return false;
 
+    // m_default_collision_resolution.resolve(_id, _dt);
+
+    float ke_before = M_calculate_kinetic_energy(rb->velocity(), rb->angular_velocity(), rb->mass(), rb->moment_of_inertia());
+
     glm::vec3 normal = _id.normal;
     if(dynamic_pm == _id.second)
         normal *= -1.0f;
 
-    float ke_before = M_calculate_kinetic_energy(rb->velocity(), rb->angular_velocity(), rb->mass(), rb->moment_of_inertia());
+    glm::vec3 radius_vector = _id.point - rb->center_of_mass();
 
-    const glm::vec3& center_of_mass = rb->center_of_mass();
-    const glm::vec3 vec_to_point = _id.point - center_of_mass;
+    glm::vec3 contact_point_velocity = rb->velocity() + LEti::Math::cross_product(rb->angular_velocity(), radius_vector);
 
-    const glm::vec3 velocity_at_contact = rb->velocity() +
-                                          LEti::Math::cross_product(rb->angular_velocity(), vec_to_point);
+    float relative_normal_velocity = LEti::Math::dot_product(contact_point_velocity, normal);
 
-    const float relative_velocity_normal = LEti::Math::dot_product(velocity_at_contact, normal);
-
-    if (relative_velocity_normal > -0.001f)
+    if (relative_normal_velocity >= 0.0f)
         return false;
 
-    const glm::vec3 perpendicular = LEti::Math::cross_product(vec_to_point, normal);
-    const float effectiveMassDenom = rb->mass_inverse() +
-                                     LEti::Math::dot_product(perpendicular, rb->inertia_tensor_inverse() * perpendicular);
+    glm::vec3 radius_cross_normal = LEti::Math::cross_product(radius_vector, normal);
+    glm::vec3 inv_inertia_times_radius_cross_normal = rb->inertia_tensor_inverse() * radius_cross_normal;
 
-    if (effectiveMassDenom <= 0.0f)
-        return false;
+    float effective_mass_denominator = (1.0f / rb->mass())
+                                       + LEti::Math::dot_product( normal, LEti::Math::cross_product(inv_inertia_times_radius_cross_normal, radius_vector) );
 
-    const float impulse_along_normal = -2.0f * relative_velocity_normal / effectiveMassDenom;
+    float impulse_magnitude = -(1.0f + rb->restitution()) * relative_normal_velocity / effective_mass_denominator;
 
-    glm::vec3 total_impulse = normal * impulse_along_normal;
+    glm::vec3 velocity = rb->velocity();
+    velocity += (impulse_magnitude / rb->mass()) * normal;
 
-    if (fabsf(impulse_along_normal) > 0.0001f)
-    {
-        glm::vec3 tangent_velocity = velocity_at_contact - normal * relative_velocity_normal;
-        const float tangent_speed = length(tangent_velocity);
+    glm::vec3 angular_impulse = LEti::Math::cross_product(radius_vector, impulse_magnitude * normal);
+    glm::vec3 angular_velocity = rb->angular_velocity();
+    angular_velocity -= rb->inertia_tensor_inverse() * angular_impulse;
 
-        if (tangent_speed > 0.0001f)
-        {
-            LEti::Math::shrink_vector_to_1(tangent_velocity);
+    float ke_after = M_calculate_kinetic_energy(velocity, angular_velocity, rb->mass(), rb->moment_of_inertia());
 
-            const glm::vec3 r_cross_t = LEti::Math::cross_product(vec_to_point, tangent_velocity);
-            const float tangent_mass_denom = rb->mass_inverse() +
-                                           LEti::Math::dot_product(r_cross_t, rb->inertia_tensor_inverse() * r_cross_t);
-
-            if (tangent_mass_denom > 0.0001f)
-            {
-                const float full_tangent_impulse = -tangent_speed / tangent_mass_denom;
-
-                const float max_tangent_impulse = fabsf(impulse_along_normal);
-                const float tangent_impulse = glm::clamp(full_tangent_impulse, -max_tangent_impulse, max_tangent_impulse);
-
-                total_impulse += tangent_velocity * tangent_impulse;
-            }
-        }
-    }
-
-    glm::vec3 velocity = rb->velocity() + (total_impulse * rb->mass_inverse());
-    glm::vec3 angular_velocity = rb->angular_velocity() + (rb->inertia_tensor_inverse() * LEti::Math::cross_product(vec_to_point, total_impulse));
-
-    rb->set_velocity(velocity);
-    rb->set_angular_velocity(angular_velocity);
-
-    float ke_after = M_calculate_kinetic_energy(rb->velocity(), rb->angular_velocity(), rb->mass(), rb->moment_of_inertia());
+    float impulse_multiplier = m_impulse_ratio_after_collision;
 
     if(ke_after > 0.0f)
     {
-        float ratio_sqrt = sqrtf(ke_before / ke_after);
-
-        rb->set_velocity( rb->velocity() * ratio_sqrt );
-        rb->set_angular_velocity( rb->angular_velocity() * ratio_sqrt );
+        float ratio = ke_before / ke_after;
+        if(ratio < 1.0f)
+            impulse_multiplier *= sqrtf(ratio) * 0.99f;
     }
 
-    m_default_collision_resolution.resolve(_id, _dt);
+    velocity *= impulse_multiplier;
+    angular_velocity *= impulse_multiplier;
+
+    float raw_velocity = LEti::Math::vector_length_squared(velocity);
+    float raw_angular_velocity = LEti::Math::vector_length_squared(angular_velocity);
+
+    if(raw_velocity < m_hard_damping_velocity_threshold)
+        velocity *= 0.0f;
+    else if(raw_velocity < m_min_damping_velocity)
+        velocity *= m_impulse_ratio_after_collision;
+
+    if(raw_angular_velocity < m_hard_damping_angular_velocity_threshold)
+        angular_velocity *= 0.0f;
+    else if(raw_angular_velocity < m_min_damping_angular_velocity)
+        angular_velocity *= m_impulse_ratio_after_collision;
+
+    rb->set_velocity( velocity );
+    rb->set_angular_velocity( angular_velocity );
 
     return true;
 }
