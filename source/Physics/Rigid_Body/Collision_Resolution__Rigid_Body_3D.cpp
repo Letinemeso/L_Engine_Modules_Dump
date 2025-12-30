@@ -5,19 +5,6 @@
 using namespace LMD;
 
 
-float Collision_Resolution__Rigid_Body_3D::M_calculate_kinetic_energy(const glm::vec3& _velocity, const glm::vec3& _angular_velocity, float _mass, float _moment_of_inertia) const
-{
-    float velocity = LEti::Math::vector_length(_velocity);
-
-    float angular_velocity_squared = LEti::Math::vector_length_squared(_angular_velocity);
-
-    float movemental = (_mass * velocity * velocity) * 0.5f;
-    float rotational = (_moment_of_inertia * angular_velocity_squared) / 2.0f;
-
-    return movemental + rotational;
-}
-
-
 bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_dynamic(const LPhys::Intersection_Data& _id, float _dt)
 {
     Physics_Module__Rigid_Body* pm1 = LV::cast_variable<Physics_Module__Rigid_Body>(_id.first);
@@ -28,9 +15,6 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_dynamic(const LPh
 
     if(!m_default_collision_resolution.resolve(_id, _dt))
         return false;
-
-    float ke_before = M_calculate_kinetic_energy(pm1->velocity(), pm1->angular_velocity(), pm1->mass(), pm1->moment_of_inertia())
-                      + M_calculate_kinetic_energy(pm2->velocity(), pm2->angular_velocity(), pm2->mass(), pm2->moment_of_inertia());
 
     glm::vec3 vec_to_point_1 = _id.point - pm1->center_of_mass();
     glm::vec3 vec_to_point_2 = _id.point - pm2->center_of_mass();
@@ -70,19 +54,6 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_dynamic(const LPh
     pm1->set_angular_velocity(new_angular_velocity_1);
     pm2->set_angular_velocity(new_angular_velocity_2);
 
-    float ke_after = M_calculate_kinetic_energy(pm1->velocity(), pm1->angular_velocity(), pm1->mass(), pm1->moment_of_inertia())
-                      + M_calculate_kinetic_energy(pm2->velocity(), pm2->angular_velocity(), pm2->mass(), pm2->moment_of_inertia());
-
-    if(!LEti::Math::floats_are_equal(ke_after, 0.0f) && !LEti::Math::floats_are_equal(ke_before, 0.0f))
-    {
-        float ratio_sqrt = sqrtf(ke_before / ke_after);
-
-        pm1->set_velocity(pm1->velocity() * ratio_sqrt);
-        pm1->set_angular_velocity(pm1->angular_velocity() * ratio_sqrt);
-        pm2->set_velocity(pm2->velocity() * ratio_sqrt);
-        pm2->set_angular_velocity(pm2->angular_velocity() * ratio_sqrt);
-    }
-
     return true;
 }
 
@@ -91,21 +62,11 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     LPhys::Physics_Module* dynamic_pm = _id.first->is_static() ? _id.second : _id.first;
     L_ASSERT(!dynamic_pm->is_static());
 
-    // auto print_vec = [](const glm::vec3& _vec)
-    // {
-    //     std::cout << _vec.x << " " << _vec.y << " " << _vec.z << std::endl;
-    // };
-
     Physics_Module__Rigid_Body* rb = LV::cast_variable<Physics_Module__Rigid_Body>(dynamic_pm);
     if(!rb)
         return false;
 
     m_default_collision_resolution.resolve(_id, _dt);
-
-    // print_vec(rb->velocity());
-    // print_vec(rb->angular_velocity());
-
-    float ke_before = M_calculate_kinetic_energy(rb->velocity(), rb->angular_velocity(), rb->mass(), rb->moment_of_inertia());
 
     glm::vec3 normal = _id.normal;
     if(dynamic_pm == _id.second)
@@ -133,26 +94,15 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
 
     glm::vec3 angular_impulse = LEti::Math::cross_product(radius_vector, impulse_magnitude * normal);
     glm::vec3 angular_velocity = rb->angular_velocity();
-    angular_velocity -= rb->inertia_tensor_inverse() * angular_impulse;
-
-    float ke_after = M_calculate_kinetic_energy(velocity, angular_velocity, rb->mass(), rb->moment_of_inertia());
+    angular_velocity += rb->inertia_tensor_inverse() * angular_impulse;
 
     float impulse_multiplier = m_impulse_ratio_after_collision * rb->restitution();
-
-    if(ke_after > 0.0f)
-    {
-        float ratio = ke_before / ke_after;
-        if(ratio < 1.0f)
-            impulse_multiplier *= sqrtf(ratio);
-    }
 
     velocity *= impulse_multiplier;
     angular_velocity *= impulse_multiplier;
 
-    M_apply_torque(rb, angular_velocity, _id.point, normal, _dt);
-
-    float raw_velocity = LEti::Math::vector_length_squared(velocity);
-    float raw_angular_velocity = LEti::Math::vector_length_squared(angular_velocity);
+    float raw_velocity = LEti::Math::vector_length(velocity);
+    float raw_angular_velocity = LEti::Math::vector_length(angular_velocity);
 
     if(raw_velocity < m_hard_damping_velocity_threshold)
         velocity *= 0.0f;
@@ -168,26 +118,6 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     rb->set_angular_velocity( angular_velocity );
 
     return true;
-}
-
-
-void Collision_Resolution__Rigid_Body_3D::M_apply_torque(Physics_Module__Rigid_Body* _rb, glm::vec3& _angular_velocity, const glm::vec3& _point_of_contact, const glm::vec3& _normal, float _dt) const
-{
-    glm::vec3 radius_vec = _point_of_contact - _rb->center_of_mass();
-    float radius_length = LEti::Math::vector_length(radius_vec);
-
-    glm::vec3 axis = LEti::Math::cross_product(radius_vec, _normal);
-    float axis_length = LEti::Math::vector_length(axis);
-    if(axis_length > 0.0f)
-        axis /= axis_length;
-
-    float balance = glm::clamp(axis_length / radius_length, 0.0f, 1.0f);
-    balance = sqrtf(balance);
-
-    constexpr float torque_strength = 10.0f;
-
-    float torque = balance * torque_strength * _dt;
-    _angular_velocity -= axis * torque;
 }
 
 

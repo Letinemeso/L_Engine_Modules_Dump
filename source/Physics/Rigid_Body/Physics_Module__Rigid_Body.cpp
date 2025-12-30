@@ -92,24 +92,27 @@ void Physics_Module__Rigid_Body::update(float _dt)
 
     m_center_of_mass_position += m_velocity * _dt;
 
-    glm::vec3 new_position = M_calculate_world_position();
-    transformation_data()->set_position(new_position);
+    float angle = LEti::Math::vector_length(m_angular_velocity);
+    if (angle > 0.0f)
+    {
+        glm::vec3 axis = m_angular_velocity / angle;
+        float half_angle = 0.5f * angle * _dt;
 
-    glm::quat rotation_quat = {
-        0.5f * m_angular_velocity.x * _dt,
-        0.5f * m_angular_velocity.y * _dt,
-        0.5f * m_angular_velocity.z * _dt,
-        0.0f
-    };
-    glm::quat current_quat = LEti::Math::calculate_rotation_quaternion(transformation_data()->rotation());
-    glm::quat new_rotation_quat = glm::normalize(current_quat + rotation_quat * current_quat);
+        glm::quat current_rotation_quat = LEti::Math::calculate_rotation_quaternion(transformation_data()->rotation());
+        glm::quat rotation_quat = glm::quat(glm::cos(half_angle), axis * glm::sin(half_angle));
 
-    glm::vec3 new_euler_angles = LEti::Math::calculate_angles(new_rotation_quat);
-    transformation_data()->set_rotation(new_euler_angles);
+        glm::quat new_rotation_quat = glm::normalize(rotation_quat * current_rotation_quat);
+        glm::vec3 new_euler_angles = LEti::Math::calculate_angles(new_rotation_quat);
+
+        transformation_data()->set_rotation( new_euler_angles );
+    }
 
     glm::mat3x3 rotation_matrix = transformation_data()->rotation_matrix();
     m_inertia_tensor = rotation_matrix * cast_physical_model()->inertia_tensor_raw() * glm::transpose(rotation_matrix);
     m_inertia_tensor_inverse = glm::inverse(m_inertia_tensor);
+
+    glm::vec3 new_position = M_calculate_world_position();
+    transformation_data()->set_position(new_position);
 
     Physics_Module__Mesh::update(_dt);
 }
