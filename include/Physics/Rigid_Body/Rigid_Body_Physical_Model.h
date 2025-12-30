@@ -10,8 +10,8 @@ namespace LMD
     private:
         float m_mass = 0.0f;
         float m_moment_of_inertia = 0.0f;
-        glm::mat3x3 m_inertia_tensor;
-        glm::mat3x3 m_inertia_tensor_inverse;
+
+        glm::mat3x3 m_inertia_tensor_raw;
 
         glm::vec3 m_raw_center_of_mass = {0.0f, 0.0f, 0.0f};
         glm::vec3 m_center_of_mass = {0.0f, 0.0f, 0.0f};
@@ -36,13 +36,12 @@ namespace LMD
 
     public:
         void set_mass(float _mass);
-        void recalculate_raw_center_of_mass();
+        void recalculate_raw_data();
 
     public:
         inline float mass() const { return m_mass; }
         inline float moment_of_inertia() const { return m_moment_of_inertia; }
-        inline const glm::mat3x3& inertia_tensor() const { return m_inertia_tensor; }
-        inline const glm::mat3x3& inertia_tensor_inverse() const { return m_inertia_tensor_inverse; }
+        inline const glm::mat3x3& inertia_tensor_raw() const { return m_inertia_tensor_raw; }
         inline const glm::vec3& center_of_mass() const { return m_center_of_mass; }
         inline const glm::vec3& raw_center_of_mass() const { return m_raw_center_of_mass; }
 

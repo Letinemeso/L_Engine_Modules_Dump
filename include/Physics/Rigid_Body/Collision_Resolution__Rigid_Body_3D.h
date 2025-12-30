@@ -22,6 +22,8 @@ namespace LMD
         float m_hard_damping_velocity_threshold = 0.0025f;
         float m_hard_damping_angular_velocity_threshold = 0.075f;
 
+        float m_balancing_torque = 0.3f;
+
     public:
         inline LPhys::Collision_Resolution__Physics_Module__Mesh& default_collision_resolution() { return m_default_collision_resolution; }
 
@@ -32,6 +34,8 @@ namespace LMD
 
         bool M_resolve_dynamic_vs_dynamic(const LPhys::Intersection_Data& _id, float _dt);
         bool M_resolve_dynamic_vs_static(const LPhys::Intersection_Data& _id, float _dt);
+
+        void M_apply_torque(Physics_Module__Rigid_Body* _rb, glm::vec3& _angular_velocity, const glm::vec3& _point_of_contact, const glm::vec3& _normal, float _dt) const;
 
 	public:
         bool resolve(const LPhys::Intersection_Data &_id, float _dt = 0.0f) override;

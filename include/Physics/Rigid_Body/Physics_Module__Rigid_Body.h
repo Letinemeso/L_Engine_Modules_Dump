@@ -21,12 +21,15 @@ namespace LMD
 
         glm::vec3 m_center_of_mass_position = {0.0f, 0.0f, 0.0f};
 
+        glm::mat3x3 m_inertia_tensor;
+        glm::mat3x3 m_inertia_tensor_inverse;
+
     private:
         LPhys::Physical_Model* M_create_physical_model() const override;
 
     public:
         void set_mass(float _mass);
-        void recalculate_raw_center_of_mass();
+        void recalculate_raw_data();
         void set_center_of_mass_position(const glm::vec3& _position);
 
         inline void set_restitution(float _value) { m_restitution = _value; }

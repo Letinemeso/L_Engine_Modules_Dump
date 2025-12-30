@@ -17,9 +17,9 @@ void Physics_Module__Rigid_Body::set_mass(float _mass)
     cast_physical_model()->set_mass(_mass);
 }
 
-void Physics_Module__Rigid_Body::recalculate_raw_center_of_mass()
+void Physics_Module__Rigid_Body::recalculate_raw_data()
 {
-    cast_physical_model()->recalculate_raw_center_of_mass();
+    cast_physical_model()->recalculate_raw_data();
 }
 
 void Physics_Module__Rigid_Body::set_center_of_mass_position(const glm::vec3& _position)
@@ -60,12 +60,12 @@ float Physics_Module__Rigid_Body::moment_of_inertia_inverse() const
 
 const glm::mat3x3& Physics_Module__Rigid_Body::inertia_tensor() const
 {
-    return cast_physical_model()->inertia_tensor();
+    return m_inertia_tensor;
 }
 
 const glm::mat3x3& Physics_Module__Rigid_Body::inertia_tensor_inverse() const
 {
-    return cast_physical_model()->inertia_tensor_inverse();
+    return m_inertia_tensor_inverse;
 }
 
 const glm::vec3& Physics_Module__Rigid_Body::center_of_mass() const
@@ -106,6 +106,10 @@ void Physics_Module__Rigid_Body::update(float _dt)
 
     glm::vec3 new_euler_angles = LEti::Math::calculate_angles(new_rotation_quat);
     transformation_data()->set_rotation(new_euler_angles);
+
+    glm::mat3x3 rotation_matrix = transformation_data()->rotation_matrix();
+    m_inertia_tensor = rotation_matrix * cast_physical_model()->inertia_tensor_raw() * glm::transpose(rotation_matrix);
+    m_inertia_tensor_inverse = glm::inverse(m_inertia_tensor);
 
     Physics_Module__Mesh::update(_dt);
 }
@@ -170,5 +174,5 @@ BUILDER_STUB_INITIALIZATION_FUNC(Physics_Module_Stub__Rigid_Body)
     product->set_mass(mass);
     product->set_restitution(restitution);
 
-    product->recalculate_raw_center_of_mass();
+    product->recalculate_raw_data();
 }

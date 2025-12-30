@@ -91,11 +91,19 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     LPhys::Physics_Module* dynamic_pm = _id.first->is_static() ? _id.second : _id.first;
     L_ASSERT(!dynamic_pm->is_static());
 
+    // auto print_vec = [](const glm::vec3& _vec)
+    // {
+    //     std::cout << _vec.x << " " << _vec.y << " " << _vec.z << std::endl;
+    // };
+
     Physics_Module__Rigid_Body* rb = LV::cast_variable<Physics_Module__Rigid_Body>(dynamic_pm);
     if(!rb)
         return false;
 
-    // m_default_collision_resolution.resolve(_id, _dt);
+    m_default_collision_resolution.resolve(_id, _dt);
+
+    // print_vec(rb->velocity());
+    // print_vec(rb->angular_velocity());
 
     float ke_before = M_calculate_kinetic_energy(rb->velocity(), rb->angular_velocity(), rb->mass(), rb->moment_of_inertia());
 
@@ -129,17 +137,19 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
 
     float ke_after = M_calculate_kinetic_energy(velocity, angular_velocity, rb->mass(), rb->moment_of_inertia());
 
-    float impulse_multiplier = m_impulse_ratio_after_collision;
+    float impulse_multiplier = m_impulse_ratio_after_collision * rb->restitution();
 
     if(ke_after > 0.0f)
     {
         float ratio = ke_before / ke_after;
         if(ratio < 1.0f)
-            impulse_multiplier *= sqrtf(ratio) * 0.99f;
+            impulse_multiplier *= sqrtf(ratio);
     }
 
     velocity *= impulse_multiplier;
     angular_velocity *= impulse_multiplier;
+
+    M_apply_torque(rb, angular_velocity, _id.point, normal, _dt);
 
     float raw_velocity = LEti::Math::vector_length_squared(velocity);
     float raw_angular_velocity = LEti::Math::vector_length_squared(angular_velocity);
@@ -158,6 +168,26 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     rb->set_angular_velocity( angular_velocity );
 
     return true;
+}
+
+
+void Collision_Resolution__Rigid_Body_3D::M_apply_torque(Physics_Module__Rigid_Body* _rb, glm::vec3& _angular_velocity, const glm::vec3& _point_of_contact, const glm::vec3& _normal, float _dt) const
+{
+    glm::vec3 radius_vec = _point_of_contact - _rb->center_of_mass();
+    float radius_length = LEti::Math::vector_length(radius_vec);
+
+    glm::vec3 axis = LEti::Math::cross_product(radius_vec, _normal);
+    float axis_length = LEti::Math::vector_length(axis);
+    if(axis_length > 0.0f)
+        axis /= axis_length;
+
+    float balance = glm::clamp(axis_length / radius_length, 0.0f, 1.0f);
+    balance = sqrtf(balance);
+
+    constexpr float torque_strength = 10.0f;
+
+    float torque = balance * torque_strength * _dt;
+    _angular_velocity -= axis * torque;
 }
 
 

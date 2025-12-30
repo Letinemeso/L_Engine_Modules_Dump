@@ -158,7 +158,7 @@ glm::mat3x3 Rigid_Body_Physical_Model::M_calculate_inertia_tensor(const LPhys::P
             if(!polygon.segment_can_collide(i))
                 continue;
 
-            glm::vec3 point_wo_offset = polygon[i] - center_of_mass();
+            glm::vec3 point_wo_offset = polygon[i] - m_raw_center_of_mass;
             glm::vec3 point_squared = point_wo_offset * point_wo_offset;
 
             result[0][0] += point_mass * (point_squared.y * point_squared.z);
@@ -189,8 +189,6 @@ void Rigid_Body_Physical_Model::update(const glm::mat4x4 &_matrix)
 
     m_center_of_mass = M_calculate_center_of_mass(*get_polygons(), polygons_areas, total_area);
     m_moment_of_inertia = M_calculate_moment_of_inertia(*get_polygons(), polygons_areas, total_area);
-    m_inertia_tensor = M_calculate_inertia_tensor(*get_polygons(), polygons_areas, total_area);
-    m_inertia_tensor_inverse = glm::inverse((m_inertia_tensor));
 }
 
 
@@ -199,7 +197,7 @@ void Rigid_Body_Physical_Model::set_mass(float _mass)
     m_mass = _mass;
 }
 
-void Rigid_Body_Physical_Model::recalculate_raw_center_of_mass()
+void Rigid_Body_Physical_Model::recalculate_raw_data()
 {
     constexpr glm::mat4x4 Default_Matrix = {
         1.0f, 0.0f, 0.0f, 0.0f,
@@ -215,6 +213,7 @@ void Rigid_Body_Physical_Model::recalculate_raw_center_of_mass()
     float total_area = M_calculate_total_area(polygons_areas);
 
     m_raw_center_of_mass = M_calculate_center_of_mass(*imprint->get_polygons(), polygons_areas, total_area);
+    m_inertia_tensor_raw = M_calculate_inertia_tensor(*imprint->get_polygons(), polygons_areas, total_area);
 
     delete imprint;
 }
