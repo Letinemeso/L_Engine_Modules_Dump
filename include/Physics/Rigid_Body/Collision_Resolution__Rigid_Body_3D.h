@@ -14,24 +14,26 @@ namespace LMD
     private:
         LPhys::Collision_Resolution__Physics_Module__Mesh m_default_collision_resolution;
 
-        float m_impulse_ratio_after_collision = 0.75f;
+        float m_soft_damping_multiplier = 0.75f;
 
-        float m_min_damping_velocity = 0.1f;
-        float m_min_damping_velocity_squared = m_min_damping_velocity * m_min_damping_velocity;
-        float m_min_damping_angular_velocity = 1.5f;
-        float m_min_damping_angular_velocity_squared = m_min_damping_angular_velocity * m_min_damping_angular_velocity;
+        float m_soft_damping_min_velocity_squared = 0.01f;
+        float m_soft_damping_min_angular_velocity_squared = 2.25f;
 
-        float m_hard_damping_velocity_threshold = 0.01f;
-        float m_hard_damping_velocity_threshold_squared = m_hard_damping_velocity_threshold * m_hard_damping_velocity_threshold;
-        float m_hard_damping_angular_velocity_threshold = 0.5f;
-        float m_hard_damping_angular_velocity_threshold_squared = m_hard_damping_angular_velocity_threshold * m_hard_damping_angular_velocity_threshold;
+        float m_hard_damping_velocity_threshold_squared = 0.0001f;
+        float m_hard_damping_angular_velocity_threshold_squared = 0.25f;
 
         float m_balancing_torque = 0.3f;
 
     public:
         inline LPhys::Collision_Resolution__Physics_Module__Mesh& default_collision_resolution() { return m_default_collision_resolution; }
 
-        inline void set_impulse_ratio_after_collision(float _value) { m_impulse_ratio_after_collision = _value; }
+        inline void set_soft_damping_multiplier(float _value) { m_soft_damping_multiplier = _value; }
+
+        inline void set_soft_damping_min_velocity(float _value) { m_soft_damping_min_velocity_squared = _value * _value; }
+        inline void set_soft_damping_min_angular_velocity(float _value) { m_soft_damping_min_angular_velocity_squared = _value * _value; }
+
+        inline void set_hard_damping_velocity_threshold(float _value) { m_hard_damping_velocity_threshold_squared = _value * _value; }
+        inline void set_hard_damping_angular_velocity_threshold(float _value) { m_hard_damping_angular_velocity_threshold_squared = _value * _value; }
 
     private:
         bool M_resolve_dynamic_vs_dynamic(const LPhys::Intersection_Data& _id, float _dt);
