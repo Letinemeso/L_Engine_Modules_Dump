@@ -98,7 +98,7 @@ void Physics_Module__Rigid_Body::update(float _dt)
         glm::vec3 axis = m_angular_velocity / angle;
         float half_angle = 0.5f * angle * _dt;
 
-        glm::quat current_rotation_quat = LEti::Math::calculate_rotation_quaternion(transformation_data()->rotation());
+        const glm::quat& current_rotation_quat = transformation_data()->rotation();
         glm::quat rotation_quat = glm::quat(glm::cos(half_angle), axis * glm::sin(half_angle));
 
         glm::quat new_rotation_quat = glm::normalize(rotation_quat * current_rotation_quat);
@@ -142,7 +142,7 @@ void Physics_Module__Rigid_Body::apply_data_after_collisions()
             largest_movement_vec[i] = movement_vec[i];
         }
 
-        average_rotation += transformation.rotation();
+        average_rotation += LEti::Math::calculate_angles(transformation.rotation());
         average_scale += transformation.scale();
     }
 
