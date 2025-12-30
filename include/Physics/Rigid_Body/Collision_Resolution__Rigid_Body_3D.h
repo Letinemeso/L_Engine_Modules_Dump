@@ -39,6 +39,8 @@ namespace LMD
         bool M_resolve_dynamic_vs_dynamic(const LPhys::Intersection_Data& _id, float _dt);
         bool M_resolve_dynamic_vs_static(const LPhys::Intersection_Data& _id, float _dt);
 
+        void M_damp_velocities(glm::vec3& _velocity, glm::vec3& _angular_velocity) const;
+
 	public:
         bool resolve(const LPhys::Intersection_Data &_id, float _dt = 0.0f) override;
 

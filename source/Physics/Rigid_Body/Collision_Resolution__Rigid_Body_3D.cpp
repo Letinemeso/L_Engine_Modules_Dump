@@ -96,28 +96,34 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     glm::vec3 angular_velocity = rb->angular_velocity();
     angular_velocity += rb->inertia_tensor_inverse() * angular_impulse;
 
-    float impulse_multiplier = m_soft_damping_multiplier * rb->restitution();
+    float impulse_multiplier = rb->restitution();
 
     velocity *= impulse_multiplier;
     angular_velocity *= impulse_multiplier;
 
-    float raw_velocity_squared = LEti::Math::vector_length_squared(velocity);
-    float raw_angular_velocity_squared = LEti::Math::vector_length_squared(angular_velocity);
-
-    if(raw_velocity_squared < m_hard_damping_velocity_threshold_squared)
-        velocity *= 0.0f;
-    else if(raw_velocity_squared < m_soft_damping_min_velocity_squared)
-        velocity *= m_soft_damping_multiplier;
-
-    if(raw_angular_velocity_squared < m_hard_damping_angular_velocity_threshold_squared)
-        angular_velocity *= 0.0f;
-    else if(raw_angular_velocity_squared < m_soft_damping_min_angular_velocity_squared)
-        angular_velocity *= m_soft_damping_multiplier;
+    M_damp_velocities(velocity, angular_velocity);
 
     rb->set_velocity( velocity );
     rb->set_angular_velocity( angular_velocity );
 
     return true;
+}
+
+
+void Collision_Resolution__Rigid_Body_3D::M_damp_velocities(glm::vec3& _velocity, glm::vec3& _angular_velocity) const
+{
+    float raw_velocity_squared = LEti::Math::vector_length_squared(_velocity);
+    float raw_angular_velocity_squared = LEti::Math::vector_length_squared(_angular_velocity);
+
+    if(raw_velocity_squared < m_hard_damping_velocity_threshold_squared)
+        _velocity *= 0.0f;
+    else if(raw_velocity_squared < m_soft_damping_min_velocity_squared)
+        _velocity *= m_soft_damping_multiplier;
+
+    if(raw_angular_velocity_squared < m_hard_damping_angular_velocity_threshold_squared)
+        _angular_velocity *= 0.0f;
+    else if(raw_angular_velocity_squared < m_soft_damping_min_angular_velocity_squared)
+        _angular_velocity *= m_soft_damping_multiplier;
 }
 
 
