@@ -22,14 +22,6 @@ void Physics_Module__Rigid_Body::recalculate_raw_data()
     cast_physical_model()->recalculate_raw_data();
 }
 
-void Physics_Module__Rigid_Body::set_center_of_mass_position(const glm::vec3& _position)
-{
-    m_center_of_mass_position = _position;
-
-    glm::vec3 new_position = M_calculate_world_position();
-    transformation_data()->set_position(new_position);
-}
-
 
 
 float Physics_Module__Rigid_Body::mass() const
@@ -75,12 +67,21 @@ const glm::vec3& Physics_Module__Rigid_Body::center_of_mass() const
 
 
 
-glm::vec3 Physics_Module__Rigid_Body::M_calculate_world_position() const
+glm::vec3 Physics_Module__Rigid_Body::M_calculate_world_position(const glm::vec3& _center_of_mass) const
 {
     glm::vec4 offset = {cast_physical_model()->raw_center_of_mass(), 1.0f};
     offset = (transformation_data()->rotation_matrix() * transformation_data()->scale_matrix()) * offset;
 
-    glm::vec3 result = m_center_of_mass_position - glm::vec3(offset);
+    glm::vec3 result = _center_of_mass - glm::vec3(offset);
+    return result;
+}
+
+glm::vec3 Physics_Module__Rigid_Body::M_calculate_center_of_mass() const
+{
+    glm::vec4 offset = {cast_physical_model()->raw_center_of_mass(), 1.0f};
+    offset = (transformation_data()->rotation_matrix() * transformation_data()->scale_matrix()) * offset;
+
+    glm::vec3 result = transformation_data()->position() + glm::vec3(offset);
     return result;
 }
 
@@ -90,7 +91,8 @@ void Physics_Module__Rigid_Body::update(float _dt)
 {
     L_ASSERT(get_physical_model() && get_physical_model_prev_state() && transformation_data());
 
-    m_center_of_mass_position += m_velocity * _dt;
+    glm::vec3 center_of_mass = M_calculate_center_of_mass();
+    center_of_mass += m_velocity * _dt;
 
     float angle = LEti::Math::vector_length(m_angular_velocity);
     if (angle > 0.0f)
@@ -111,56 +113,10 @@ void Physics_Module__Rigid_Body::update(float _dt)
     m_inertia_tensor = rotation_matrix * cast_physical_model()->inertia_tensor_raw() * glm::transpose(rotation_matrix);
     m_inertia_tensor_inverse = glm::inverse(m_inertia_tensor);
 
-    glm::vec3 new_position = M_calculate_world_position();
+    glm::vec3 new_position = M_calculate_world_position(center_of_mass);
     transformation_data()->set_position(new_position);
 
     Physics_Module__Mesh::update(_dt);
-}
-
-
-void Physics_Module__Rigid_Body::apply_data_after_collisions()
-{
-    if(m_transformations_after_collisions.size() == 0)
-        return;
-
-    glm::vec3 average_rotation(0.0f, 0.0f, 0.0f);
-    glm::vec3 average_scale(0.0f, 0.0f, 0.0f);
-
-    glm::vec3 largest_movement_vec(0.0f, 0.0f, 0.0f);
-
-    for(Transformations_List::Iterator it = m_transformations_after_collisions.begin(); !it.end_reached(); ++it)
-    {
-        const LEti::Transformation_Data& transformation = *it;
-
-        glm::vec3 movement_vec = transformation.position() - transformation_data()->position();
-
-        for(unsigned int i = 0; i < 3; ++i)
-        {
-            if(fabs(largest_movement_vec[i]) >= fabs(movement_vec[i]))
-                continue;
-
-            largest_movement_vec[i] = movement_vec[i];
-        }
-
-        average_rotation += LEti::Math::calculate_angles(transformation.rotation());
-        average_scale += transformation.scale();
-    }
-
-    float multiplier = 1.0f / (float)(m_transformations_after_collisions.size());
-
-    average_rotation *= multiplier;
-    average_scale *= multiplier;
-
-    m_center_of_mass_position += largest_movement_vec;
-    glm::vec3 new_position = M_calculate_world_position();
-    transformation_data()->set_position(new_position);
-
-    transformation_data()->set_rotation(average_rotation);
-    transformation_data()->set_scale(average_scale);
-
-    m_transformations_after_collisions.clear();
-
-    Physics_Module__Mesh::update(0.0f);
 }
 
 

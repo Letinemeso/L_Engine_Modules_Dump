@@ -187,7 +187,7 @@ void Rigid_Body_Physical_Model::update(const glm::mat4x4 &_matrix)
     LDS::Vector<float> polygons_areas = M_calculate_polygons_areas(*get_polygons());
     float total_area = M_calculate_total_area(polygons_areas);
 
-    m_center_of_mass = M_calculate_center_of_mass(*get_polygons(), polygons_areas, total_area);
+    m_center_of_mass = _matrix * glm::vec4(m_raw_center_of_mass, 1.0f);
     m_moment_of_inertia = M_calculate_moment_of_inertia(*get_polygons(), polygons_areas, total_area);
 }
 

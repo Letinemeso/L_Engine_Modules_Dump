@@ -19,8 +19,6 @@ namespace LMD
         glm::vec3 m_velocity{0.0f, 0.0f, 0.0f};
         glm::vec3 m_angular_velocity = {0.0f, 0.0f, 0.0f};
 
-        glm::vec3 m_center_of_mass_position = {0.0f, 0.0f, 0.0f};
-
         glm::mat3x3 m_inertia_tensor;
         glm::mat3x3 m_inertia_tensor_inverse;
 
@@ -30,7 +28,6 @@ namespace LMD
     public:
         void set_mass(float _mass);
         void recalculate_raw_data();
-        void set_center_of_mass_position(const glm::vec3& _position);
 
         inline void set_restitution(float _value) { m_restitution = _value; }
 
@@ -58,12 +55,11 @@ namespace LMD
         inline const glm::vec3& angular_velocity() const { return m_angular_velocity; }
 
     private:
-        glm::vec3 M_calculate_world_position() const;
+        glm::vec3 M_calculate_world_position(const glm::vec3& _center_of_mass) const;
+        glm::vec3 M_calculate_center_of_mass() const;
 
     public:
         void update(float _dt) override;
-
-        void apply_data_after_collisions() override;
 
 	};
 
