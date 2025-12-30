@@ -111,6 +111,7 @@ void Physics_Module__Rigid_Body::update(float _dt)
 
     glm::mat3x3 rotation_matrix = transformation_data()->rotation_matrix();
     m_inertia_tensor = rotation_matrix * cast_physical_model()->inertia_tensor_raw() * glm::transpose(rotation_matrix);
+    m_inertia_tensor *= m_moment_of_inertia_scale;
     m_inertia_tensor_inverse = glm::inverse(m_inertia_tensor);
 
     glm::vec3 new_position = M_calculate_world_position(center_of_mass);
@@ -132,6 +133,7 @@ BUILDER_STUB_INITIALIZATION_FUNC(Physics_Module_Stub__Rigid_Body)
 
     product->set_mass(mass);
     product->set_restitution(restitution);
+    product->set_moment_of_inertia_scale(moment_of_inertia_scale);
 
     product->recalculate_raw_data();
 }
