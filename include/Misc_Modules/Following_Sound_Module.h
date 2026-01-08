@@ -15,6 +15,7 @@ namespace LMD
 
     private:
         LSound::Sound* m_sound = nullptr;
+        bool m_started_sound = false;
 
     public:
         Following_Sound_Module();

@@ -19,8 +19,11 @@ void Following_Sound_Module::update(float _dt)
 {
     L_ASSERT(m_sound);
 
-    if(!m_sound->is_playing())
+    if(!m_started_sound)
+    {
         m_sound->play();
+        m_started_sound = true;
+    }
 
     m_sound->set_position(transformation_data()->position());
 }
