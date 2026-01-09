@@ -2,7 +2,7 @@
 
 #include <Stuff/Math_Stuff.h>
 
-#include <Resources_Manager.h>
+#include <Variable_Loader.h>
 
 #include <Resources/Font.h>
 #include <Resources/Picture.h>
@@ -90,7 +90,7 @@ namespace LMD
         FIELDS_END
 
     public:
-        const LEti::Resources_Manager* resources_manager = nullptr;
+        const LV::Variable_Loader* resources_manager = nullptr;
 
     public:
         std::string font_name;

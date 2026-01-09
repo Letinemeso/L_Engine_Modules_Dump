@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Data_Provider.h>
-#include <Resources_Manager.h>
+#include <Variable_Loader.h>
 
 #include <Resources/Model.h>
 
@@ -34,14 +34,14 @@ namespace LMD
         std::string m_model_name;
         std::string m_data_extraction_type_str;
 
-        const LEti::Resources_Manager* m_resources_manager = nullptr;
+        const LV::Variable_Loader* m_resources_manager = nullptr;
 
     private:
         const Model* m_model = nullptr;
         Extraction_Type m_extraction_type = Extraction_Type::Unknown;
 
     public:
-        inline void inject_resources_manager(const LEti::Resources_Manager* _ptr) { m_resources_manager = _ptr; }
+        inline void inject_resources_manager(const LV::Variable_Loader* _ptr) { m_resources_manager = _ptr; }
 
     public:
         const LDS::Vector<float>& get_data() const override;

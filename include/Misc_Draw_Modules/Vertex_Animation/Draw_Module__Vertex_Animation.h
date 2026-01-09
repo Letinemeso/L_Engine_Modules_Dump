@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Resources_Manager.h>
+#include <Variable_Loader.h>
 
 #include <Draw_Modules/Draw_Module.h>
 
@@ -72,7 +72,7 @@ namespace LMD
         FIELDS_END
 
     public:
-        const LEti::Resources_Manager* resources_manager = nullptr;
+        const LV::Variable_Loader* resources_manager = nullptr;
 
     public:
         std::string animation_name;

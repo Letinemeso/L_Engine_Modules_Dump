@@ -40,7 +40,7 @@ using namespace LMD;
 
 
 void LMD::register_types(LV::Object_Constructor& _object_constructor,
-                         const LST::Function<const LEti::Resources_Manager*()>& _resources_manager_getter,
+                         const LST::Function<const LV::Variable_Loader*()>& _resources_manager_getter,
                          LR::Renderer& _renderer,
                          LR::Draw_Order_Controller* _draw_order_controller)
 {

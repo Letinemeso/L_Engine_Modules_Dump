@@ -2,7 +2,7 @@
 
 #include <Stuff/Timer.h>
 
-#include <Resources_Manager.h>
+#include <Variable_Loader.h>
 
 #include <Components/Graphics_Component__Default.h>
 #include <Texture/Texture__Default.h>
@@ -82,7 +82,7 @@ namespace LMD
         CHILDS_END
 
     public:
-        const LEti::Resources_Manager* resources_manager = nullptr;
+        const LV::Variable_Loader* resources_manager = nullptr;
 
     public:
         std::string animation_name;
