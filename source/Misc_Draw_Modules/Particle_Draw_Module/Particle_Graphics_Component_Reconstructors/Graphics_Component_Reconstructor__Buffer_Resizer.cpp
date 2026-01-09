@@ -1,6 +1,6 @@
 #include <Misc_Draw_Modules/Particle_Draw_Module/Particle_Graphics_Component_Reconstructors/Graphics_Component_Reconstructor__Buffer_Resizer.h>
 
-#include <Math_Stuff.h>
+#include <Stuff/Math_Stuff.h>
 
 #include <Components/Graphics_Component__Default.h>
 #include <Draw_Modules/Draw_Module.h>

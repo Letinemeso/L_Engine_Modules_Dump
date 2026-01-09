@@ -7,7 +7,7 @@ using namespace LMD;
 
 float Collision_Resolution__Rigid_Body_2D::M_calculate_kinetic_energy(const glm::vec3& _velocity, float _angular_velocity, float _mass, float _moment_of_inertia) const
 {
-    float velocity = LEti::Math::vector_length(_velocity);
+    float velocity = LST::Math::vector_length(_velocity);
 
     float movemental = (_mass * velocity * velocity) / 2.0f;
     float rotational = (_moment_of_inertia * _angular_velocity * _angular_velocity) / 2.0f;
@@ -57,10 +57,10 @@ bool Collision_Resolution__Rigid_Body_2D::resolve(const LPhys::Intersection_Data
 
     glm::vec3 relativeVelocity = (B_velocity + alvB) - (A_velocity + alvA);
 
-    float contactVelocityMag = LEti::Math::dot_product(relativeVelocity, _id.normal);
+    float contactVelocityMag = LST::Math::dot_product(relativeVelocity, _id.normal);
 
-    float raPerpDotN = LEti::Math::dot_product(raPerp, _id.normal);
-    float rbPerpDotN = LEti::Math::dot_product(rbPerp, _id.normal);
+    float raPerpDotN = LST::Math::dot_product(raPerp, _id.normal);
+    float rbPerpDotN = LST::Math::dot_product(rbPerp, _id.normal);
 
     float denom = 1 / pm1->mass() + 1 / pm2->mass() +
             (raPerpDotN * raPerpDotN) / A_moment_of_inertia +
@@ -71,8 +71,8 @@ bool Collision_Resolution__Rigid_Body_2D::resolve(const LPhys::Intersection_Data
 
     glm::vec3 impulse = j * _id.normal;
 
-    float avA = LEti::Math::cross_product(ra, impulse).z / A_moment_of_inertia;
-    float avB = LEti::Math::cross_product(rb, impulse).z / B_moment_of_inertia;
+    float avA = LST::Math::cross_product(ra, impulse).z / A_moment_of_inertia;
+    float avB = LST::Math::cross_product(rb, impulse).z / B_moment_of_inertia;
 
     Physics_Module__Rigid_Body* heavier_pm = pm1->mass() > pm2->mass() ? pm1 : pm2;
     Physics_Module__Rigid_Body* lighter_pm = heavier_pm == pm1 ? pm2 : pm1;
@@ -97,7 +97,7 @@ bool Collision_Resolution__Rigid_Body_2D::resolve(const LPhys::Intersection_Data
     //  attempt to fix increase of models' velocities after some collisions. and it seems to work fine!
     float ke_after = M_calculate_kinetic_energy(pm1->velocity(), pm1->angular_velocity().z, pm1->mass(), A_moment_of_inertia) + M_calculate_kinetic_energy(pm2->velocity(), pm2->angular_velocity().z, pm2->mass(), B_moment_of_inertia);
 
-    if(!LEti::Math::floats_are_equal(ke_after, 0.0f) && !LEti::Math::floats_are_equal(ke_before, 0.0f))
+    if(!LST::Math::floats_are_equal(ke_after, 0.0f) && !LST::Math::floats_are_equal(ke_before, 0.0f))
     {
         float ratio_sqrt = sqrtf(ke_before / ke_after);
 

@@ -1,6 +1,6 @@
 #include <Misc_Modules/Directional_Movement_Module.h>
 
-#include <Math_Stuff.h>
+#include <Stuff/Math_Stuff.h>
 
 using namespace LMD;
 
@@ -8,7 +8,7 @@ using namespace LMD;
 void Directional_Movement_Module::set_direction(const glm::vec3& _value)
 {
     m_direction = _value;
-    LEti::Math::shrink_vector_to_1(m_direction);
+    LST::Math::shrink_vector_to_1(m_direction);
 
     m_stride_per_second = m_direction * m_velocity;
 }

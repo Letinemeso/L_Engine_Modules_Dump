@@ -1,6 +1,6 @@
 #include <Physics/Rigid_Body/Physics_Module__Rigid_Body.h>
 
-#include <Math_Stuff.h>
+#include <Stuff/Math_Stuff.h>
 
 using namespace LMD;
 
@@ -94,7 +94,7 @@ void Physics_Module__Rigid_Body::update(float _dt)
     glm::vec3 center_of_mass = M_calculate_center_of_mass();
     center_of_mass += m_velocity * _dt;
 
-    float angle = LEti::Math::vector_length(m_angular_velocity);
+    float angle = LST::Math::vector_length(m_angular_velocity);
     if (angle > 0.0f)
     {
         glm::vec3 axis = m_angular_velocity / angle;
@@ -104,7 +104,7 @@ void Physics_Module__Rigid_Body::update(float _dt)
         glm::quat rotation_quat = glm::quat(glm::cos(half_angle), axis * glm::sin(half_angle));
 
         glm::quat new_rotation_quat = glm::normalize(rotation_quat * current_rotation_quat);
-        glm::vec3 new_euler_angles = LEti::Math::calculate_angles(new_rotation_quat);
+        glm::vec3 new_euler_angles = LST::Math::calculate_angles(new_rotation_quat);
 
         transformation_data()->set_rotation( new_euler_angles );
     }

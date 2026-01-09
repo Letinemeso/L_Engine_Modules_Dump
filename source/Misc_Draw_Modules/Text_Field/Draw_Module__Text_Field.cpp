@@ -9,8 +9,8 @@ bool Text_Field_Settings::operator==(const Text_Field_Settings &_other) const
             picture == _other.picture &&
             horizontal_alignment == _other.horizontal_alignment &&
             vertical_alignment == _other.vertical_alignment &&
-            LEti::Math::vecs_are_equal(raw_offset, _other.raw_offset) &&
-            LEti::Math::floats_are_equal(raw_size, _other.raw_size) &&
+            LST::Math::vecs_are_equal(raw_offset, _other.raw_offset) &&
+            LST::Math::floats_are_equal(raw_size, _other.raw_size) &&
             text == _other.text;
 }
 

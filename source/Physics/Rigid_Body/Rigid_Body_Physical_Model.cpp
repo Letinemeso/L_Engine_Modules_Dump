@@ -1,6 +1,6 @@
 #include <Physics/Rigid_Body/Rigid_Body_Physical_Model.h>
 
-#include <Math_Stuff.h>
+#include <Stuff/Math_Stuff.h>
 
 using namespace LMD;
 
@@ -30,9 +30,9 @@ float Rigid_Body_Physical_Model::M_calculate_polygon_area(const LPhys::Polygon& 
     glm::vec3 edge_0 = _polygon[1] - _polygon[0];
     glm::vec3 edge_1 = _polygon[2] - _polygon[0];
 
-    glm::vec3 cross = LEti::Math::cross_product(edge_0, edge_1);
+    glm::vec3 cross = LST::Math::cross_product(edge_0, edge_1);
 
-    return LEti::Math::vector_length(cross) * 0.5f;
+    return LST::Math::vector_length(cross) * 0.5f;
 }
 
 LDS::Vector<float> Rigid_Body_Physical_Model::M_calculate_polygons_areas(const LPhys::Polygon_Holder_Base& _polygons) const
@@ -128,7 +128,7 @@ float Rigid_Body_Physical_Model::M_calculate_moment_of_inertia(const LPhys::Poly
             if(!polygon.segment_can_collide(i))
                 continue;
 
-            float distance_squared = LEti::Math::vector_length_squared(polygon[i] - center_of_mass());
+            float distance_squared = LST::Math::vector_length_squared(polygon[i] - center_of_mass());
             result += distance_squared * point_mass;
         }
     }

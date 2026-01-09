@@ -1,6 +1,6 @@
 #include <Misc_Modules/Follow_Trajectory_Module.h>
 
-#include <Math_Stuff.h>
+#include <Stuff/Math_Stuff.h>
 
 using namespace LMD;
 
@@ -45,7 +45,7 @@ void Follow_Trajectory_Module::setup_trajectory(const LDS::List<glm::vec3>& _poi
         if(next_it.end_reached())
             break;
 
-        float distance = LEti::Math::vector_length(*next_it - *it);
+        float distance = LST::Math::vector_length(*next_it - *it);
         time_offset += distance / m_speed;
 
         m_trajectory.add_frame(time_offset, *next_it);
@@ -55,7 +55,7 @@ void Follow_Trajectory_Module::setup_trajectory(const LDS::List<glm::vec3>& _poi
 
     if(m_should_run_in_loop)
     {
-        float distance = LEti::Math::vector_length(*it - first_point);
+        float distance = LST::Math::vector_length(*it - first_point);
         time_offset += distance / m_speed;
         m_trajectory.add_frame(time_offset, first_point);
     }

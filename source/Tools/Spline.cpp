@@ -1,6 +1,6 @@
 #include <Tools/Spline.h>
 
-#include <Math_Stuff.h>
+#include <Stuff/Math_Stuff.h>
 
 using namespace LMD;
 
@@ -82,7 +82,7 @@ Spline::Points_List Spline::interpolate() const
 
         glm::vec3 current_segment = p2 - p1;
 
-        float segment_length = LEti::Math::vector_length(current_segment);
+        float segment_length = LST::Math::vector_length(current_segment);
         unsigned int points_amount = (unsigned int)(segment_length / m_interpolation_step_length);
         if(points_amount == 0)
             points_amount = 1;
