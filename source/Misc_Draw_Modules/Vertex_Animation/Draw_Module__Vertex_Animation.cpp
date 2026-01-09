@@ -118,7 +118,7 @@ BUILDER_STUB_INITIALIZATION_FUNC(Draw_Module_Stub__Vertex_Animation)
     L_ASSERT(resources_manager);
     L_ASSERT(animation_name.size() > 0);
 
-    const Vertex_Animation* animation = resources_manager->get_resource<Vertex_Animation>(animation_name);
+    const Vertex_Animation* animation = resources_manager->get_variable<Vertex_Animation>(animation_name);
 
     product->set_frames_amount(animation->frames_amount());
     product->set_vertices_per_frame(animation->vertices_per_frame());

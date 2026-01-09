@@ -131,7 +131,7 @@ BUILDER_STUB_INITIALIZATION_FUNC(Graphics_Component_Stub__Animation)
     BUILDER_STUB_PARENT_INITIALIZATION;
     BUILDER_STUB_CAST_PRODUCT;
 
-    const Animation* animation = resources_manager->get_resource<Animation>(animation_name);
+    const Animation* animation = resources_manager->get_variable<Animation>(animation_name);
 
     Graphics_Component__Animation::Frame_Textures textures(animation->frames_amount(), nullptr);
     for(unsigned int i = 0; i < animation->frames_amount(); ++i)

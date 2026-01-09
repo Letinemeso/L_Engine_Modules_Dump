@@ -62,8 +62,8 @@ void Draw_Module_Stub__Text_Field::M_init_constructed_product(LV::Variable_Base 
     Draw_Module__Text_Field* product = (Draw_Module__Text_Field*)_product;
 
     Text_Field_Settings& tfs = product->settings();
-    tfs.font = resources_manager->get_resource<LR::Font>(font_name);
-    tfs.picture = resources_manager->get_resource<LR::Picture>(picture_name);
+    tfs.font = resources_manager->get_variable<LR::Font>(font_name);
+    tfs.picture = resources_manager->get_variable<LR::Picture>(picture_name);
     tfs.text = text;
     tfs.raw_size_multiplier = raw_size_multiplier;
     tfs.raw_size = raw_size;

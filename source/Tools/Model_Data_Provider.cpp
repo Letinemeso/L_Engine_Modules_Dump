@@ -8,7 +8,7 @@ ON_VALUES_ASSIGNED_IMPLEMENTATION(Model_Data_Provider)
     L_ASSERT(m_resources_manager);
     L_ASSERT(m_model_name.size() > 0);
 
-    m_model = m_resources_manager->get_resource<Model>(m_model_name);
+    m_model = m_resources_manager->get_variable<Model>(m_model_name);
 
     if(m_data_extraction_type_str == "Geometry")
         m_extraction_type = Extraction_Type::Geometry;
