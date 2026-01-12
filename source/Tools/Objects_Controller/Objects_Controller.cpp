@@ -11,6 +11,7 @@ Objects_Controller::Objects_Controller()
 Objects_Controller::~Objects_Controller()
 {
     clear_objects();
+    clear_extensions();
 }
 
 
