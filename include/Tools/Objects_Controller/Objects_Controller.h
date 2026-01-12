@@ -35,7 +35,7 @@ namespace LMD
 
     public:
         void add_object(LEti::Object* _object);         //  takes ownership
-        void remove_object(LEti::Object* _object);     //  entity will be deleted during next update
+        void remove_object(LEti::Object* _object);
         void clear_objects();
         void clear_extensions();
 

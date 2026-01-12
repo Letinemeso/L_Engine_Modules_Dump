@@ -47,6 +47,10 @@ void Objects_Controller::remove_object(LEti::Object* _object)
 {
     Objects_List::Iterator obj_it = m_objects.find(_object);
     L_ASSERT(obj_it.is_ok());
+
+    for(unsigned int i = 0; i < m_extensions.size(); ++i)
+        m_extensions[i]->on_object_removed(_object);
+
     m_objects.erase(obj_it);
 }
 
