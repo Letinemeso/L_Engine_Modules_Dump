@@ -3,6 +3,18 @@
 using namespace LMD;
 
 
+Objects_Controller_Extension__Physics::Objects_Controller_Extension__Physics()
+{
+
+}
+
+Objects_Controller_Extension__Physics::~Objects_Controller_Extension__Physics()
+{
+    delete m_collisions_filter;
+}
+
+
+
 void Objects_Controller_Extension__Physics::on_object_added(LEti::Object* _object)
 {
     _object->process_logic_for_modules_of_type<LPhys::Physics_Module>([this](LPhys::Physics_Module* _module)
@@ -25,5 +37,10 @@ void Objects_Controller_Extension__Physics::on_object_removed(LEti::Object* _obj
 void Objects_Controller_Extension__Physics::update(Objects_List& _objects, float _dt)
 {
     m_collision_detector.update();
-    m_collision_resolver.resolve_all(m_collision_detector.found_collisions(), _dt);
+
+    if(!m_collisions_filter)
+        return m_collision_resolver.resolve_all(m_collision_detector.found_collisions(), _dt);
+
+    LPhys::Collision_Detector::Intersection_Data_List filtered_list = m_collisions_filter->filter(m_collision_detector.found_collisions());
+    m_collision_resolver.resolve_all(filtered_list, _dt);
 }
