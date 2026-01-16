@@ -25,8 +25,6 @@ void Physical_Model_Renderer::set_draw_module(LR::Draw_Module* _ptr, unsigned in
     m_coordinates_graphic_component = (LR::Graphics_Component__Default*)m_draw_module->get_graphics_component_with_buffer_index(_coordinates_graphics_component_index);
     L_ASSERT(LV::cast_variable<LR::Graphics_Component__Default>(m_coordinates_graphic_component));
     L_ASSERT(m_coordinates_graphic_component);
-    L_ASSERT(m_coordinates_graphic_component->buffer().floats_per_vertex() == 3);
-    L_ASSERT(m_coordinates_graphic_component->buffer().size() == 9);
     L_ASSERT(m_draw_module->draw_mode() == GL_TRIANGLES);
 }
 
@@ -47,9 +45,20 @@ void Physical_Model_Renderer::draw(const float* _data, unsigned int _size, const
     m_draw_module->set_transformation_data(&transformation_data_plug);
     m_draw_module->set_transformation_data_prev_state(&transformation_data_plug);
 
-    for(unsigned int i = 0; i < _size; i += 9)
+    LDS::Vector<float> raw_data(buffer.floats_per_vertex() * 3);
+
+    for(unsigned int offset_i = 0; offset_i < _size; offset_i += 9)
     {
-        buffer.copy_array(&(_data[i]), 9);
+        const float* data_with_offset = _data + offset_i;
+
+        raw_data.mark_empty();
+        for(unsigned int v_i = 0; v_i < 3; ++v_i)
+        {
+            for(unsigned int i = 0; i < buffer.floats_per_vertex(); ++i)
+                raw_data.push(data_with_offset[v_i * 3 + i]);
+        }
+
+        buffer.copy_array(raw_data.raw_data(), raw_data.size());
 
         m_draw_module->update(0.0f);
     }
