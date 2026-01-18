@@ -12,6 +12,17 @@ LPhys::Physical_Model* Physics_Module__Rigid_Body::M_create_physical_model() con
 
 
 
+void Physics_Module__Rigid_Body::M_debug_check_vec3(const glm::vec3& _vec) const
+{
+    L_DEBUG_FUNC_NOARG([&]()
+    {
+        for(unsigned int i = 0; i < 3; ++i)
+            L_ASSERT(!std::isnan(_vec[i]));
+    });
+}
+
+
+
 void Physics_Module__Rigid_Body::set_mass(float _mass)
 {
     cast_physical_model()->set_mass(_mass);

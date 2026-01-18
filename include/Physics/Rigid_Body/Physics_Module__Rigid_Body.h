@@ -26,6 +26,9 @@ namespace LMD
     private:
         LPhys::Physical_Model* M_create_physical_model() const override;
 
+    private:
+        void M_debug_check_vec3(const glm::vec3& _vec) const;
+
     public:
         void set_mass(float _mass);
         void recalculate_raw_data();
@@ -33,11 +36,11 @@ namespace LMD
         inline void set_restitution(float _value) { m_restitution = _value; }
         inline void set_moment_of_inertia_scale(float _value) { m_moment_of_inertia_scale = _value; }
 
-        inline void set_velocity(const glm::vec3& _value) { m_velocity = _value; }
-        inline void set_angular_velocity(const glm::vec3& _value) { m_angular_velocity = _value; }
+        inline void set_velocity(const glm::vec3& _value) { L_DEBUG_FUNC_1ARG(M_debug_check_vec3, _value); m_velocity = _value; }
+        inline void set_angular_velocity(const glm::vec3& _value) { L_DEBUG_FUNC_1ARG(M_debug_check_vec3, _value); m_angular_velocity = _value; }
 
-        inline void apply_linear_impulse(const glm::vec3& _value) { m_velocity += _value; }
-        inline void apply_rotation(const glm::vec3& _value) { m_angular_velocity += _value; }
+        inline void apply_linear_impulse(const glm::vec3& _value) { L_DEBUG_FUNC_1ARG(M_debug_check_vec3, _value); m_velocity += _value; }
+        inline void apply_rotation(const glm::vec3& _value) { L_DEBUG_FUNC_1ARG(M_debug_check_vec3, _value); m_angular_velocity += _value; }
 
     public:
         float mass() const;
