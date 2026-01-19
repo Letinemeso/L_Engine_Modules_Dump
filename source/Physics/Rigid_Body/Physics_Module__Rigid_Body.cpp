@@ -100,6 +100,9 @@ glm::vec3 Physics_Module__Rigid_Body::M_calculate_center_of_mass() const
 
 void Physics_Module__Rigid_Body::update(float _dt)
 {
+    if(!can_collide())
+        return;
+
     L_ASSERT(get_physical_model() && get_physical_model_prev_state() && transformation_data());
 
     glm::vec3 center_of_mass = M_calculate_center_of_mass();
