@@ -87,26 +87,98 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     float effective_mass_denominator = (1.0f / rb->mass())
                                        + LST::Math::dot_product( normal, LST::Math::cross_product(inv_inertia_times_radius_cross_normal, radius_vector) );
 
-    float impulse_magnitude = -(1.0f + rb->restitution()) * relative_normal_velocity / effective_mass_denominator;
+    if(effective_mass_denominator < 1e-6f)
+        return false;
 
-    glm::vec3 velocity = rb->velocity();
-    velocity += (impulse_magnitude / rb->mass()) * normal;
+    if(relative_normal_velocity < -1.5f)
+        M_resolve_impulse(rb, normal, radius_vector, relative_normal_velocity, effective_mass_denominator);
+    else
+        M_resolve_contact(rb, normal, radius_vector, relative_normal_velocity, effective_mass_denominator);
 
-    glm::vec3 angular_impulse = LST::Math::cross_product(radius_vector, impulse_magnitude * normal);
-    glm::vec3 angular_velocity = rb->angular_velocity();
-    angular_velocity += rb->inertia_tensor_inverse() * angular_impulse;
+    return true;
+}
 
-    float impulse_multiplier = rb->restitution();
+
+void Collision_Resolution__Rigid_Body_3D::M_resolve_impulse(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity, float _mass_denominator)
+{
+    float impulse_magnitude = -(1.0f + _rb->restitution()) * _normal_velocity / _mass_denominator;
+
+    glm::vec3 velocity = _rb->velocity();
+    velocity += (impulse_magnitude / _rb->mass()) * _normal;
+
+    glm::vec3 angular_impulse = LST::Math::cross_product(_radius_vector, impulse_magnitude * _normal);
+    glm::vec3 angular_velocity = _rb->angular_velocity();
+    angular_velocity += _rb->inertia_tensor_inverse() * angular_impulse;
+
+    float impulse_multiplier = _rb->restitution();
 
     velocity *= impulse_multiplier;
     angular_velocity *= impulse_multiplier;
 
     M_damp_velocities(velocity, angular_velocity);
 
-    rb->set_velocity( velocity );
-    rb->set_angular_velocity( angular_velocity );
+    _rb->set_velocity( velocity );
+    _rb->set_angular_velocity( angular_velocity );
 
-    return true;
+    M_apply_friction(_rb, _normal, _radius_vector, _normal_velocity);
+}
+
+void Collision_Resolution__Rigid_Body_3D::M_resolve_contact(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity, float _mass_denominator)
+{
+    float normal_impulse_magnitude = -_normal_velocity / _mass_denominator;
+
+    glm::vec3 normal_impulse = normal_impulse_magnitude * _normal;
+    glm::vec3 angular_impulse = LST::Math::cross_product(_radius_vector, normal_impulse);
+
+    glm::vec3 velocity = _rb->velocity();
+    glm::vec3 angular_velocity = _rb->angular_velocity();
+
+    velocity += normal_impulse * _rb->mass_inverse();
+    angular_velocity += _rb->inertia_tensor_inverse() * angular_impulse;
+
+    _rb->set_velocity( velocity );
+    _rb->set_angular_velocity( angular_velocity );
+
+    M_apply_friction(_rb, _normal, _radius_vector, _normal_velocity);
+}
+
+
+void Collision_Resolution__Rigid_Body_3D::M_apply_friction(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity)
+{
+    glm::vec3 velocity = _rb->velocity();
+    glm::vec3 angular_velocity = _rb->angular_velocity();
+
+    glm::vec3 contact_velocity = velocity + LST::Math::cross_product(angular_velocity, _radius_vector);
+
+    glm::vec3 tangent_velocity = contact_velocity - LST::Math::dot_product(contact_velocity, _normal) * _normal;
+
+    float tangent_speed = LST::Math::vector_length(tangent_velocity);
+    if (tangent_speed < 1e-6f)
+        return;
+
+    glm::vec3 tangent_direction = tangent_velocity / tangent_speed;
+
+    glm::vec3 r_cross_t = LST::Math::cross_product(_radius_vector, tangent_direction);
+    glm::vec3 angular_term = LST::Math::cross_product(_rb->inertia_tensor_inverse() * r_cross_t, _radius_vector);
+
+    float effective_mass = _rb->mass_inverse() + LST::Math::dot_product(tangent_direction, angular_term);
+
+    if (effective_mass <= 0.0f)
+        return;
+
+    float desired_impulse = -tangent_speed / effective_mass;
+
+    float max_friction_impulse = _rb->traction() * _normal_velocity;
+
+    float friction_impulse_magnitude = glm::clamp( desired_impulse, -max_friction_impulse, max_friction_impulse );
+
+    glm::vec3 friction_impulse = friction_impulse_magnitude * tangent_direction;
+
+    velocity += friction_impulse * _rb->mass_inverse();
+    angular_velocity += _rb->inertia_tensor_inverse() * LST::Math::cross_product(_radius_vector, friction_impulse);
+
+    _rb->set_velocity( velocity );
+    _rb->set_angular_velocity( angular_velocity );
 }
 
 

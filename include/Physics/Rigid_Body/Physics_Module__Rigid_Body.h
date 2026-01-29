@@ -16,6 +16,7 @@ namespace LMD
     private:
         float m_restitution = 1.0f;
         float m_moment_of_inertia_scale = 1.0f;
+        float m_traction = 0.0f;
 
         glm::vec3 m_velocity{0.0f, 0.0f, 0.0f};
         glm::vec3 m_angular_velocity = {0.0f, 0.0f, 0.0f};
@@ -35,6 +36,7 @@ namespace LMD
 
         inline void set_restitution(float _value) { m_restitution = _value; }
         inline void set_moment_of_inertia_scale(float _value) { m_moment_of_inertia_scale = _value; }
+        inline void set_traction(float _value) { m_traction = _value; }
 
         inline void set_velocity(const glm::vec3& _value) { L_DEBUG_FUNC_1ARG(M_debug_check_vec3, _value); m_velocity = _value; }
         inline void set_angular_velocity(const glm::vec3& _value) { L_DEBUG_FUNC_1ARG(M_debug_check_vec3, _value); m_angular_velocity = _value; }
@@ -55,6 +57,7 @@ namespace LMD
         inline const Rigid_Body_Physical_Model* cast_physical_model() const { return (Rigid_Body_Physical_Model*)get_physical_model(); }
 
         inline float restitution() const { return m_restitution; }
+        inline float traction() const { return m_traction; }
 
         inline const glm::vec3& velocity() const { return m_velocity; }
         inline const glm::vec3& angular_velocity() const { return m_angular_velocity; }
@@ -79,15 +82,18 @@ namespace LMD
         ADD_FIELD(float, mass)
         ADD_FIELD(float, restitution)
         ADD_FIELD(float, moment_of_inertia_scale)
+        ADD_FIELD(float, traction)
         FIELDS_END
 
     public:
         float mass = 1.0f;
         float restitution = 1.0f;
         float moment_of_inertia_scale = 1.0f;
+        float traction = 0.0f;
 
     protected:
         INIT_BUILDER_STUB(Physics_Module__Rigid_Body)
+
     };
 
 }
