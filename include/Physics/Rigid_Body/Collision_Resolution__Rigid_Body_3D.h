@@ -42,7 +42,7 @@ namespace LMD
         void M_resolve_impulse(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity, float _mass_denominator);
         void M_resolve_contact(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity, float _mass_denominator);
 
-        void M_apply_friction(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity);
+        void M_apply_friction(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity, glm::vec3& _new_velocity, glm::vec3& _new_angular_velocity);
 
         void M_damp_velocities(glm::vec3& _velocity, glm::vec3& _angular_velocity) const;
 

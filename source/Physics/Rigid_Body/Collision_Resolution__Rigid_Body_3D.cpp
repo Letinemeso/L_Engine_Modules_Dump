@@ -115,12 +115,11 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_impulse(Physics_Module__Rigi
     velocity *= impulse_multiplier;
     angular_velocity *= impulse_multiplier;
 
+    M_apply_friction(_rb, _normal, _radius_vector, _normal_velocity, velocity, angular_velocity);
     M_damp_velocities(velocity, angular_velocity);
 
     _rb->set_velocity( velocity );
     _rb->set_angular_velocity( angular_velocity );
-
-    M_apply_friction(_rb, _normal, _radius_vector, _normal_velocity);
 }
 
 void Collision_Resolution__Rigid_Body_3D::M_resolve_contact(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity, float _mass_denominator)
@@ -136,19 +135,17 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_contact(Physics_Module__Rigi
     velocity += normal_impulse * _rb->mass_inverse();
     angular_velocity += _rb->inertia_tensor_inverse() * angular_impulse;
 
+    M_apply_friction(_rb, _normal, _radius_vector, _normal_velocity, velocity, angular_velocity);
+    M_damp_velocities(velocity, angular_velocity);
+
     _rb->set_velocity( velocity );
     _rb->set_angular_velocity( angular_velocity );
-
-    M_apply_friction(_rb, _normal, _radius_vector, _normal_velocity);
 }
 
 
-void Collision_Resolution__Rigid_Body_3D::M_apply_friction(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity)
+void Collision_Resolution__Rigid_Body_3D::M_apply_friction(Physics_Module__Rigid_Body* _rb, const glm::vec3& _normal, const glm::vec3& _radius_vector, float _normal_velocity, glm::vec3& _new_velocity, glm::vec3& _new_angular_velocity)
 {
-    glm::vec3 velocity = _rb->velocity();
-    glm::vec3 angular_velocity = _rb->angular_velocity();
-
-    glm::vec3 contact_velocity = velocity + LST::Math::cross_product(angular_velocity, _radius_vector);
+    glm::vec3 contact_velocity = _new_velocity + LST::Math::cross_product(_new_angular_velocity, _radius_vector);
 
     glm::vec3 tangent_velocity = contact_velocity - LST::Math::dot_product(contact_velocity, _normal) * _normal;
 
@@ -174,11 +171,8 @@ void Collision_Resolution__Rigid_Body_3D::M_apply_friction(Physics_Module__Rigid
 
     glm::vec3 friction_impulse = friction_impulse_magnitude * tangent_direction;
 
-    velocity += friction_impulse * _rb->mass_inverse();
-    angular_velocity += _rb->inertia_tensor_inverse() * LST::Math::cross_product(_radius_vector, friction_impulse);
-
-    _rb->set_velocity( velocity );
-    _rb->set_angular_velocity( angular_velocity );
+    _new_velocity += friction_impulse * _rb->mass_inverse();
+    _new_angular_velocity += _rb->inertia_tensor_inverse() * LST::Math::cross_product(_radius_vector, friction_impulse);
 }
 
 
