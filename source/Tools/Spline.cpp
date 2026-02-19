@@ -60,7 +60,7 @@ glm::vec3 Spline::M_calculate_point(const glm::vec3& _0, const glm::vec3& _1, co
 
 Spline::Points_List Spline::interpolate() const
 {
-    L_ASSERT(m_points.size() >= 3);
+    L_ASSERT(m_points.size() >= 2);
     L_ASSERT(m_interpolation_step_length > 0.0f);
 
     M_add_edge_control_points();
