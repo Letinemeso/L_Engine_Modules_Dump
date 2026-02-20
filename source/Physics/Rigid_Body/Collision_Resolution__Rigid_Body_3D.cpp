@@ -87,7 +87,7 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     float effective_mass_denominator = (1.0f / rb->mass())
                                        + LST::Math::dot_product( normal, LST::Math::cross_product(inv_inertia_times_radius_cross_normal, radius_vector) );
 
-    if(effective_mass_denominator < 1e-6f)
+    if(effective_mass_denominator < LST::Math::Float_Precision_Tolerance)
         return false;
 
     if(relative_normal_velocity < -1.5f)
@@ -150,7 +150,7 @@ void Collision_Resolution__Rigid_Body_3D::M_apply_friction(Physics_Module__Rigid
     glm::vec3 tangent_velocity = contact_velocity - LST::Math::dot_product(contact_velocity, _normal) * _normal;
 
     float tangent_speed = LST::Math::vector_length(tangent_velocity);
-    if (tangent_speed < 1e-6f)
+    if (tangent_speed < LST::Math::Float_Precision_Tolerance)
         return;
 
     glm::vec3 tangent_direction = tangent_velocity / tangent_speed;

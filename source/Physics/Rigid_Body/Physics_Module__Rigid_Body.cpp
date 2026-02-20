@@ -42,7 +42,7 @@ float Physics_Module__Rigid_Body::mass() const
 
 float Physics_Module__Rigid_Body::mass_inverse() const
 {
-    if(cast_physical_model()->mass() > 1e-6f)
+    if(cast_physical_model()->mass() > LST::Math::Float_Precision_Tolerance)
         return 1.0f / cast_physical_model()->mass();
 
     return 0.0f;
@@ -55,7 +55,7 @@ float Physics_Module__Rigid_Body::moment_of_inertia() const
 
 float Physics_Module__Rigid_Body::moment_of_inertia_inverse() const
 {
-    if(cast_physical_model()->moment_of_inertia() > 1e-6f)
+    if(cast_physical_model()->moment_of_inertia() > LST::Math::Float_Precision_Tolerance)
         return 1.0f / cast_physical_model()->moment_of_inertia();
 
     return 0.0f;
