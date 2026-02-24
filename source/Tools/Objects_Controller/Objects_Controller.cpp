@@ -58,7 +58,15 @@ void Objects_Controller::remove_object(LEti::Object* _object)
 void Objects_Controller::clear_objects()
 {
     for(Objects_List::Iterator it = m_objects.begin(); !it.end_reached(); ++it)
-        delete *it;
+    {
+        LEti::Object* object = *it;
+
+        for(unsigned int i = 0; i < m_extensions.size(); ++i)
+            m_extensions[i]->on_object_removed(object);
+
+        delete object;
+    }
+
     m_objects.clear();
 }
 
