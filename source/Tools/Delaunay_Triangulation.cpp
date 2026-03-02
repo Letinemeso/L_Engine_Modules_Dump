@@ -45,29 +45,6 @@ namespace LMD
     };
 
 
-    void debug_print_triangle(const Index_Triangle& _triangle)
-    {
-        for(unsigned int i = 0; i < 3; ++i)
-            std::cout << "[" << i << "]: id: " << _triangle[i].index << "(x: " << _triangle[i].point.x << ", y: " << _triangle[i].point.y << ")\n";
-        std::cout << std::endl;
-    };
-
-    void debug_print_list(const Index_Triangles_List& _list)
-    {
-        unsigned int counter = 0;
-        for(Index_Triangles_List::Const_Iterator it = _list.begin(); !it.end_reached(); ++it)
-        {
-            const Index_Triangle& triangle = *it;
-
-            std::cout << "Triangle #" << counter << ": " << std::endl;
-            debug_print_triangle(triangle);
-
-            ++counter;
-        }
-        std::cout << std::endl;
-    }
-
-
     Index_Triangle calculate_daddy_triangle(const Points_Vec& _points)
     {
         glm::vec2 center = {0.0f, 0.0f};
@@ -209,7 +186,7 @@ namespace LMD
         glm::vec2 vertices[4];
         unsigned int indices[4];
 
-        /*      current
+/*      current
            0
           /|\
         /  |  \
@@ -234,7 +211,7 @@ namespace LMD
         vertices[3] = _triangle_1[(_common_side_offset_index_1 + 2) % 3].point;
         indices[3] = _triangle_1[(_common_side_offset_index_1 + 2) % 3].index;
 
-        /*      target
+/*      target
            0
           / \
         /     \
@@ -275,9 +252,6 @@ namespace LMD
             _list.push_back(new_triangle);
             new_triangles[i] = &_list.back();
         }
-
-        // std::cout << "Triangles before balancing " << _point_index << ":\n";
-        // debug_print_list(_list);
 
         for(unsigned int i = 0; i < 3; ++i)
             flip_side_if_needed(_list, *new_triangles[i], 0);
@@ -322,9 +296,6 @@ Triangles_Vec LMD::triangulate(const Points_Vec& _points)
     Index_Triangles_List list;
     list.push_back( calculate_daddy_triangle(_points) );
 
-    // std::cout << "Initial daddy triangle: \n";
-    // debug_print_list(list);
-
     for(unsigned int i = 0; i < _points.size(); ++i)
     {
         Index_Triangles_List::Iterator owner_triangle_it = find_owner_triangle(list, _points[i]);
@@ -338,9 +309,6 @@ Triangles_Vec LMD::triangulate(const Points_Vec& _points)
         list.erase(owner_triangle_it);
 
         split_triangle(list, triangle, _points[i], i);
-
-        // std::cout << "Added point #" << i << ":\n";
-        // debug_print_list(list);
     }
 
     purge_daddy_triangle(list);
