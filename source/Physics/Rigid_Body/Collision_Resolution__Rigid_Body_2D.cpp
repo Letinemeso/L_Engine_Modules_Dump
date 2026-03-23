@@ -45,8 +45,8 @@ bool Collision_Resolution__Rigid_Body_2D::resolve(const LPhys::Intersection_Data
 
     float e = 1.0f;
 
-    glm::vec3 ra = _id.point - A_center_of_mass;
-    glm::vec3 rb = _id.point - B_center_of_mass;
+    glm::vec3 ra = _id.points[0] - A_center_of_mass;
+    glm::vec3 rb = _id.points[0] - B_center_of_mass;
 
     glm::vec3 raPerp = {-ra.y, ra.x, 0.0f};
     glm::vec3 rbPerp = {-rb.y, rb.x, 0.0f};

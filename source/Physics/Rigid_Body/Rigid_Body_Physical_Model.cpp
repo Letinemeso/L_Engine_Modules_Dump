@@ -161,9 +161,9 @@ glm::mat3x3 Rigid_Body_Physical_Model::M_calculate_inertia_tensor(const LPhys::P
             glm::vec3 point_wo_offset = polygon[i] - m_raw_center_of_mass;
             glm::vec3 point_squared = point_wo_offset * point_wo_offset;
 
-            result[0][0] += point_mass * (point_squared.y * point_squared.z);
-            result[1][1] += point_mass * (point_squared.x * point_squared.z);
-            result[2][2] += point_mass * (point_squared.x * point_squared.y);
+            result[0][0] += point_mass * (point_squared.y + point_squared.z);
+            result[1][1] += point_mass * (point_squared.x + point_squared.z);
+            result[2][2] += point_mass * (point_squared.x + point_squared.y);
 
             result[0][1] -= point_mass * point_wo_offset.x * point_wo_offset.y;
             result[0][2] -= point_mass * point_wo_offset.x * point_wo_offset.z;
