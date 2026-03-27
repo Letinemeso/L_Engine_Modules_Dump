@@ -9,7 +9,7 @@
 namespace LMD
 {
 
-    class Collision_Resolution__Rigid_Body_3D : public LPhys::Collision_Resolution_Interface
+    class Collision_Resolution__Rigid_Body_3D : public LPhys::Collision_Resolution
 	{
     private:
         LPhys::Collision_Resolution__Physics_Module__Mesh m_default_collision_resolution;
