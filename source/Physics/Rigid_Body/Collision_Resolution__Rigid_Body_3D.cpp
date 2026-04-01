@@ -71,7 +71,15 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_dynamic(const LPh
 
 bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhys::Intersection_Data& _id, float _dt)
 {
-    LPhys::Physics_Module* dynamic_pm = _id.first->is_static() ? _id.second : _id.first;
+    LPhys::Physics_Module* dynamic_pm = _id.first;
+    LPhys::Physics_Module* static_pm = _id.second;
+
+    if(_id.first->is_static())
+    {
+        dynamic_pm = _id.second;
+        static_pm = _id.first;
+    }
+
     L_ASSERT(!dynamic_pm->is_static());
 
     Physics_Module__Rigid_Body* rb = LV::cast_variable<Physics_Module__Rigid_Body>(dynamic_pm);
@@ -82,15 +90,32 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     if(dynamic_pm == _id.second)
         normal *= -1.0f;
 
-    LDS::Vector<glm::vec3> radius_vectors(_id.points.size());
+    Prep_Data prep_data = M_calculate_dvs_prep_data(dynamic_pm, static_pm, _id.normal, _id.points);
+
     for(unsigned int i = 0; i < _id.points.size(); ++i)
-        radius_vectors.push( _id.points[i] - rb->center_of_mass() );
+    {
+        const Warm_Starting_Data* ws_data = prep_data.old_ws_data[i];
+        if(!ws_data)
+            continue;
+
+        glm::vec3 normal_projected = ws_data->normal * LST::Math::dot_product(normal, ws_data->normal);
+        glm::vec3 impulse_to_apply = ws_data->accumulated_normal_impulse * normal_projected;
+        M_apply_impulse(rb, prep_data.radius_vectors_0[i], impulse_to_apply);
+
+        prep_data.new_ws_data[i]->accumulated_normal_impulse = LST::Math::vector_length(impulse_to_apply);
+
+        std::cout << "impulse == " << prep_data.new_ws_data[i]->accumulated_normal_impulse << std::endl;
+    }
 
     constexpr unsigned int Iterations_Amount = 10;
     for(unsigned int i_i = 0; i_i < Iterations_Amount; ++i_i)
     {
         for(unsigned int i = 0; i < _id.points.size(); ++i)
-            M_resolve_dynamic_vs_static_single_point(rb, radius_vectors[i], normal);
+        {
+            Warm_Starting_Data& current_ws = *prep_data.new_ws_data[i];
+
+            M_resolve_dynamic_vs_static_single_point(rb, prep_data.radius_vectors_0[i], normal, _id.depth, _dt, current_ws);
+        }
     }
 
     m_default_collision_resolution.resolve(_id, _dt);
@@ -99,7 +124,104 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
 }
 
 
-void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_point(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector, const glm::vec3& _contact_normal)
+LST::UInt128 Collision_Resolution__Rigid_Body_3D::M_construct_pair_key(const LPhys::Physics_Module* _pm_0, const LPhys::Physics_Module* _pm_1) const
+{
+    LST::UInt128::Part_Type part_0 = (LST::UInt128::Part_Type)_pm_0;
+    LST::UInt128::Part_Type part_1 = (LST::UInt128::Part_Type)_pm_1;
+
+    if(part_0 > part_1)
+        return {part_0, part_1};
+    return {part_1, part_0};
+}
+
+bool Collision_Resolution__Rigid_Body_3D::M_ws_data_compatible(const Warm_Starting_Data& _data, const glm::vec3& _normal, const glm::vec3& _local_point_0, const glm::vec3& _local_point_1) const
+{
+    float distance_squared = LST::Math::vector_length_squared(_data.local_point_0 - _local_point_0);
+    if(distance_squared > m_ws_local_point_distance_tolerance_squared)
+        return false;
+    distance_squared = LST::Math::vector_length_squared(_data.local_point_1 - _local_point_1);
+    if(distance_squared > m_ws_local_point_distance_tolerance_squared)
+        return false;
+
+    constexpr float Acceptable_Normal_Difference = 0.9f;
+    float normal_cos = LST::Math::dot_product(_normal, _data.normal);
+    if(normal_cos < Acceptable_Normal_Difference)
+        return false;
+
+    return true;
+}
+
+glm::vec3 Collision_Resolution__Rigid_Body_3D::M_calculate_local_contact_point(const LPhys::Physics_Module* _pm, const glm::vec3& _contact_point) const
+{
+    return glm::inverse(_pm->transformation_data()->rotation_matrix())
+           *
+           glm::vec4(_pm->transformation_data()->position() - _contact_point, 1.0f);
+}
+
+Collision_Resolution__Rigid_Body_3D::Warm_Starting_Data* Collision_Resolution__Rigid_Body_3D::M_find_ws_data(const LPhys::Physics_Module* _pm_0,
+                                                                                                             const LPhys::Physics_Module* _pm_1,
+                                                                                                             const glm::vec3& _normal,
+                                                                                                             const glm::vec3& _local_contact_point_0,
+                                                                                                             const glm::vec3& _local_contact_point_1)
+{
+    LST::UInt128 search_key = M_construct_pair_key(_pm_0, _pm_1);
+
+    Warm_Starting_Data_Map::Iterator maybe_data_it = m_previous_intersections.find_or_insert(search_key);
+    LDS::Vector<Warm_Starting_Data>& data_vec = *maybe_data_it;
+
+    for(unsigned int i = 0; i < data_vec.size(); ++i)
+    {
+        Warm_Starting_Data& ws_data = data_vec[i];
+        if(!M_ws_data_compatible(ws_data, _normal, _local_contact_point_0, _local_contact_point_1))
+            continue;
+
+        return &ws_data;
+    }
+
+    return nullptr;
+}
+
+
+Collision_Resolution__Rigid_Body_3D::Prep_Data Collision_Resolution__Rigid_Body_3D::M_calculate_dvs_prep_data(const LPhys::Physics_Module* _dynamic_pm,
+                                                                                                              const LPhys::Physics_Module* _static_pm,
+                                                                                                              const glm::vec3& _normal,
+                                                                                                              const LDS::Vector<glm::vec3>& _contact_points)
+{
+    Prep_Data result;
+
+    L_ASSERT(LV::cast_variable<Physics_Module__Rigid_Body>(_dynamic_pm));
+    const Physics_Module__Rigid_Body* rb = LST::raw_cast<Physics_Module__Rigid_Body>(_dynamic_pm);
+
+    LST::UInt128 search_key = M_construct_pair_key(_dynamic_pm, _static_pm);
+    L_ASSERT(!m_current_intersections.find(search_key).is_ok());
+    LDS::Vector<Warm_Starting_Data>& current_ws_data = *m_current_intersections.insert_and_get_iterator(search_key, {});
+
+    for(unsigned int i = 0; i < _contact_points.size(); ++i)
+    {
+        const glm::vec3& contact_point = _contact_points[i];
+
+        result.radius_vectors_0.push( contact_point - rb->center_of_mass() );
+
+        glm::vec3 local_contact_point_0 = M_calculate_local_contact_point(_dynamic_pm, contact_point);
+        glm::vec3 local_contact_point_1 = M_calculate_local_contact_point(_static_pm, contact_point);
+
+        result.old_ws_data.push( M_find_ws_data(_dynamic_pm, _static_pm, _normal, local_contact_point_0, local_contact_point_1) );
+
+        current_ws_data.push({});
+        Warm_Starting_Data& ws_data = current_ws_data[current_ws_data.size() - 1];
+        ws_data.local_point_0 = local_contact_point_0;
+        ws_data.local_point_1 = local_contact_point_1;
+        ws_data.normal = _normal;
+
+        result.new_ws_data.push(&ws_data);
+    }
+
+    return result;
+}
+
+
+void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_point(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector,
+                                                                                   const glm::vec3& _contact_normal, float _depth, float _dt, Warm_Starting_Data& _ws_data)
 {
     glm::vec3 angular_velocity_component = LST::Math::cross_product(_rb->angular_velocity(), _radius_vector);
     glm::vec3 relative_velocity = _rb->velocity() + angular_velocity_component;
@@ -114,26 +236,32 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_poi
 
     float effective_mass = _rb->mass_inverse() + LST::Math::dot_product(_contact_normal, LST::Math::cross_product(angular_term, _radius_vector));
 
-    // float impulse_magnitude = -normal_velocity / effective_mass;
-
+    constexpr float Min_Normal_Velocity = 0.3f;
     float effective_restitution = 0.0f;
-    if(normal_velocity > 0.3f)
+    if(normal_velocity < -Min_Normal_Velocity)
         effective_restitution = _rb->restitution();
 
-    float impulse_magnitude = -(1.0f + effective_restitution) * normal_velocity / effective_mass;
+    constexpr float Baumgarte = 0.2f;
+    constexpr float Slop = 0.01f;
 
-    if (impulse_magnitude < 0.0f)
-        impulse_magnitude = 0.0f;
+    float bias = 0.0f;
 
-    glm::vec3 impulse = impulse_magnitude * _contact_normal;
+    if (_depth > Slop)
+        bias = Baumgarte * (_depth - Slop) / _dt;
 
-    glm::vec3 velocity_increment = impulse * _rb->mass_inverse();
-    glm::vec3 angular_velocity_increment = _rb->inertia_tensor_inverse() * LST::Math::cross_product(_radius_vector, impulse);
+    float impulse_magnitude = -(normal_velocity * (1.0f + effective_restitution) + bias) / effective_mass;
+
+    float old_accumulated_impulse = _ws_data.accumulated_normal_impulse;
+    _ws_data.accumulated_normal_impulse = std::max(old_accumulated_impulse + impulse_magnitude, 0.0f);
+    float impulse_delta = _ws_data.accumulated_normal_impulse - old_accumulated_impulse;
+
+    glm::vec3 impulse = impulse_delta * _contact_normal;
 
     float kinetic_energy_before = compute_kinetic_energy(_rb);
 
-    _rb->apply_linear_impulse(velocity_increment);
-    _rb->apply_rotation(angular_velocity_increment);
+    M_apply_impulse(_rb, _radius_vector, impulse);
+
+    // _ws_data.accumulated_normal_impulse += impulse_magnitude;
 
     float kinetic_energy_after = compute_kinetic_energy(_rb);
 
@@ -146,6 +274,15 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_poi
 
     if(kinetic_energy_after_friction > kinetic_energy_after * 1.2f)
         std::cout << "kinetic energy significantly increased after friction application" << std::endl;
+}
+
+void Collision_Resolution__Rigid_Body_3D::M_apply_impulse(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector, const glm::vec3& _impulse)
+{
+    glm::vec3 velocity_increment = _impulse * _rb->mass_inverse();
+    glm::vec3 angular_velocity_increment = _rb->inertia_tensor_inverse() * LST::Math::cross_product(_radius_vector, _impulse);
+
+    _rb->apply_linear_impulse(velocity_increment);
+    _rb->apply_rotation(angular_velocity_increment);
 }
 
 void Collision_Resolution__Rigid_Body_3D::M_apply_friction(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector, const glm::vec3& _contact_normal, float _impulse_magnitude)
@@ -202,6 +339,11 @@ void Collision_Resolution__Rigid_Body_3D::M_damp_velocities(glm::vec3& _velocity
 }
 
 
+
+void Collision_Resolution__Rigid_Body_3D::on_before_pass()
+{
+    m_previous_intersections = LST::move(m_current_intersections);
+}
 
 bool Collision_Resolution__Rigid_Body_3D::resolve(const LPhys::Intersection_Data &_id, float _dt)
 {
