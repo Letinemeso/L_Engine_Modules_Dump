@@ -263,7 +263,7 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_poi
     if(normal_velocity < -Min_Normal_Velocity)
         effective_restitution = _rb->restitution();
 
-    constexpr float Baumgarte = 0.05f;
+    constexpr float Baumgarte = 0.005f;
     constexpr float Slope = 0.01f;
 
     float bias = 0.0f;
