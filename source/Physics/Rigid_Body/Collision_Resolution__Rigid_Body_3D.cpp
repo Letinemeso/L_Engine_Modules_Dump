@@ -197,10 +197,7 @@ Collision_Resolution__Rigid_Body_3D::Prep_Data Collision_Resolution__Rigid_Body_
 
     Warm_Starting_Data_Map::Iterator maybe_data_it = m_previous_intersections.find(search_key);
     if(!maybe_data_it.is_ok())
-    {
-        std::cout << "not found old data" << std::endl;
         return result;
-    }
 
     LDS::Vector<WS_Contact_Data>& old_ws_data = maybe_data_it->data;
     for(unsigned int i = 0; i < _contact_points.size(); ++i)
@@ -229,8 +226,6 @@ void Collision_Resolution__Rigid_Body_3D::M_apply_old_dvs_data(Physics_Module__R
         M_apply_impulse(_dynamic_rb, _prep_data.radius_vectors_0[i], impulse_to_apply);
 
         _prep_data.new_ws_data[i]->accumulated_normal_impulse = LST::Math::vector_length(impulse_to_apply);
-
-        std::cout << "impulse == " << _prep_data.new_ws_data[i]->accumulated_normal_impulse << " old == " << ws_data->accumulated_normal_impulse << std::endl;
     }
 }
 
