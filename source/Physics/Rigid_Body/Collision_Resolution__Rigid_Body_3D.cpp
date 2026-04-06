@@ -96,14 +96,21 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
 
     M_apply_old_dvs_data(rb, prep_data, normal);
 
-    constexpr unsigned int Iterations_Amount = 10;
-    for(unsigned int i_i = 0; i_i < Iterations_Amount; ++i_i)
+    for(unsigned int i = 0; i < _id.points.size(); ++i)
+    {
+        WS_Contact_Data& current_ws = *prep_data.new_ws_data[i];
+
+        M_resolve_dynamic_vs_static_single_point(rb, prep_data.radius_vectors_0[i], normal, _id.depth, _dt, current_ws, true);
+    }
+
+    constexpr unsigned int Iterations_Amount = 20;
+    for(unsigned int i_i = 1; i_i < Iterations_Amount; ++i_i)
     {
         for(unsigned int i = 0; i < _id.points.size(); ++i)
         {
             WS_Contact_Data& current_ws = *prep_data.new_ws_data[i];
 
-            M_resolve_dynamic_vs_static_single_point(rb, prep_data.radius_vectors_0[i], normal, _id.depth, _dt, current_ws);
+            M_resolve_dynamic_vs_static_single_point(rb, prep_data.radius_vectors_0[i], normal, _id.depth, _dt, current_ws, false);
         }
     }
 
@@ -233,11 +240,13 @@ void Collision_Resolution__Rigid_Body_3D::M_apply_old_dvs_data(Physics_Module__R
 
 
 void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_point(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector,
-                                                                                   const glm::vec3& _contact_normal, float _depth, float _dt, WS_Contact_Data& _ws_data)
+                                                                                   const glm::vec3& _contact_normal, float _depth, float _dt, WS_Contact_Data& _ws_data, bool _apply_restitution)
 {
     glm::vec3 relative_velocity = Rigid_Body_Utility::calculate_point_velocity(*_rb, _radius_vector);
 
     float normal_velocity = LST::Math::dot_product(relative_velocity, _contact_normal);
+    if(!_apply_restitution && normal_velocity > 0.0f)
+        normal_velocity = 0.0f;
 
     glm::vec3 r_cross_n = LST::Math::cross_product(_radius_vector, _contact_normal);
     glm::vec3 angular_term = _rb->inertia_tensor_inverse() * r_cross_n;

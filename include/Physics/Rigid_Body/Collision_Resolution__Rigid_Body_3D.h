@@ -86,7 +86,7 @@ namespace LMD
 
         void M_resolve_dynamic_vs_static_single_point(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector,
                                                       const glm::vec3& _contact_normal, float _depth, float _dt,
-                                                      WS_Contact_Data& _ws_data);
+                                                      WS_Contact_Data& _ws_data, bool _apply_restitution);
         void M_apply_impulse(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector, const glm::vec3& _impulse);
         void M_apply_friction(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector, const glm::vec3& _contact_normal, float _impulse_magnitude);
 
