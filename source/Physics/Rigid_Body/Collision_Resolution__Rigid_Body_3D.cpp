@@ -116,6 +116,8 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
 
     m_default_collision_resolution.resolve(_id, _dt);
 
+    M_damp_velocities(rb);
+
     return true;
 }
 
@@ -253,7 +255,7 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_poi
 
     float effective_mass = _rb->mass_inverse() + LST::Math::dot_product(_contact_normal, LST::Math::cross_product(angular_term, _radius_vector));
 
-    constexpr float Baumgarte = 0.005f;
+    constexpr float Baumgarte = 0.00001f;
     constexpr float Slope = 0.01f;
 
     float bias = 0.0f;
@@ -261,7 +263,13 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_poi
     if (_depth > Slope)
         bias = Baumgarte * (_depth - Slope) / _dt;
 
-    float impulse_magnitude = -(normal_velocity * (1.0f + _rb->restitution()) + bias) / effective_mass;
+    float effective_restitution = _rb->restitution();
+
+    constexpr float Resting_Normal_Speed_Threshold = 0.05f;
+    if(fabsf(normal_velocity) < Resting_Normal_Speed_Threshold)
+        effective_restitution = 0.0f;
+
+    float impulse_magnitude = -(normal_velocity * (1.0f + effective_restitution) + bias) / effective_mass;
 
     float old_accumulated_impulse = _ws_data.accumulated_normal_impulse;
     _ws_data.accumulated_normal_impulse = std::max(old_accumulated_impulse + impulse_magnitude, 0.0f);
@@ -320,20 +328,26 @@ void Collision_Resolution__Rigid_Body_3D::M_apply_friction(Physics_Module__Rigid
 }
 
 
-void Collision_Resolution__Rigid_Body_3D::M_damp_velocities(glm::vec3& _velocity, glm::vec3& _angular_velocity) const
+void Collision_Resolution__Rigid_Body_3D::M_damp_velocities(Physics_Module__Rigid_Body* _rb) const
 {
-    float raw_velocity_squared = LST::Math::vector_length_squared(_velocity);
-    float raw_angular_velocity_squared = LST::Math::vector_length_squared(_angular_velocity);
+    glm::vec3 velocity = _rb->velocity();
+    glm::vec3 angular_velocity = _rb->angular_velocity();
+
+    float raw_velocity_squared = LST::Math::vector_length_squared(velocity);
+    float raw_angular_velocity_squared = LST::Math::vector_length_squared(angular_velocity);
 
     if(raw_velocity_squared < m_hard_damping_velocity_threshold_squared)
-        _velocity *= 0.0f;
+        velocity *= 0.0f;
     else if(raw_velocity_squared < m_soft_damping_min_velocity_squared)
-        _velocity *= m_soft_damping_multiplier;
+        velocity *= m_soft_damping_multiplier;
 
     if(raw_angular_velocity_squared < m_hard_damping_angular_velocity_threshold_squared)
-        _angular_velocity *= 0.0f;
+        angular_velocity *= 0.0f;
     else if(raw_angular_velocity_squared < m_soft_damping_min_angular_velocity_squared)
-        _angular_velocity *= m_soft_damping_multiplier;
+        angular_velocity *= m_soft_damping_multiplier;
+
+    _rb->set_velocity(velocity);
+    _rb->set_angular_velocity(angular_velocity);
 }
 
 
