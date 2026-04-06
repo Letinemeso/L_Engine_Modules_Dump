@@ -92,11 +92,11 @@ bool Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static(const LPhy
     if(dynamic_pm == _id.second)
         normal *= -1.0f;
 
-    Prep_Data prep_data = M_calculate_dvs_prep_data(dynamic_pm, static_pm, _id.normal, _id.points);
+    Prep_Data prep_data = M_calculate_dvs_prep_data(dynamic_pm, static_pm, normal, _id.points);
 
     M_apply_old_dvs_data(rb, prep_data, normal);
 
-    constexpr unsigned int Iterations_Amount = 30;
+    constexpr unsigned int Iterations_Amount = 10;
     for(unsigned int i_i = 0; i_i < Iterations_Amount; ++i_i)
     {
         for(unsigned int i = 0; i < _id.points.size(); ++i)
@@ -144,7 +144,7 @@ glm::vec3 Collision_Resolution__Rigid_Body_3D::M_calculate_local_contact_point(c
 {
     return glm::inverse(_pm->transformation_data()->rotation_matrix())
            *
-           glm::vec4(_pm->transformation_data()->position() - _contact_point, 1.0f);
+           glm::vec4(_contact_point - _pm->transformation_data()->position(), 0.0f);
 }
 
 Collision_Resolution__Rigid_Body_3D::WS_Contact_Data* Collision_Resolution__Rigid_Body_3D::M_find_ws_data(LDS::Vector<WS_Contact_Data>& _ws_data,
@@ -244,15 +244,19 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_poi
 
     float effective_mass = _rb->mass_inverse() + LST::Math::dot_product(_contact_normal, LST::Math::cross_product(angular_term, _radius_vector));
 
-    if (normal_velocity > 0.0f)
-    {
-        float impulse_magnitude = -(normal_velocity) / effective_mass;
+    // if (normal_velocity > 0.0f)
+    // {
+    //     float impulse_magnitude = -(normal_velocity) / effective_mass;
 
-        float old_accumulated_impulse = _ws_data.accumulated_normal_impulse;
-        _ws_data.accumulated_normal_impulse = std::max(old_accumulated_impulse + impulse_magnitude, 0.0f);
+    //     float old_accumulated_impulse = _ws_data.accumulated_normal_impulse;
+    //     _ws_data.accumulated_normal_impulse = std::max(old_accumulated_impulse + impulse_magnitude, 0.0f);
+    //     float impulse_delta = _ws_data.accumulated_normal_impulse - old_accumulated_impulse;
 
-        return;
-    }
+    //     glm::vec3 impulse = impulse_delta * _contact_normal;
+    //     M_apply_impulse(_rb, _radius_vector, impulse);
+
+    //     return;
+    // }
 
     constexpr float Min_Normal_Velocity = 0.3f;
     float effective_restitution = 0.0f;
