@@ -244,25 +244,6 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_poi
 
     float effective_mass = _rb->mass_inverse() + LST::Math::dot_product(_contact_normal, LST::Math::cross_product(angular_term, _radius_vector));
 
-    // if (normal_velocity > 0.0f)
-    // {
-    //     float impulse_magnitude = -(normal_velocity) / effective_mass;
-
-    //     float old_accumulated_impulse = _ws_data.accumulated_normal_impulse;
-    //     _ws_data.accumulated_normal_impulse = std::max(old_accumulated_impulse + impulse_magnitude, 0.0f);
-    //     float impulse_delta = _ws_data.accumulated_normal_impulse - old_accumulated_impulse;
-
-    //     glm::vec3 impulse = impulse_delta * _contact_normal;
-    //     M_apply_impulse(_rb, _radius_vector, impulse);
-
-    //     return;
-    // }
-
-    constexpr float Min_Normal_Velocity = 0.3f;
-    float effective_restitution = 0.0f;
-    if(normal_velocity < -Min_Normal_Velocity)
-        effective_restitution = _rb->restitution();
-
     constexpr float Baumgarte = 0.005f;
     constexpr float Slope = 0.01f;
 
@@ -271,7 +252,7 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_poi
     if (_depth > Slope)
         bias = Baumgarte * (_depth - Slope) / _dt;
 
-    float impulse_magnitude = -(normal_velocity * (1.0f + effective_restitution) + bias) / effective_mass;
+    float impulse_magnitude = -(normal_velocity * (1.0f + _rb->restitution()) + bias) / effective_mass;
 
     float old_accumulated_impulse = _ws_data.accumulated_normal_impulse;
     _ws_data.accumulated_normal_impulse = std::max(old_accumulated_impulse + impulse_magnitude, 0.0f);
@@ -280,7 +261,8 @@ void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_poi
     glm::vec3 impulse = impulse_delta * _contact_normal;
     M_apply_impulse(_rb, _radius_vector, impulse);
 
-    M_apply_friction(_rb, _radius_vector, _contact_normal, _ws_data.accumulated_normal_impulse);
+    if(_ws_data.accumulated_normal_impulse > 0.0f)
+        M_apply_friction(_rb, _radius_vector, _contact_normal, _ws_data.accumulated_normal_impulse);
 }
 
 void Collision_Resolution__Rigid_Body_3D::M_apply_impulse(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector, const glm::vec3& _impulse)
