@@ -2,6 +2,8 @@
 
 #include <Stuff/Math_Stuff.h>
 
+#include <Physics/Rigid_Body/Rigid_Body_Utility.h>
+
 using namespace LMD;
 
 
@@ -181,7 +183,7 @@ Collision_Resolution__Rigid_Body_3D::Prep_Data Collision_Resolution__Rigid_Body_
     {
         const glm::vec3& contact_point = _contact_points[i];
 
-        result.radius_vectors_0.push( contact_point - rb->center_of_mass() );
+        result.radius_vectors_0.push( Rigid_Body_Utility::calculate_radius_vector(*rb, contact_point) );
 
         glm::vec3 local_contact_point_0 = M_calculate_local_contact_point(_dynamic_pm, contact_point);
         glm::vec3 local_contact_point_1 = M_calculate_local_contact_point(_static_pm, contact_point);
@@ -233,8 +235,7 @@ void Collision_Resolution__Rigid_Body_3D::M_apply_old_dvs_data(Physics_Module__R
 void Collision_Resolution__Rigid_Body_3D::M_resolve_dynamic_vs_static_single_point(Physics_Module__Rigid_Body* _rb, const glm::vec3& _radius_vector,
                                                                                    const glm::vec3& _contact_normal, float _depth, float _dt, WS_Contact_Data& _ws_data)
 {
-    glm::vec3 angular_velocity_component = LST::Math::cross_product(_rb->angular_velocity(), _radius_vector);
-    glm::vec3 relative_velocity = _rb->velocity() + angular_velocity_component;
+    glm::vec3 relative_velocity = Rigid_Body_Utility::calculate_point_velocity(*_rb, _radius_vector);
 
     float normal_velocity = LST::Math::dot_product(relative_velocity, _contact_normal);
 
