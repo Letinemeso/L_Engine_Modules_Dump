@@ -18,9 +18,12 @@ namespace LMD
         bool m_rotate_with_object = false;
 
     private:
+        bool m_enabled = true;
+
         LMD::Physics_Module__Rigid_Body* m_rigid_body = nullptr;
 
     public:
+        inline void set_enabled(bool _value) { m_enabled = _value; }
         inline void set_acceleration(const glm::vec3& _value) { m_acceleration = _value; }
         inline void set_rotate_with_object(bool _value) { m_rotate_with_object = _value; }
 
@@ -42,11 +45,13 @@ namespace LMD
         INIT_VARIABLE(LMD::Rigid_Body_Accelerator_Module_Stub, LEti::Module_Stub)
 
         INIT_FIELDS
+        ADD_FIELD(bool, enabled)
         ADD_FIELD(glm::vec3, acceleration)
         ADD_FIELD(bool, rotate_with_object)
         FIELDS_END
 
     public:
+        bool enabled = true;
         glm::vec3 acceleration = {0.0f, 0.0f, 0.0f};
         bool rotate_with_object = false;
 
@@ -54,6 +59,7 @@ namespace LMD
         INIT_DEFAULT_BUILDER_STUB(Rigid_Body_Accelerator_Module)
 
         INIT_BUILDER_STUB_SETTERS
+        ADD_BUILDER_STUB_SETTER(set_enabled, enabled)
         ADD_BUILDER_STUB_SETTER(set_acceleration, acceleration)
         ADD_BUILDER_STUB_SETTER(set_rotate_with_object, rotate_with_object)
         BUILDER_STUB_SETTERS_END

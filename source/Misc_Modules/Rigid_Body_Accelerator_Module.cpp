@@ -15,6 +15,9 @@ void Rigid_Body_Accelerator_Module::M_on_parent_object_set()
 
 void Rigid_Body_Accelerator_Module::update(float _dt)
 {
+    if(!m_enabled)
+        return;
+
     glm::vec3 additional_velocity = m_acceleration * _dt;
 
     if(m_rotate_with_object)
