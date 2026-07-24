@@ -1,9 +1,9 @@
 #include <Tools/Voxel/Voxel_2D/Voxel_2D_Intersection_Checks.h>
 
-using namespace LGL;
+using namespace LMD;
 
 
-bool LGL::voxel_2d_inside_circle(const Voxel_2D* _voxel, const float* _circle_center, float _circle_radius)
+bool LMD::voxel_2d_inside_circle(const Voxel_2D* _voxel, const float* _circle_center, float _circle_radius)
 {
     float radius_squared = _circle_radius * _circle_radius;
 
@@ -28,7 +28,7 @@ bool LGL::voxel_2d_inside_circle(const Voxel_2D* _voxel, const float* _circle_ce
     return true;
 }
 
-bool LGL::voxel_2d_touches_circle(const Voxel_2D* _voxel, const float* _circle_center, float _circle_radius)
+bool LMD::voxel_2d_touches_circle(const Voxel_2D* _voxel, const float* _circle_center, float _circle_radius)
 {
     float rectX = _voxel->position_x();
     float rectY = _voxel->position_y();
@@ -66,7 +66,7 @@ bool point_inside_triangle(const float* p, const float* a, const float* b, const
     return !(has_neg && has_pos);
 }
 
-bool LGL::voxel_2d_inside_triangle(const Voxel_2D* _voxel, const float* _vertex_0, const float* _vertex_1, const float* _vertex_2)
+bool LMD::voxel_2d_inside_triangle(const Voxel_2D* _voxel, const float* _vertex_0, const float* _vertex_1, const float* _vertex_2)
 {
     float rectCorners[4][2] = {
         {_voxel->position_x(),                     _voxel->position_y()},
@@ -105,7 +105,7 @@ bool segments_intersect(const float* p1, const float* q1, const float* p2, const
     return false;
 }
 
-bool LGL::voxel_2d_touches_triangle(const Voxel_2D* _voxel, const float* _vertex_0, const float* _vertex_1, const float* _vertex_2)
+bool LMD::voxel_2d_touches_triangle(const Voxel_2D* _voxel, const float* _vertex_0, const float* _vertex_1, const float* _vertex_2)
 {
     float rectCorners[4][2] = {
         {_voxel->position_x(),                     _voxel->position_y()},
@@ -128,7 +128,7 @@ bool LGL::voxel_2d_touches_triangle(const Voxel_2D* _voxel, const float* _vertex
 }
 
 
-bool LGL::voxel_2d_inside_rectangle(const Voxel_2D* _voxel, float _left, float _bottom, float _right, float _top)
+bool LMD::voxel_2d_inside_rectangle(const Voxel_2D* _voxel, float _left, float _bottom, float _right, float _top)
 {
     float voxel_left = _voxel->position_x();
     float voxel_right = voxel_left + _voxel->size_x();
@@ -145,7 +145,7 @@ bool LGL::voxel_2d_inside_rectangle(const Voxel_2D* _voxel, float _left, float _
     return true;
 }
 
-bool LGL::voxel_2d_touches_rectangle(const Voxel_2D* _voxel, float _left, float _bottom, float _right, float _top)
+bool LMD::voxel_2d_touches_rectangle(const Voxel_2D* _voxel, float _left, float _bottom, float _right, float _top)
 {
     float voxel_left = _voxel->position_x();
     float voxel_right = voxel_left + _voxel->size_x();

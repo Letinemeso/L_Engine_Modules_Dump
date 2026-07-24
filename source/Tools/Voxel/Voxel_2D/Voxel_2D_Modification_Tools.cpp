@@ -1,9 +1,9 @@
 #include <Tools/Voxel/Voxel_2D/Voxel_2D_Modification_Tools.h>
 
-using namespace LGL;
+using namespace LMD;
 
 
-bool LGL::apply_data_to_voxel_recursive(Voxel_2D* _voxel, const Voxel_Intersection_Check_Func& _should_apply_to_whole, const Voxel_Intersection_Check_Func& _should_apply_partially, const Voxel_Apply_Data_Func& _apply_data)
+bool LMD::apply_data_to_voxel_recursive(Voxel_2D* _voxel, const Voxel_Intersection_Check_Func& _should_apply_to_whole, const Voxel_Intersection_Check_Func& _should_apply_partially, const Voxel_Apply_Data_Func& _apply_data)
 {
     if(_should_apply_to_whole(_voxel))
     {

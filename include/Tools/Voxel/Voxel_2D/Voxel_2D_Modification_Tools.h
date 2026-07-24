@@ -5,7 +5,7 @@
 #include <Tools/Voxel/Voxel_2D/Voxel_2D.h>
 
 
-namespace LGL
+namespace LMD
 {
 
     using Voxel_Intersection_Check_Func = LST::Function<bool(Voxel_2D*)>;

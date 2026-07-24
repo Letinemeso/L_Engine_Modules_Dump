@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-using namespace LGL;
+using namespace LMD;
 
 
 Voxel_2D_Controller::Voxel_2D_Controller()

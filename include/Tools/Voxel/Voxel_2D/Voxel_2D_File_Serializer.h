@@ -6,7 +6,7 @@
 #include <Tools/Voxel/Voxel_2D/Voxel_2D_Serializer.h>
 
 
-namespace LGL
+namespace LMD
 {
 
     class Voxel_2D_File_Serializer : public Voxel_2D_Serializer

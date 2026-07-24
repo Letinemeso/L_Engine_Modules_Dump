@@ -3,7 +3,7 @@
 #include <Tools/Voxel/Voxel_2D/Voxel_2D.h>
 
 
-namespace LGL
+namespace LMD
 {
 
     bool voxel_2d_inside_circle(const Voxel_2D* _voxel, const float* _circle_center, float _circle_radius);

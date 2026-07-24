@@ -2,7 +2,7 @@
 
 #include <string>
 
-using namespace LGL;
+using namespace LMD;
 
 
 Voxel_2D::Voxel_2D(Voxel_2D* _parent, unsigned int _max_depth, unsigned int _depth, unsigned int _id, float _position_x, float _position_y, float _size_x, float _size_y)

@@ -3,7 +3,7 @@
 #include <L_Debug/L_Debug.h>
 
 
-namespace LGL
+namespace LMD
 {
 
     class Voxel_2D

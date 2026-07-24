@@ -2,7 +2,7 @@
 
 #include <Stuff/File.h>
 
-using namespace LGL;
+using namespace LMD;
 
 
 Voxel_2D_File_Serializer::Voxel_2D_File_Serializer(const Voxel_Constructor_Function& _voxel_constructor_function, const std::string& _file_path_format)
