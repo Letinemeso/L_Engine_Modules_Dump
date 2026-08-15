@@ -11,6 +11,17 @@ namespace LMD
         unsigned int x = 0;
         unsigned int y = 0;
         unsigned int z = 0;
+
+        inline Spatial_Grid_3D_Indices operator+(const Spatial_Grid_3D_Indices& _other) const
+        {
+            Spatial_Grid_3D_Indices result;
+
+            result.x = x + _other.x;
+            result.y = y + _other.y;
+            result.z = z + _other.z;
+
+            return result;
+        }
     };
 
 
