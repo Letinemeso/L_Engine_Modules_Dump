@@ -115,3 +115,32 @@ Voxel_3D* Voxel_3D_Controller::get_or_insert_voxel(const glm::vec3& _at)
     LST::Signed_Coordinates coordinates = calculate_coordinates(_at);
     return get_or_insert_voxel(coordinates);
 }
+
+
+Voxel_3D_Controller::Voxel_Coordinates_Range Voxel_3D_Controller::calculate_voxel_coordinates_range() const
+{
+    Voxel_Coordinates_Range result;
+
+    if(m_voxels.size() == 0)
+        return result;
+
+    Voxel_Map::Const_Iterator it = m_voxels.iterator();
+    result.min = it.key();
+    result.max = it.key();
+    ++it;
+
+    for(; !it.end_reached(); ++it)
+    {
+        const LST::Signed_Coordinates& coords = it.key();
+
+        for(unsigned int i = 0; i < 3; ++i)
+        {
+            if(coords[i] < result.min[i])
+                result.min[i] = coords[i];
+            if(coords[i] > result.max[i])
+                result.max[i] = coords[i];
+        }
+    }
+
+    return result;
+}

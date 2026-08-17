@@ -11,8 +11,15 @@ namespace LMD
 
     class Voxel_3D_Controller
     {
-    private:
+    public:
+        struct Voxel_Coordinates_Range
+        {
+            LST::Signed_Coordinates min, max;
+        };
+
         using Voxel_Map = LDS::Map<LST::Signed_Coordinates, Voxel_3D*>;
+
+    private:
         Voxel_Map m_voxels;
 
         float m_voxel_size = 0.0f;
@@ -28,6 +35,9 @@ namespace LMD
         ~Voxel_3D_Controller();
 
     public:
+        inline const Voxel_Map& voxels() const { return m_voxels; }
+
+    public:
         void clear();
 
     public:
@@ -37,6 +47,8 @@ namespace LMD
         Voxel_3D* get_voxel(const glm::vec3& _at) const;
         Voxel_3D* get_or_insert_voxel(const LST::Signed_Coordinates& _coordinates);
         Voxel_3D* get_or_insert_voxel(const glm::vec3& _at);
+
+        Voxel_Coordinates_Range calculate_voxel_coordinates_range() const;
 
     };
 

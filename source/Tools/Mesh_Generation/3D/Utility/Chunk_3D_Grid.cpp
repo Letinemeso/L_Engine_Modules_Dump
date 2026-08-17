@@ -1,9 +1,29 @@
 #include <Tools/Mesh_Generation/3D/Utility/Chunk_3D_Grid.h>
 
+#include <Stuff/Cast_Tools.h>
 #include <Stuff/Math_Stuff.h>
 #include <Data_Structures/Map.h>
 
 using namespace LMD;
+
+
+Chunk_3D_Grid::Chunk_3D_Grid()
+{
+
+}
+
+Chunk_3D_Grid::Chunk_3D_Grid(Chunk_3D_Grid&& _from)
+{
+    m_max_depth = _from.m_max_depth;
+    m_grid = LST::move(_from.m_grid);
+}
+
+void Chunk_3D_Grid::operator=(Chunk_3D_Grid&& _from)
+{
+    m_max_depth = _from.m_max_depth;
+    m_grid = LST::move(_from.m_grid);
+}
+
 
 
 unsigned int Chunk_3D_Grid::M_calculate_subvoxel_value(const Voxel_3D& _subvoxel) const
