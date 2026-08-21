@@ -15,7 +15,9 @@ namespace LMD
 
     public:
         Chunk_3D_Grid();
+        Chunk_3D_Grid(const Chunk_3D_Grid& _other);
         Chunk_3D_Grid(Chunk_3D_Grid&& _from);
+        void operator=(const Chunk_3D_Grid& _other);
         void operator=(Chunk_3D_Grid&& _from);
 
     private:

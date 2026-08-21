@@ -12,10 +12,22 @@ Chunk_3D_Grid::Chunk_3D_Grid()
 
 }
 
+Chunk_3D_Grid::Chunk_3D_Grid(const Chunk_3D_Grid& _other)
+{
+    m_max_depth = _other.m_max_depth;
+    m_grid = _other.m_grid;
+}
+
 Chunk_3D_Grid::Chunk_3D_Grid(Chunk_3D_Grid&& _from)
 {
     m_max_depth = _from.m_max_depth;
     m_grid = LST::move(_from.m_grid);
+}
+
+void Chunk_3D_Grid::operator=(const Chunk_3D_Grid& _other)
+{
+    m_max_depth = _other.m_max_depth;
+    m_grid = _other.m_grid;
 }
 
 void Chunk_3D_Grid::operator=(Chunk_3D_Grid&& _from)

@@ -17,15 +17,10 @@ namespace LMD
     private:
         using Layer_Map = LDS::Map<LST::Signed_Coordinates, Chunk_3D_Generation_Data>;
 
-        struct Layer_Data
-        {
-            Layer_Map chunks_data;
-        };
-
     private:
-        Layer_Data m_layer_prev;
-        Layer_Data m_layer_curr;
-        Layer_Data m_layer_next;
+        Layer_Map m_layer_prev;
+        Layer_Map m_layer_curr;
+        Layer_Map m_layer_next;
 
         unsigned int m_current_z_offset = 0;
 
@@ -41,7 +36,9 @@ namespace LMD
         inline void set_max_depth(unsigned int _value) { m_max_depth = _value; }
 
     private:
-        void M_load_layer(Layer_Data& _layer_data, unsigned int _z);
+        Chunk_3D_Generation_Data::Neighbors_Data M_find_neighbors(const LST::Signed_Coordinates& _coords) const;
+
+        void M_load_layer(Layer_Map& _layer_data, unsigned int _z);
 
     public:
         void clear();
