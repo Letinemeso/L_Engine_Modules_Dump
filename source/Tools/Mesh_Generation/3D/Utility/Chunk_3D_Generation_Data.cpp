@@ -85,7 +85,7 @@ Chunk_3D_Generation_Data::Neighbor_Cell_Location Chunk_3D_Generation_Data::M_cal
         }
     }
 
-    if(result.coordinates[0] == 1 && result.coordinates[1] == 1 && result.coordinates[2] == 1)
+    if(neighbor_coords[0] == 1 && neighbor_coords[1] == 1 && neighbor_coords[2] == 1)
         result.chunk = this;
     else
         result.chunk = _neighbors.data[neighbor_coords[0]][neighbor_coords[1]][neighbor_coords[2]];

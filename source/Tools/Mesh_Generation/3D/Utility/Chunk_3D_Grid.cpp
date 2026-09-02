@@ -85,11 +85,11 @@ void Chunk_3D_Grid::M_fill_subvoxel_area(const Voxel_3D& _subvoxel, const Spatia
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Left_Bottom_Far),
                              _offset + Spatial_Grid_3D_Indices{0, 0, area_size_halved}, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Right_Bottom_Far),
-                             _offset + Spatial_Grid_3D_Indices{_area_size, 0, area_size_halved}, area_size_halved);
+                             _offset + Spatial_Grid_3D_Indices{area_size_halved, 0, area_size_halved}, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Left_Top_Far),
                              _offset + Spatial_Grid_3D_Indices{0, area_size_halved, area_size_halved}, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Right_Top_Far),
-                             _offset + Spatial_Grid_3D_Indices{_area_size, area_size_halved, area_size_halved}, area_size_halved);
+                             _offset + Spatial_Grid_3D_Indices{area_size_halved, area_size_halved, area_size_halved}, area_size_halved);
 
         return;
     }

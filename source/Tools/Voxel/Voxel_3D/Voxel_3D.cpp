@@ -95,6 +95,7 @@ void Voxel_3D::split()
         m_subvoxels[i] = new_voxel;
 
         new_voxel->set_size(next_size);
+        new_voxel->set_value(m_value);
     }
 
     m_subvoxels[Left_Bottom_Close]->set_offset(m_offset);
