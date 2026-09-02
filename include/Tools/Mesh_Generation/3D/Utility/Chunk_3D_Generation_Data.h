@@ -45,6 +45,7 @@ namespace LMD
 
     public:
         inline const Chunk_3D_Grid& grid() const { return m_grid; }
+        inline const LDS::Vector<glm::vec3>& points() const { return m_points; }
 
     private:
         Neighbor_Cell_Location M_calculate_neighbor_cell_location(const Neighbors_Data& _neighbors, unsigned int _x, unsigned int _y, unsigned int _z) const;

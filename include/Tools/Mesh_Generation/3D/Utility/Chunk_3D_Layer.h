@@ -14,7 +14,7 @@ namespace LMD
 
     class Chunk_3D_Layer
     {
-    private:
+    public:
         using Layer_Map = LDS::Map<LST::Signed_Coordinates, Chunk_3D_Generation_Data>;
 
     private:
@@ -35,15 +35,18 @@ namespace LMD
         inline void set_voxel_controller(const Voxel_3D_Controller* _ptr) { m_voxel_controller = _ptr;  }
         inline void set_max_depth(unsigned int _value) { m_max_depth = _value; }
 
+        inline const Layer_Map& current_layer() const { return m_layer_curr; }
+
     private:
         Chunk_3D_Generation_Data::Neighbors_Data M_find_neighbors(const LST::Signed_Coordinates& _coords) const;
 
         void M_load_layer(Layer_Map& _layer_data, unsigned int _z);
+        void M_extract_current_layer_points();
 
     public:
         void clear();
         void reload();
-        void load_next_layer();
+        bool load_next_layer();
 
     };
 

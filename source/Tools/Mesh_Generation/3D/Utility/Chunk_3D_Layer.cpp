@@ -48,8 +48,11 @@ void Chunk_3D_Layer::M_load_layer(Layer_Map& _layer_data, unsigned int _z)
         Chunk_3D_Generation_Data generation_data(*it, m_max_depth);
         _layer_data.insert(coords, LST::move(generation_data));
     }
+}
 
-    for(Layer_Map::Iterator it = _layer_data.iterator(); !it.end_reached(); ++it)
+void Chunk_3D_Layer::M_extract_current_layer_points()
+{
+    for(Layer_Map::Iterator it = m_layer_curr.iterator(); !it.end_reached(); ++it)
     {
         const LST::Signed_Coordinates& coords = it.key();
         Chunk_3D_Generation_Data& generation_data = *it;
@@ -85,13 +88,22 @@ void Chunk_3D_Layer::reload()
 
     M_load_layer(m_layer_curr, m_z_min);
     M_load_layer(m_layer_next, m_z_min + 1);
+
+    M_extract_current_layer_points();
 }
 
-void Chunk_3D_Layer::load_next_layer()
+bool Chunk_3D_Layer::load_next_layer()
 {
     ++m_current_z_offset;
+
+    if(m_current_z_offset > m_z_max)
+        return false;
 
     m_layer_prev = LST::move(m_layer_curr);
     m_layer_curr = LST::move(m_layer_next);
     M_load_layer(m_layer_next, m_current_z_offset + 1);
+
+    M_extract_current_layer_points();
+
+    return true;
 }
