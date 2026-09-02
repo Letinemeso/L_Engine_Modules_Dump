@@ -36,6 +36,7 @@ namespace LMD
 
     public:
         inline const Voxel_Map& voxels() const { return m_voxels; }
+        inline float voxel_size() const { return m_voxel_size; }
 
     public:
         void clear();

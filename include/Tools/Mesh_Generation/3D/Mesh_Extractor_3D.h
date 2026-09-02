@@ -39,6 +39,9 @@ namespace LMD
         Voxel_Triangles_Map m_voxel_triangles;
         Voxel_Meshes_Map m_voxel_meshes_map;
 
+        unsigned int m_max_extraction_depth = 0;
+        float m_extraction_cell_size = 0.0f;
+
     private:
         const Voxel_3D_Controller* m_voxel_controller = nullptr;
 
@@ -48,6 +51,7 @@ namespace LMD
 
     public:
         inline void set_voxel_controller(const Voxel_3D_Controller* _ptr) { m_voxel_controller = _ptr; }
+        inline void set_max_extraction_depth(unsigned int _value) { m_max_extraction_depth = _value; }
 
     private:
         unsigned int M_get_or_add_id(const glm::vec3& _vec);
@@ -56,6 +60,8 @@ namespace LMD
         void M_append_mesh_data(const LST::Signed_Coordinates& _coords, const LDS::Vector<glm::vec3>& _raw_mesh);
 
         void M_extract_geometry_data(LDS::Vector<float>& _geometry, const Triangles_Vec& _triangles);
+        void M_extract_texture_coords_data(LDS::Vector<float>& _texture_coords, const Triangles_Vec& _triangles);
+        void M_extract_normals_data(LDS::Vector<float>& _normals, const Triangles_Vec& _triangles);
         void M_extract_meshes();
 
     public:
@@ -63,7 +69,7 @@ namespace LMD
         void extract();
 
     public:
-        const LDS::Vector<float>* get_mesh(const LST::Signed_Coordinates& _coords) const;
+        const Mesh_3D* get_mesh(const LST::Signed_Coordinates& _coords) const;
 
     };
 

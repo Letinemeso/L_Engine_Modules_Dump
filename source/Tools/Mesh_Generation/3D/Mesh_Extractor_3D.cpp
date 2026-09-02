@@ -1,5 +1,7 @@
 #include <Tools/Mesh_Generation/3D/Mesh_Extractor_3D.h>
 
+#include <Stuff/Math_Stuff.h>
+
 #include <Tools/Mesh_Generation/3D/Utility/Chunk_3D_Layer.h>
 
 using namespace LMD;
@@ -80,6 +82,64 @@ void Mesh_Extractor_3D::M_extract_geometry_data(LDS::Vector<float>& _geometry, c
     }
 }
 
+void Mesh_Extractor_3D::M_extract_texture_coords_data(LDS::Vector<float>& _texture_coords, const Triangles_Vec& _triangles)
+{
+    _texture_coords.clear();
+    _texture_coords.resize(_triangles.size() * 6);
+
+    for(unsigned int t_i = 0; t_i < _triangles.size(); ++t_i)
+    {
+        const Triangle& triangle = _triangles[t_i];
+
+        const glm::vec3& point_0 = m_points_cache[ triangle.id[0] ];
+        const glm::vec3& point_1 = m_points_cache[ triangle.id[1] ];
+        const glm::vec3& point_2 = m_points_cache[ triangle.id[2] ];
+
+        glm::vec3 triangle_normal = LST::Math::cross_product(point_1 - point_0, point_2 - point_0);
+        LST::Math::shrink_vector_to_1(triangle_normal);
+
+        glm::vec3 u_axis = point_1 - point_0;
+        LST::Math::shrink_vector_to_1(u_axis);
+
+        glm::vec3 v_axis = LST::Math::cross_product(triangle_normal, u_axis);
+        LST::Math::shrink_vector_to_1(v_axis);
+
+        _texture_coords.push(0.0f);
+        _texture_coords.push(0.0f);
+
+        _texture_coords.push( LST::Math::dot_product(point_1 - point_0, u_axis) / m_extraction_cell_size );
+        _texture_coords.push(0.0f);
+
+        _texture_coords.push( LST::Math::dot_product(point_2 - point_0, u_axis) / m_extraction_cell_size );
+        _texture_coords.push( LST::Math::dot_product(point_2 - point_0, v_axis) / m_extraction_cell_size );
+    }
+}
+
+void Mesh_Extractor_3D::M_extract_normals_data(LDS::Vector<float>& _normals, const Triangles_Vec& _triangles)
+{
+    _normals.clear();
+    _normals.resize(_triangles.size() * 9);
+
+    for(unsigned int t_i = 0; t_i < _triangles.size(); ++t_i)
+    {
+        const Triangle& triangle = _triangles[t_i];
+
+        const glm::vec3& point_0 = m_points_cache[ triangle.id[0] ];
+        const glm::vec3& point_1 = m_points_cache[ triangle.id[1] ];
+        const glm::vec3& point_2 = m_points_cache[ triangle.id[2] ];
+
+        glm::vec3 normal = LST::Math::cross_product(point_1 - point_0, point_2 - point_0);
+        LST::Math::shrink_vector_to_1(normal);
+
+        for(unsigned int r_i = 0; r_i < 3; ++r_i)
+        {
+            _normals.push(normal.x);
+            _normals.push(normal.y);
+            _normals.push(normal.z);
+        }
+    }
+}
+
 void Mesh_Extractor_3D::M_extract_meshes()
 {
     m_voxel_meshes_map.clear();
@@ -96,7 +156,8 @@ void Mesh_Extractor_3D::M_extract_meshes()
         Mesh_3D& mesh = *mesh_it;
 
         M_extract_geometry_data(mesh.geometry, triangles);
-
+        M_extract_texture_coords_data(mesh.texture_coordinates, triangles);
+        M_extract_normals_data(mesh.normals, triangles);
     }
 }
 
@@ -112,8 +173,11 @@ void Mesh_Extractor_3D::extract()
 {
     L_ASSERT(m_voxel_controller);
 
+    m_extraction_cell_size = m_voxel_controller->voxel_size() / powf(2.0f, (float)m_max_extraction_depth);
+
     Chunk_3D_Layer layer;
     layer.set_voxel_controller(m_voxel_controller);
+    layer.set_max_depth(m_max_extraction_depth);
     layer.reload();
 
     do
@@ -122,4 +186,14 @@ void Mesh_Extractor_3D::extract()
             M_append_mesh_data(it.key(), it->points());
     }
     while(!layer.load_next_layer());
+}
+
+
+
+const Mesh_3D* Mesh_Extractor_3D::get_mesh(const LST::Signed_Coordinates& _coords) const
+{
+    Voxel_Meshes_Map::Const_Iterator it = m_voxel_meshes_map.find(_coords);
+    if(!it.is_ok())
+        return nullptr;
+    return &(*it);
 }
