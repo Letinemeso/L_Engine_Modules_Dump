@@ -43,6 +43,7 @@ namespace LMD
 
     public:
         LST::Signed_Coordinates calculate_coordinates(const glm::vec3& _at) const;
+        glm::vec3 calculate_coordinates(const LST::Signed_Coordinates& _at) const;
 
         Voxel_3D* get_voxel(const LST::Signed_Coordinates& _coordinates) const;
         Voxel_3D* get_voxel(const glm::vec3& _at) const;

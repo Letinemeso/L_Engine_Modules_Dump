@@ -88,6 +88,16 @@ LST::Signed_Coordinates Voxel_3D_Controller::calculate_coordinates(const glm::ve
     return result;
 }
 
+glm::vec3 Voxel_3D_Controller::calculate_coordinates(const LST::Signed_Coordinates& _at) const
+{
+    glm::vec3 result;
+
+    for(unsigned int i = 0; i < 3; ++i)
+        result[i] = (float)_at[i] * m_voxel_size;
+
+    return result;
+}
+
 
 Voxel_3D* Voxel_3D_Controller::get_voxel(const LST::Signed_Coordinates& _coordinates) const
 {
@@ -105,9 +115,17 @@ Voxel_3D* Voxel_3D_Controller::get_voxel(const glm::vec3& _at) const
 
 Voxel_3D* Voxel_3D_Controller::get_or_insert_voxel(const LST::Signed_Coordinates& _coordinates)
 {
-    Voxel_Map::Iterator voxel_it = m_voxels.find_or_insert(_coordinates);
-    *voxel_it = new Voxel_3D();
-    return *voxel_it;
+    Voxel_Map::Iterator voxel_it = m_voxels.find(_coordinates);
+    if(voxel_it.is_ok())
+        return *voxel_it;
+
+    Voxel_3D* voxel = new Voxel_3D();
+    voxel->set_offset( calculate_coordinates(_coordinates) );
+    voxel->set_size(m_voxel_size);
+
+    m_voxels.insert(_coordinates, voxel);
+
+    return voxel;
 }
 
 Voxel_3D* Voxel_3D_Controller::get_or_insert_voxel(const glm::vec3& _at)

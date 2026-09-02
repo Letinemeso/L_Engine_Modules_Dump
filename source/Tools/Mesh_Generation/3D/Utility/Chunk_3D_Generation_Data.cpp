@@ -19,7 +19,12 @@ Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(const Voxel_3D* _voxel, unsig
 
 Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(const Chunk_3D_Generation_Data& _other)
 {
+    m_voxel = _other.m_voxel;
+    m_grid = _other.m_grid;
+    m_points = _other.m_points;
 
+    m_cell_size = _other.m_cell_size;
+    m_cell_size_halved = _other.m_cell_size_halved;
 }
 
 Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(Chunk_3D_Generation_Data&& _from)
@@ -27,6 +32,9 @@ Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(Chunk_3D_Generation_Data&& _f
 {
     m_grid = LST::move(_from.m_grid);
     m_points = LST::move(_from.m_points);
+
+    m_cell_size = _from.m_cell_size;
+    m_cell_size_halved = _from.m_cell_size_halved;
 }
 
 void Chunk_3D_Generation_Data::operator=(const Chunk_3D_Generation_Data& _other)
@@ -34,6 +42,9 @@ void Chunk_3D_Generation_Data::operator=(const Chunk_3D_Generation_Data& _other)
     m_voxel = _other.m_voxel;
     m_grid = _other.m_grid;
     m_points = _other.m_points;
+
+    m_cell_size = _other.m_cell_size;
+    m_cell_size_halved = _other.m_cell_size_halved;
 }
 
 void Chunk_3D_Generation_Data::operator=(Chunk_3D_Generation_Data&& _from)
@@ -41,6 +52,9 @@ void Chunk_3D_Generation_Data::operator=(Chunk_3D_Generation_Data&& _from)
     m_voxel = _from.m_voxel;
     m_grid = LST::move(_from.m_grid);
     m_points = LST::move(_from.m_points);
+
+    m_cell_size = _from.m_cell_size;
+    m_cell_size_halved = _from.m_cell_size_halved;
 }
 
 
@@ -48,7 +62,7 @@ void Chunk_3D_Generation_Data::operator=(Chunk_3D_Generation_Data&& _from)
 Chunk_3D_Generation_Data::Neighbor_Cell_Location Chunk_3D_Generation_Data::M_calculate_neighbor_cell_location(const Neighbors_Data& _neighbors, unsigned int _x, unsigned int _y, unsigned int _z) const
 {
     unsigned int coords[3] = { _x, _y, _z };
-    unsigned int correct_neighbor_coords[3];
+    unsigned int neighbor_coords[3];
 
     Neighbor_Cell_Location result;
 
@@ -56,17 +70,17 @@ Chunk_3D_Generation_Data::Neighbor_Cell_Location Chunk_3D_Generation_Data::M_cal
     {
         if(coords[i] < m_grid.grid_size())
         {
-            correct_neighbor_coords[i] = 1;
+            neighbor_coords[i] = 1;
             result.coordinates[i] = coords[i];
         }
         else if(coords[i] == LST::Math::Max_Unsigned_Int)
         {
-            correct_neighbor_coords[i] = 0;
+            neighbor_coords[i] = 0;
             result.coordinates[i] = m_grid.grid_size() - 1;
         }
         else
         {
-            correct_neighbor_coords[i] = 2;
+            neighbor_coords[i] = 2;
             result.coordinates[i] = 0;
         }
     }
@@ -74,7 +88,7 @@ Chunk_3D_Generation_Data::Neighbor_Cell_Location Chunk_3D_Generation_Data::M_cal
     if(result.coordinates[0] == 1 && result.coordinates[1] == 1 && result.coordinates[2] == 1)
         result.chunk = this;
     else
-        result.chunk = _neighbors.data[result.coordinates.x()][result.coordinates.y()][result.coordinates.z()];
+        result.chunk = _neighbors.data[neighbor_coords[0]][neighbor_coords[1]][neighbor_coords[2]];
 
     return result;
 }
@@ -84,13 +98,9 @@ Chunk_3D_Generation_Data::Neighboring_Cells_Data Chunk_3D_Generation_Data::M_cal
     unsigned int coords[3] = { _x, _y, _z };
 
     unsigned int offsets[3];
-    unsigned int limits[3];
 
-    for(unsigned int i = 0; i < m_grid.grid_size(); ++i)
-    {
+    for(unsigned int i = 0; i < 3; ++i)
         offsets[i] = coords[i] - 1;
-        limits[i] = coords[i] + 1;
-    }
 
     Neighboring_Cells_Data result;
 
@@ -100,7 +110,7 @@ Chunk_3D_Generation_Data::Neighboring_Cells_Data Chunk_3D_Generation_Data::M_cal
         {
             for(unsigned int z = 0; z < 3; ++z)
             {
-                Neighbor_Cell_Location cell_location = M_calculate_neighbor_cell_location(_neighbors, x, y, z);
+                Neighbor_Cell_Location cell_location = M_calculate_neighbor_cell_location(_neighbors, offsets[0] + x, offsets[1] + y, offsets[2] + z);
 
                 if(!cell_location.chunk)
                     continue;
@@ -204,12 +214,12 @@ void Chunk_3D_Generation_Data::M_balance_point(const Neighboring_Cells_Data& _ne
 void Chunk_3D_Generation_Data::M_append_quad(const glm::vec3& _point_0, const glm::vec3& _point_1, const glm::vec3& _point_2, const glm::vec3& _point_3)
 {
     m_points.push(_point_3);
-    m_points.push(_point_2);
     m_points.push(_point_0);
+    m_points.push(_point_2);
 
     m_points.push(_point_2);
-    m_points.push(_point_1);
     m_points.push(_point_0);
+    m_points.push(_point_1);
 }
 
 void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbors, unsigned int _x, unsigned int _y, unsigned int _z)
@@ -245,14 +255,14 @@ void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbo
     /* 6 */ glm::vec3 left_up_far = center +     glm::vec3(-m_cell_size_halved,  m_cell_size_halved,  m_cell_size_halved);
     /* 7 */ glm::vec3 right_up_far = center +    glm::vec3( m_cell_size_halved,  m_cell_size_halved,  m_cell_size_halved);
 
-    M_balance_point(neighbors_data, center, left_down_near, false, false, false);
-    M_balance_point(neighbors_data, center, right_down_near, true, false, false);
-    M_balance_point(neighbors_data, center, left_down_far, false, false, true);
-    M_balance_point(neighbors_data, center, right_down_far, true, false, true);
-    M_balance_point(neighbors_data, center, left_up_near, false, true, false);
-    M_balance_point(neighbors_data, center, right_up_near, true, true, false);
-    M_balance_point(neighbors_data, center, left_up_far, false, true, true);
-    M_balance_point(neighbors_data, center, right_up_far, true, true, true);
+    // M_balance_point(neighbors_data, center, left_down_near, false, false, false);
+    // M_balance_point(neighbors_data, center, right_down_near, true, false, false);
+    // M_balance_point(neighbors_data, center, left_down_far, false, false, true);
+    // M_balance_point(neighbors_data, center, right_down_far, true, false, true);
+    // M_balance_point(neighbors_data, center, left_up_near, false, true, false);
+    // M_balance_point(neighbors_data, center, right_up_near, true, true, false);
+    // M_balance_point(neighbors_data, center, left_up_far, false, true, true);
+    // M_balance_point(neighbors_data, center, right_up_far, true, true, true);
 
     if(neighbors_data.values[0][1][1] == 0)
         M_append_quad(left_down_far, left_up_far, left_up_near, left_down_near);

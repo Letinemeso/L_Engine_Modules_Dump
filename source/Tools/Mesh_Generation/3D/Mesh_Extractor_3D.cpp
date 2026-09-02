@@ -180,12 +180,17 @@ void Mesh_Extractor_3D::extract()
     layer.set_max_depth(m_max_extraction_depth);
     layer.reload();
 
-    do
+    bool last_layer_reached = false;
+
+    while(!last_layer_reached)
     {
         for(Chunk_3D_Layer::Layer_Map::Const_Iterator it = layer.current_layer().iterator(); !it.end_reached(); ++it)
             M_append_mesh_data(it.key(), it->points());
+
+        last_layer_reached = !layer.load_next_layer();
     }
-    while(!layer.load_next_layer());
+
+    M_extract_meshes();
 }
 
 
