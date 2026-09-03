@@ -95,22 +95,21 @@ Chunk_3D_Generation_Data::Neighbor_Cell_Location Chunk_3D_Generation_Data::M_cal
 
 Chunk_3D_Generation_Data::Neighboring_Cells_Data Chunk_3D_Generation_Data::M_calculate_neighboring_cells_data(const Neighbors_Data& _neighbors, unsigned int _x, unsigned int _y, unsigned int _z) const
 {
-    unsigned int coords[3] = { _x, _y, _z };
-
-    unsigned int offsets[3];
-
-    for(unsigned int i = 0; i < 3; ++i)
-        offsets[i] = coords[i] - 1;
-
     Neighboring_Cells_Data result;
 
     for(unsigned int x = 0; x < 3; ++x)
     {
+        unsigned int neighbor_x = _x - 1 + x;
+
         for(unsigned int y = 0; y < 3; ++y)
         {
+            unsigned int neighbor_y = _y - 1 + y;
+
             for(unsigned int z = 0; z < 3; ++z)
             {
-                Neighbor_Cell_Location cell_location = M_calculate_neighbor_cell_location(_neighbors, offsets[0] + x, offsets[1] + y, offsets[2] + z);
+                unsigned int neighbor_z = _z - 1 + z;
+
+                Neighbor_Cell_Location cell_location = M_calculate_neighbor_cell_location(_neighbors, neighbor_x, neighbor_y, neighbor_z);
 
                 if(!cell_location.chunk)
                     continue;

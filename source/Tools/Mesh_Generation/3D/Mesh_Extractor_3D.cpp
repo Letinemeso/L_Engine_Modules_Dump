@@ -182,6 +182,8 @@ void Mesh_Extractor_3D::extract()
 
     bool last_layer_reached = false;
 
+    LST::Quantized_Vector::set_factor(m_extraction_cell_size * 0.1f);
+
     while(!last_layer_reached)
     {
         for(Chunk_3D_Layer::Layer_Map::Const_Iterator it = layer.current_layer().iterator(); !it.end_reached(); ++it)
