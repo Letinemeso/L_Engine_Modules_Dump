@@ -63,6 +63,95 @@ void Mesh_Extractor_3D::M_append_mesh_data(const LST::Signed_Coordinates& _coord
     m_voxel_triangles.insert(_coords, LST::move(triangles));
 }
 
+void Mesh_Extractor_3D::M_extract_meshes_data()
+{
+    m_voxel_triangles.clear();
+
+    Chunk_3D_Layer layer;
+    layer.set_voxel_controller(m_voxel_controller);
+    layer.set_max_depth(m_max_extraction_depth);
+    layer.reload();
+
+    bool last_layer_reached = false;
+
+    LST::Quantized_Vector::set_factor(m_extraction_cell_size * 0.1f);
+
+    while(!last_layer_reached)
+    {
+        for(Chunk_3D_Layer::Layer_Map::Const_Iterator it = layer.current_layer().iterator(); !it.end_reached(); ++it)
+            M_append_mesh_data(it.key(), it->points());
+
+        last_layer_reached = !layer.load_next_layer();
+    }
+}
+
+
+void Mesh_Extractor_3D::M_append_points_neighbors_for_triangle(const Triangle& _triangle)
+{
+    for(unsigned int i = 0; i < 3; ++i)
+    {
+        IDs_Vec& ids_vec = m_point_neighbors[ _triangle.id[i] ];
+
+        unsigned int neighbor_0 = _triangle.id[(i + 1) % 3];
+        unsigned int neighbor_1 = _triangle.id[(i + 2) % 3];
+
+        if(!ids_vec.contains(neighbor_0))
+            ids_vec.push(neighbor_0);
+        if(!ids_vec.contains(neighbor_1))
+            ids_vec.push(neighbor_1);
+    }
+}
+
+void Mesh_Extractor_3D::M_find_point_neighbors()
+{
+    m_point_neighbors.clear();
+    m_point_neighbors.resize(m_points_cache.size());
+    m_point_neighbors.mark_full();
+
+    for(Voxel_Triangles_Map::Iterator it = m_voxel_triangles.iterator(); !it.end_reached(); ++it)
+    {
+        const Triangles_Vec& triangles = *it;
+
+        for(unsigned int i = 0; i < triangles.size(); ++i)
+            M_append_points_neighbors_for_triangle( triangles[i] );
+    }
+}
+
+
+glm::vec3 Mesh_Extractor_3D::M_smooth_point(const glm::vec3& _point, const IDs_Vec& _neighbors_ids)
+{
+    L_ASSERT(_neighbors_ids.size() > 0);
+
+    glm::vec3 stride = {0.0f, 0.0f, 0.0f};
+
+    for(unsigned int i = 0; i < _neighbors_ids.size(); ++i)
+    {
+        const glm::vec3& neighbor_point = m_points_cache[ _neighbors_ids[i] ];
+        stride += neighbor_point - _point;
+    }
+
+    stride /= (float)_neighbors_ids.size();
+
+    return _point + stride;
+}
+
+void Mesh_Extractor_3D::M_smooth_points()
+{
+    L_ASSERT(m_points_cache.size() == m_point_neighbors.size());
+
+    Points_Vec smoothed_points(m_points_cache.size());
+    smoothed_points.mark_full();
+
+    for(unsigned int i = 0; i < m_points_cache.size(); ++i)
+    {
+        const glm::vec3& original_point = m_points_cache[i];
+        const IDs_Vec& neighbors_ids = m_point_neighbors[i];
+        smoothed_points[i] = M_smooth_point(original_point, neighbors_ids);
+    }
+
+    m_points_cache = LST::move(smoothed_points);
+}
+
 
 void Mesh_Extractor_3D::M_extract_geometry_data(LDS::Vector<float>& _geometry, const Triangles_Vec& _triangles)
 {
@@ -175,23 +264,9 @@ void Mesh_Extractor_3D::extract()
 
     m_extraction_cell_size = m_voxel_controller->voxel_size() / powf(2.0f, (float)m_max_extraction_depth);
 
-    Chunk_3D_Layer layer;
-    layer.set_voxel_controller(m_voxel_controller);
-    layer.set_max_depth(m_max_extraction_depth);
-    layer.reload();
-
-    bool last_layer_reached = false;
-
-    LST::Quantized_Vector::set_factor(m_extraction_cell_size * 0.1f);
-
-    while(!last_layer_reached)
-    {
-        for(Chunk_3D_Layer::Layer_Map::Const_Iterator it = layer.current_layer().iterator(); !it.end_reached(); ++it)
-            M_append_mesh_data(it.key(), it->points());
-
-        last_layer_reached = !layer.load_next_layer();
-    }
-
+    M_extract_meshes_data();
+    M_find_point_neighbors();
+    M_smooth_points();
     M_extract_meshes();
 }
 

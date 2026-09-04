@@ -254,14 +254,14 @@ void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbo
     /* 6 */ glm::vec3 left_up_far = center +     glm::vec3(-m_cell_size_halved,  m_cell_size_halved,  m_cell_size_halved);
     /* 7 */ glm::vec3 right_up_far = center +    glm::vec3( m_cell_size_halved,  m_cell_size_halved,  m_cell_size_halved);
 
-    // M_balance_point(neighbors_data, center, left_down_near, false, false, false);
-    // M_balance_point(neighbors_data, center, right_down_near, true, false, false);
-    // M_balance_point(neighbors_data, center, left_down_far, false, false, true);
-    // M_balance_point(neighbors_data, center, right_down_far, true, false, true);
-    // M_balance_point(neighbors_data, center, left_up_near, false, true, false);
-    // M_balance_point(neighbors_data, center, right_up_near, true, true, false);
-    // M_balance_point(neighbors_data, center, left_up_far, false, true, true);
-    // M_balance_point(neighbors_data, center, right_up_far, true, true, true);
+    M_balance_point(neighbors_data, center, left_down_near, false, false, false);
+    M_balance_point(neighbors_data, center, right_down_near, true, false, false);
+    M_balance_point(neighbors_data, center, left_down_far, false, false, true);
+    M_balance_point(neighbors_data, center, right_down_far, true, false, true);
+    M_balance_point(neighbors_data, center, left_up_near, false, true, false);
+    M_balance_point(neighbors_data, center, right_up_near, true, true, false);
+    M_balance_point(neighbors_data, center, left_up_far, false, true, true);
+    M_balance_point(neighbors_data, center, right_up_far, true, true, true);
 
     if(neighbors_data.values[0][1][1] == 0)
         M_append_quad(left_down_far, left_up_far, left_up_near, left_down_near);

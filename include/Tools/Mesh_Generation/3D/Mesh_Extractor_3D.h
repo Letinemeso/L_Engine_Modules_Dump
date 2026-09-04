@@ -23,6 +23,8 @@ namespace LMD
     private:
         using Ids_Map = LDS::Map<LST::Quantized_Vector, unsigned int>;
         using Points_Vec = LDS::Vector<glm::vec3>;
+        using IDs_Vec = LDS::Vector<unsigned int>;
+        using Point_Neighbors_Vec = LDS::Vector<IDs_Vec>;
 
         struct Triangle
         {
@@ -36,6 +38,7 @@ namespace LMD
     private:
         Ids_Map m_ids_cache;
         Points_Vec m_points_cache;
+        Point_Neighbors_Vec m_point_neighbors;
         Voxel_Triangles_Map m_voxel_triangles;
         Voxel_Meshes_Map m_voxel_meshes_map;
 
@@ -58,6 +61,13 @@ namespace LMD
         Triangle M_construct_triangle(const LDS::Vector<glm::vec3>& _raw_mesh, unsigned int _offset);
 
         void M_append_mesh_data(const LST::Signed_Coordinates& _coords, const LDS::Vector<glm::vec3>& _raw_mesh);
+        void M_extract_meshes_data();
+
+        void M_append_points_neighbors_for_triangle(const Triangle& _triangle);
+        void M_find_point_neighbors();
+
+        glm::vec3 M_smooth_point(const glm::vec3& _point, const IDs_Vec& _neighbors_ids);
+        void M_smooth_points();
 
         void M_extract_geometry_data(LDS::Vector<float>& _geometry, const Triangles_Vec& _triangles);
         void M_extract_texture_coords_data(LDS::Vector<float>& _texture_coords, const Triangles_Vec& _triangles);
