@@ -5,6 +5,20 @@
 using namespace LMD;
 
 
+void Voxel_3D_Brush__Rectangle::set_parameters(const glm::vec3& _offset, const glm::vec3& _size)
+{
+    set_offset(_offset);
+    set_size(_size);
+}
+
+void Voxel_3D_Brush__Rectangle::set_parameters_from_center(const glm::vec3& _center, const glm::vec3& _size)
+{
+    set_offset(_center - (_size * 0.5f));
+    set_size(_size);
+}
+
+
+
 bool Voxel_3D_Brush__Rectangle::M_fully_inside(const LMD::Voxel_3D* _voxel) const
 {
     const glm::vec3& voxel_offset = _voxel->offset();
