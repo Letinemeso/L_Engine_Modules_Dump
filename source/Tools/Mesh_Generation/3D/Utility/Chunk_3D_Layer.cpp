@@ -9,24 +9,27 @@ Chunk_3D_Generation_Data::Neighbors_Data Chunk_3D_Layer::M_find_neighbors(const 
 {
     Chunk_3D_Generation_Data::Neighbors_Data result;
 
-    for(int x = -1; x < 2; ++x)
+    for(int x = -1; x <= 1; ++x)
     {
-        for(int y = -1; y < 2; ++y)
+        for(int y = -1; y <= 1; ++y)
         {
             LST::Signed_Coordinates coords_prev = _coords + LST::Signed_Coordinates(x, y, -1);
             LST::Signed_Coordinates coords_curr = _coords + LST::Signed_Coordinates(x, y, 0);
             LST::Signed_Coordinates coords_next = _coords + LST::Signed_Coordinates(x, y, 1);
 
             Layer_Map::Const_Iterator maybe_it_prev = m_layer_prev.find(coords_prev);
-            Layer_Map::Const_Iterator maybe_it_curr = m_layer_prev.find(coords_curr);
-            Layer_Map::Const_Iterator maybe_it_next = m_layer_prev.find(coords_next);
+            Layer_Map::Const_Iterator maybe_it_curr = m_layer_curr.find(coords_curr);
+            Layer_Map::Const_Iterator maybe_it_next = m_layer_next.find(coords_next);
+
+            int array_x = x + 1;
+            int array_y = y + 1;
 
             if(maybe_it_prev.is_ok())
-                result.data[x][y][0] = &(*maybe_it_prev);
+                result.data[array_x][array_y][0] = &(*maybe_it_prev);
             if(maybe_it_curr.is_ok())
-                result.data[x][y][1] = &(*maybe_it_curr);
+                result.data[array_x][array_y][1] = &(*maybe_it_curr);
             if(maybe_it_next.is_ok())
-                result.data[x][y][2] = &(*maybe_it_next);
+                result.data[array_x][array_y][2] = &(*maybe_it_next);
         }
     }
 
@@ -58,8 +61,7 @@ void Chunk_3D_Layer::M_extract_current_layer_points()
         Chunk_3D_Generation_Data& generation_data = *it;
 
         Chunk_3D_Generation_Data::Neighbors_Data neighbors = M_find_neighbors(coords);
-
-        generation_data.extract_points(neighbors);
+        generation_data.extract_points(neighbors, m_should_balance_points);
     }
 }
 

@@ -8,6 +8,13 @@ namespace LMD
 
     class Voxel_3D_Brush
     {
+    public:
+        struct Border
+        {
+            glm::vec3 offset;
+            glm::vec3 limit;
+        };
+
     private:
         unsigned int m_max_depth = 0;
         unsigned int m_value = 0;
@@ -25,6 +32,9 @@ namespace LMD
 
         void M_apply_recursive(LMD::Voxel_3D* _voxel) const;
         void M_merge_excessive_subvoxels(LMD::Voxel_3D* _voxel) const;
+
+    public:
+        virtual Border calculate_borders() const = 0;
 
     public:
         void apply(LMD::Voxel_3D* _voxel) const;

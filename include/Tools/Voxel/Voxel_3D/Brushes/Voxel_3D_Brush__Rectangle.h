@@ -23,6 +23,9 @@ namespace LMD
         bool M_fully_inside(const LMD::Voxel_3D* _voxel) const override;
         bool M_partially_inside(const LMD::Voxel_3D* _voxel) const override;
 
+    public:
+        Border calculate_borders() const override;
+
     };
 
 }

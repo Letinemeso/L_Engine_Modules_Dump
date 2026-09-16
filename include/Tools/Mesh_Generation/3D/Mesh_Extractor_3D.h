@@ -33,6 +33,8 @@ namespace LMD
         using Triangles_Vec = LDS::Vector<Triangle>;
 
         using Voxel_Triangles_Map = LDS::Map<LST::Signed_Coordinates, Triangles_Vec>;
+
+    public:
         using Voxel_Meshes_Map = LDS::Map<LST::Signed_Coordinates, Mesh_3D>;
 
     private:
@@ -45,6 +47,8 @@ namespace LMD
         unsigned int m_max_extraction_depth = 0;
         float m_extraction_cell_size = 0.0f;
 
+        float m_smooth_factor = 1.0f;
+
     private:
         const Voxel_3D_Controller* m_voxel_controller = nullptr;
 
@@ -56,6 +60,10 @@ namespace LMD
         inline void set_voxel_controller(const Voxel_3D_Controller* _ptr) { m_voxel_controller = _ptr; }
         inline void set_max_extraction_depth(unsigned int _value) { m_max_extraction_depth = _value; }
 
+        inline void set_smooth_factor(float _value) { m_smooth_factor = _value; }
+
+        inline const Voxel_Meshes_Map& get_meshes() const { return m_voxel_meshes_map; }
+
     private:
         unsigned int M_get_or_add_id(const glm::vec3& _vec);
         Triangle M_construct_triangle(const LDS::Vector<glm::vec3>& _raw_mesh, unsigned int _offset);
@@ -66,6 +74,7 @@ namespace LMD
         void M_append_points_neighbors_for_triangle(const Triangle& _triangle);
         void M_find_point_neighbors();
 
+        bool M_should_smooth_points() const;
         glm::vec3 M_smooth_point(const glm::vec3& _point, const IDs_Vec& _neighbors_ids);
         void M_smooth_points();
 
@@ -80,6 +89,7 @@ namespace LMD
 
     public:
         const Mesh_3D* get_mesh(const LST::Signed_Coordinates& _coords) const;
+        Mesh_3D construct_combined_mesh() const;
 
     };
 

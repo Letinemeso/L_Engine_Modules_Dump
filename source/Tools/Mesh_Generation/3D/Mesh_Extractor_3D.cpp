@@ -52,7 +52,9 @@ Mesh_Extractor_3D::Triangle Mesh_Extractor_3D::M_construct_triangle(const LDS::V
 
 void Mesh_Extractor_3D::M_append_mesh_data(const LST::Signed_Coordinates& _coords, const LDS::Vector<glm::vec3>& _raw_mesh)
 {
-    L_ASSERT(_raw_mesh.size() > 0);
+    if(_raw_mesh.size() == 0)
+        return;
+
     L_ASSERT(_raw_mesh.size() % 3 == 0);
     L_ASSERT(!m_voxel_triangles.find(_coords).is_ok());
 
@@ -68,6 +70,7 @@ void Mesh_Extractor_3D::M_extract_meshes_data()
     m_voxel_triangles.clear();
 
     Chunk_3D_Layer layer;
+    layer.set_should_balance_points( M_should_smooth_points() );
     layer.set_voxel_controller(m_voxel_controller);
     layer.set_max_depth(m_max_extraction_depth);
     layer.reload();
@@ -118,6 +121,11 @@ void Mesh_Extractor_3D::M_find_point_neighbors()
 }
 
 
+bool Mesh_Extractor_3D::M_should_smooth_points() const
+{
+    return m_smooth_factor >= LST::Math::Float_Precision_Tolerance;
+}
+
 glm::vec3 Mesh_Extractor_3D::M_smooth_point(const glm::vec3& _point, const IDs_Vec& _neighbors_ids)
 {
     L_ASSERT(_neighbors_ids.size() > 0);
@@ -138,6 +146,9 @@ glm::vec3 Mesh_Extractor_3D::M_smooth_point(const glm::vec3& _point, const IDs_V
 void Mesh_Extractor_3D::M_smooth_points()
 {
     L_ASSERT(m_points_cache.size() == m_point_neighbors.size());
+
+    if(!M_should_smooth_points())
+        return;
 
     Points_Vec smoothed_points(m_points_cache.size());
     smoothed_points.mark_full();
@@ -278,4 +289,38 @@ const Mesh_3D* Mesh_Extractor_3D::get_mesh(const LST::Signed_Coordinates& _coord
     if(!it.is_ok())
         return nullptr;
     return &(*it);
+}
+
+Mesh_3D Mesh_Extractor_3D::construct_combined_mesh() const
+{
+    unsigned int geometry_data_size = 0;
+    unsigned int texture_data_size = 0;
+    unsigned int normals_data_size = 0;
+
+    for(Voxel_Meshes_Map::Const_Iterator it = m_voxel_meshes_map.iterator(); !it.end_reached(); ++it)
+    {
+        const Mesh_3D& mesh = *it;
+        geometry_data_size += mesh.geometry.size();
+        texture_data_size += mesh.texture_coordinates.size();
+        normals_data_size += mesh.normals.size();
+    }
+
+    Mesh_3D result;
+    result.geometry.resize(geometry_data_size);
+    result.texture_coordinates.resize(texture_data_size);
+    result.normals.resize(normals_data_size);
+
+    for(Voxel_Meshes_Map::Const_Iterator it = m_voxel_meshes_map.iterator(); !it.end_reached(); ++it)
+    {
+        const Mesh_3D& mesh = *it;
+
+        for(unsigned int i = 0; i < mesh.geometry.size(); ++i)
+            result.geometry.push(mesh.geometry[i]);
+        for(unsigned int i = 0; i < mesh.texture_coordinates.size(); ++i)
+            result.texture_coordinates.push(mesh.texture_coordinates[i]);
+        for(unsigned int i = 0; i < mesh.normals.size(); ++i)
+            result.normals.push(mesh.normals[i]);
+    }
+
+    return result;
 }

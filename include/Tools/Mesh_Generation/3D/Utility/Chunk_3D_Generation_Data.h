@@ -53,10 +53,10 @@ namespace LMD
         void M_balance_point(const Neighboring_Cells_Data& _neighbors_data, const glm::vec3& _voxel_center, glm::vec3& _point,
                              bool _positive_offset_x, bool _positive_offset_y, bool _positive_offset_z) const;
         void M_append_quad(const glm::vec3& _point_0, const glm::vec3& _point_1, const glm::vec3& _point_2, const glm::vec3& _point_3);
-        void M_append_cell_data(const Neighbors_Data& _neighbors, unsigned int _x, unsigned int _y, unsigned int _z);
+        void M_append_cell_data(const Neighbors_Data& _neighbors, unsigned int _x, unsigned int _y, unsigned int _z, bool _balance_points);
 
     public:
-        void extract_points(const Neighbors_Data& _neighbors);
+        void extract_points(const Neighbors_Data& _neighbors, bool _balance_points);
 
     };
 

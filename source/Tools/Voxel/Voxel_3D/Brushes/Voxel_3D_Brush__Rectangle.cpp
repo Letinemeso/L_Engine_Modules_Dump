@@ -62,3 +62,13 @@ bool Voxel_3D_Brush__Rectangle::M_partially_inside(const LMD::Voxel_3D* _voxel) 
 
     return true;
 }
+
+
+
+Voxel_3D_Brush::Border Voxel_3D_Brush__Rectangle::calculate_borders() const
+{
+    Border result;
+    result.offset = m_offset;
+    result.limit = m_offset + m_size;
+    return result;
+}

@@ -46,3 +46,13 @@ bool Voxel_3D_Brush__Ellipsoid::M_partially_inside(const LMD::Voxel_3D* _voxel) 
 
     return M_point_is_inside(closest_point_in_voxel);
 }
+
+
+
+Voxel_3D_Brush::Border Voxel_3D_Brush__Ellipsoid::calculate_borders() const
+{
+    Border result;
+    result.offset = m_center - m_radiuses;
+    result.limit = m_center + m_radiuses;
+    return result;
+}
