@@ -62,7 +62,7 @@ namespace LMD
         BUILDER_STUB_SETTERS_END
 
     public:
-        ~Data_Storage_Module_Stub() { delete data_stub; }
+        ~Data_Storage_Module_Stub();
 
     };
 
