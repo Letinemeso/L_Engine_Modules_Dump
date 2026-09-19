@@ -4,6 +4,9 @@
 #include <Data_Structures/Vector.h>
 #include <Stuff/Quantized_Vector.h>
 
+#include <Tools/Mesh_Generation/3D/Utility/Mesh_3D_Utilty.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Smoothers/Mesh_3D_Smoother.h>
 #include <Tools/Voxel/Voxel_3D/Voxel_3D_Controller.h>
 
 
@@ -20,34 +23,25 @@ namespace LMD
 
     class Mesh_Extractor_3D
     {
-    private:
-        using Ids_Map = LDS::Map<LST::Quantized_Vector, unsigned int>;
-        using Points_Vec = LDS::Vector<glm::vec3>;
-        using IDs_Vec = LDS::Vector<unsigned int>;
-        using Point_Neighbors_Vec = LDS::Vector<IDs_Vec>;
-
-        struct Triangle
-        {
-            unsigned int id[3];
-        };
-        using Triangles_Vec = LDS::Vector<Triangle>;
-
-        using Voxel_Triangles_Map = LDS::Map<LST::Signed_Coordinates, Triangles_Vec>;
-
     public:
         using Voxel_Meshes_Map = LDS::Map<LST::Signed_Coordinates, Mesh_3D>;
 
     private:
-        Ids_Map m_ids_cache;
-        Points_Vec m_points_cache;
-        Point_Neighbors_Vec m_point_neighbors;
-        Voxel_Triangles_Map m_voxel_triangles;
+        Mesh_3D_Utility::Ids_Map m_ids_cache;
+        Mesh_3D_Utility::Points_Vec m_points_cache;
+        Mesh_3D_Utility::Voxel_Triangles_Map m_voxel_triangles;
         Voxel_Meshes_Map m_voxel_meshes_map;
 
         unsigned int m_max_extraction_depth = 0;
         float m_extraction_cell_size = 0.0f;
 
         float m_smooth_factor = 1.0f;
+
+        Mesh_Data_Extractor* m_mesh_data_extractor__geometry = nullptr;
+        Mesh_Data_Extractor* m_mesh_data_extractor__texture = nullptr;
+        Mesh_Data_Extractor* m_mesh_data_extractor__normals = nullptr;
+
+        Mesh_3D_Smoother* m_mesh_smoother = nullptr;
 
     private:
         const Voxel_3D_Controller* m_voxel_controller = nullptr;
@@ -62,25 +56,26 @@ namespace LMD
 
         inline void set_smooth_factor(float _value) { m_smooth_factor = _value; }
 
+        inline void set_mesh_data_extractor__geometry(Mesh_Data_Extractor* _ptr) { delete m_mesh_data_extractor__geometry; m_mesh_data_extractor__geometry = _ptr; }
+        inline void set_mesh_data_extractor__texture(Mesh_Data_Extractor* _ptr) { delete m_mesh_data_extractor__texture; m_mesh_data_extractor__texture = _ptr; }
+        inline void set_mesh_data_extractor__normals(Mesh_Data_Extractor* _ptr) { delete m_mesh_data_extractor__normals; m_mesh_data_extractor__normals = _ptr; }
+
+        inline void set_mesh_smoother(Mesh_3D_Smoother* _ptr) { delete m_mesh_smoother; m_mesh_smoother = _ptr; }
+
         inline const Voxel_Meshes_Map& get_meshes() const { return m_voxel_meshes_map; }
+
+    public:
+        void set_default_mesh_data_extractors();
 
     private:
         unsigned int M_get_or_add_id(const glm::vec3& _vec);
-        Triangle M_construct_triangle(const LDS::Vector<glm::vec3>& _raw_mesh, unsigned int _offset);
+        Mesh_3D_Utility::Triangle M_construct_triangle(const LDS::Vector<glm::vec3>& _raw_mesh, unsigned int _offset);
 
         void M_append_mesh_data(const LST::Signed_Coordinates& _coords, const LDS::Vector<glm::vec3>& _raw_mesh);
         void M_extract_meshes_data();
 
-        void M_append_points_neighbors_for_triangle(const Triangle& _triangle);
-        void M_find_point_neighbors();
-
-        bool M_should_smooth_points() const;
-        glm::vec3 M_smooth_point(const glm::vec3& _point, const IDs_Vec& _neighbors_ids);
         void M_smooth_points();
 
-        void M_extract_geometry_data(LDS::Vector<float>& _geometry, const Triangles_Vec& _triangles);
-        void M_extract_texture_coords_data(LDS::Vector<float>& _texture_coords, const Triangles_Vec& _triangles);
-        void M_extract_normals_data(LDS::Vector<float>& _normals, const Triangles_Vec& _triangles);
         void M_extract_meshes();
 
     public:

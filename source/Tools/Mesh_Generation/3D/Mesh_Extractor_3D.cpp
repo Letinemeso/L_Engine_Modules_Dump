@@ -3,8 +3,12 @@
 #include <Stuff/Math_Stuff.h>
 
 #include <Tools/Mesh_Generation/3D/Utility/Chunk_3D_Layer.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor__Geometry.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor__Texture.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor__Normals.h>
 
 using namespace LMD;
+using namespace Mesh_3D_Utility;
 
 
 Mesh_Extractor_3D::Mesh_Extractor_3D()
@@ -14,7 +18,27 @@ Mesh_Extractor_3D::Mesh_Extractor_3D()
 
 Mesh_Extractor_3D::~Mesh_Extractor_3D()
 {
+    delete m_mesh_data_extractor__geometry;
+    delete m_mesh_data_extractor__texture;
+    delete m_mesh_data_extractor__normals;
 
+    delete m_mesh_smoother;
+}
+
+
+
+void Mesh_Extractor_3D::set_default_mesh_data_extractors()
+{
+    m_mesh_data_extractor__geometry = new Mesh_Data_Extractor__Geometry;
+    m_mesh_data_extractor__normals = new Mesh_Data_Extractor__Normals;
+
+    L_ASSERT(m_voxel_controller);
+    L_ASSERT(m_max_extraction_depth > 0);
+    m_extraction_cell_size = m_voxel_controller->voxel_size() / powf(2.0f, (float)m_max_extraction_depth);
+
+    Mesh_Data_Extractor__Texture* texture_extractor = new Mesh_Data_Extractor__Texture;
+    texture_extractor->set_extraction_cell_size(m_extraction_cell_size);
+    m_mesh_data_extractor__texture = texture_extractor;
 }
 
 
@@ -34,7 +58,7 @@ unsigned int Mesh_Extractor_3D::M_get_or_add_id(const glm::vec3& _vec)
     return new_id;
 }
 
-Mesh_Extractor_3D::Triangle Mesh_Extractor_3D::M_construct_triangle(const LDS::Vector<glm::vec3>& _raw_mesh, unsigned int _offset)
+Triangle Mesh_Extractor_3D::M_construct_triangle(const LDS::Vector<glm::vec3>& _raw_mesh, unsigned int _offset)
 {
     Triangle result;
 
@@ -70,7 +94,7 @@ void Mesh_Extractor_3D::M_extract_meshes_data()
     m_voxel_triangles.clear();
 
     Chunk_3D_Layer layer;
-    layer.set_should_balance_points( M_should_smooth_points() );
+    layer.set_should_balance_points( m_mesh_smoother != nullptr );
     layer.set_voxel_controller(m_voxel_controller);
     layer.set_max_depth(m_max_extraction_depth);
     layer.reload();
@@ -89,156 +113,14 @@ void Mesh_Extractor_3D::M_extract_meshes_data()
 }
 
 
-void Mesh_Extractor_3D::M_append_points_neighbors_for_triangle(const Triangle& _triangle)
-{
-    for(unsigned int i = 0; i < 3; ++i)
-    {
-        IDs_Vec& ids_vec = m_point_neighbors[ _triangle.id[i] ];
-
-        unsigned int neighbor_0 = _triangle.id[(i + 1) % 3];
-        unsigned int neighbor_1 = _triangle.id[(i + 2) % 3];
-
-        if(!ids_vec.contains(neighbor_0))
-            ids_vec.push(neighbor_0);
-        if(!ids_vec.contains(neighbor_1))
-            ids_vec.push(neighbor_1);
-    }
-}
-
-void Mesh_Extractor_3D::M_find_point_neighbors()
-{
-    m_point_neighbors.clear();
-    m_point_neighbors.resize(m_points_cache.size());
-    m_point_neighbors.mark_full();
-
-    for(Voxel_Triangles_Map::Iterator it = m_voxel_triangles.iterator(); !it.end_reached(); ++it)
-    {
-        const Triangles_Vec& triangles = *it;
-
-        for(unsigned int i = 0; i < triangles.size(); ++i)
-            M_append_points_neighbors_for_triangle( triangles[i] );
-    }
-}
-
-
-bool Mesh_Extractor_3D::M_should_smooth_points() const
-{
-    return m_smooth_factor >= LST::Math::Float_Precision_Tolerance;
-}
-
-glm::vec3 Mesh_Extractor_3D::M_smooth_point(const glm::vec3& _point, const IDs_Vec& _neighbors_ids)
-{
-    L_ASSERT(_neighbors_ids.size() > 0);
-
-    glm::vec3 stride = {0.0f, 0.0f, 0.0f};
-
-    for(unsigned int i = 0; i < _neighbors_ids.size(); ++i)
-    {
-        const glm::vec3& neighbor_point = m_points_cache[ _neighbors_ids[i] ];
-        stride += neighbor_point - _point;
-    }
-
-    stride /= (float)_neighbors_ids.size();
-
-    return _point + stride;
-}
-
 void Mesh_Extractor_3D::M_smooth_points()
 {
-    L_ASSERT(m_points_cache.size() == m_point_neighbors.size());
-
-    if(!M_should_smooth_points())
+    if(!m_mesh_smoother)
         return;
 
-    Points_Vec smoothed_points(m_points_cache.size());
-    smoothed_points.mark_full();
-
-    for(unsigned int i = 0; i < m_points_cache.size(); ++i)
-    {
-        const glm::vec3& original_point = m_points_cache[i];
-        const IDs_Vec& neighbors_ids = m_point_neighbors[i];
-        smoothed_points[i] = M_smooth_point(original_point, neighbors_ids);
-    }
-
-    m_points_cache = LST::move(smoothed_points);
+    m_points_cache = m_mesh_smoother->smooth(m_points_cache, m_voxel_triangles);
 }
 
-
-void Mesh_Extractor_3D::M_extract_geometry_data(LDS::Vector<float>& _geometry, const Triangles_Vec& _triangles)
-{
-    _geometry.clear();
-    _geometry.resize(_triangles.size() * 9);
-
-    for(unsigned int t_i = 0; t_i < _triangles.size(); ++t_i)
-    {
-        const Triangle& triangle = _triangles[t_i];
-        for(unsigned int i = 0; i < 3; ++i)
-        {
-            const glm::vec3& vec = m_points_cache[ triangle.id[i] ];
-
-            for(unsigned int v_i = 0; v_i < 3; ++v_i)
-                _geometry.push( vec[v_i] );
-        }
-    }
-}
-
-void Mesh_Extractor_3D::M_extract_texture_coords_data(LDS::Vector<float>& _texture_coords, const Triangles_Vec& _triangles)
-{
-    _texture_coords.clear();
-    _texture_coords.resize(_triangles.size() * 6);
-
-    for(unsigned int t_i = 0; t_i < _triangles.size(); ++t_i)
-    {
-        const Triangle& triangle = _triangles[t_i];
-
-        const glm::vec3& point_0 = m_points_cache[ triangle.id[0] ];
-        const glm::vec3& point_1 = m_points_cache[ triangle.id[1] ];
-        const glm::vec3& point_2 = m_points_cache[ triangle.id[2] ];
-
-        glm::vec3 triangle_normal = LST::Math::cross_product(point_1 - point_0, point_2 - point_0);
-        LST::Math::shrink_vector_to_1(triangle_normal);
-
-        glm::vec3 u_axis = point_1 - point_0;
-        LST::Math::shrink_vector_to_1(u_axis);
-
-        glm::vec3 v_axis = LST::Math::cross_product(triangle_normal, u_axis);
-        LST::Math::shrink_vector_to_1(v_axis);
-
-        _texture_coords.push(0.0f);
-        _texture_coords.push(0.0f);
-
-        _texture_coords.push( LST::Math::dot_product(point_1 - point_0, u_axis) / m_extraction_cell_size );
-        _texture_coords.push(0.0f);
-
-        _texture_coords.push( LST::Math::dot_product(point_2 - point_0, u_axis) / m_extraction_cell_size );
-        _texture_coords.push( LST::Math::dot_product(point_2 - point_0, v_axis) / m_extraction_cell_size );
-    }
-}
-
-void Mesh_Extractor_3D::M_extract_normals_data(LDS::Vector<float>& _normals, const Triangles_Vec& _triangles)
-{
-    _normals.clear();
-    _normals.resize(_triangles.size() * 9);
-
-    for(unsigned int t_i = 0; t_i < _triangles.size(); ++t_i)
-    {
-        const Triangle& triangle = _triangles[t_i];
-
-        const glm::vec3& point_0 = m_points_cache[ triangle.id[0] ];
-        const glm::vec3& point_1 = m_points_cache[ triangle.id[1] ];
-        const glm::vec3& point_2 = m_points_cache[ triangle.id[2] ];
-
-        glm::vec3 normal = LST::Math::cross_product(point_1 - point_0, point_2 - point_0);
-        LST::Math::shrink_vector_to_1(normal);
-
-        for(unsigned int r_i = 0; r_i < 3; ++r_i)
-        {
-            _normals.push(normal.x);
-            _normals.push(normal.y);
-            _normals.push(normal.z);
-        }
-    }
-}
 
 void Mesh_Extractor_3D::M_extract_meshes()
 {
@@ -255,9 +137,12 @@ void Mesh_Extractor_3D::M_extract_meshes()
         Voxel_Meshes_Map::Iterator mesh_it = m_voxel_meshes_map.insert_and_get_iterator(coords, {});
         Mesh_3D& mesh = *mesh_it;
 
-        M_extract_geometry_data(mesh.geometry, triangles);
-        M_extract_texture_coords_data(mesh.texture_coordinates, triangles);
-        M_extract_normals_data(mesh.normals, triangles);
+        if(m_mesh_data_extractor__geometry)
+            mesh.geometry = m_mesh_data_extractor__geometry->extract(triangles, m_points_cache);
+        if(m_mesh_data_extractor__texture)
+            mesh.texture_coordinates = m_mesh_data_extractor__texture->extract(triangles, m_points_cache);
+        if(m_mesh_data_extractor__normals)
+            mesh.normals = m_mesh_data_extractor__normals->extract(triangles, m_points_cache);
     }
 }
 
@@ -276,7 +161,6 @@ void Mesh_Extractor_3D::extract()
     m_extraction_cell_size = m_voxel_controller->voxel_size() / powf(2.0f, (float)m_max_extraction_depth);
 
     M_extract_meshes_data();
-    M_find_point_neighbors();
     M_smooth_points();
     M_extract_meshes();
 }
