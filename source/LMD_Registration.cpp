@@ -30,6 +30,7 @@
 #include <Misc_Modules/Rigid_Body_Setup_Module.h>
 #include <Misc_Modules/Rigid_Body_Accelerator_Module.h>
 #include <Misc_Modules/Debug_Movement_Module.h>
+#include <Misc_Modules/Data_Storage_Module.h>
 #include <Resources/Animation.h>
 #include <Resources/Model.h>
 #include <Resources/Vertex_Animation.h>
@@ -133,6 +134,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Rigid_Body_Accelerator_Module_Stub>();
 
     _object_constructor.register_type<LMD::Debug_Movement_Module_Stub>();
+
+    _object_constructor.register_type<LMD::Data_Storage_Module_Stub>();
 
     _object_constructor.register_type<LMD::Animation_Stub>();
 
