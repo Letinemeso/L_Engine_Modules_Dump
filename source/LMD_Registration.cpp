@@ -36,6 +36,7 @@
 #include <Resources/Vertex_Animation.h>
 #include <Tools/Objects_Storage.h>
 #include <Tools/Model_Data_Provider.h>
+#include <Tools/Owned_Model_Data_Provider.h>
 #include <Tools/Objects_Controller/Objects_Controller_Extension__Removal.h>
 #include <Physics/Rigid_Body/Physics_Module__Rigid_Body.h>
 
@@ -151,6 +152,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
 
         product->inject_resources_manager(_resources_manager_getter());
     });
+
+    _object_constructor.register_type<LMD::Owned_Model_Data_Provider>();
 
     _object_constructor.register_type<LMD::Physics_Module_Stub__Rigid_Body>();
 }

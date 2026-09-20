@@ -9,13 +9,13 @@
 namespace LMD
 {
 
-    class Model_Data_Provider : public LEti::Data_Provider
+    class Owned_Model_Data_Provider : public LEti::Data_Provider
     {
     public:
-        INIT_VARIABLE(LMD::Model_Data_Provider, LEti::Data_Provider)
+        INIT_VARIABLE(LMD::Owned_Model_Data_Provider, LEti::Data_Provider)
 
         INIT_FIELDS
-        ADD_FIELD_RENAMED(std::string, "model_name", m_model_name)
+        ADD_FIELD_RENAMED(std::string, "data_name", m_data_name)
         ADD_FIELD_RENAMED(std::string, "data_extraction_type", m_data_extraction_type_str)
         FIELDS_END
 
@@ -31,20 +31,14 @@ namespace LMD
         };
 
     private:
-        std::string m_model_name;
+        std::string m_data_name;
         std::string m_data_extraction_type_str;
 
-        const LV::Variable_Loader* m_resources_manager = nullptr;
-
     private:
-        const Model* m_model = nullptr;
         Extraction_Type m_extraction_type = Extraction_Type::Unknown;
 
-    public:
-        inline void inject_resources_manager(const LV::Variable_Loader* _ptr) { m_resources_manager = _ptr; }
-
-    public:
-        inline void set_model(const Model* _ptr) { m_model = _ptr; }
+    private:
+        const LMD::Model* M_find_model(const LEti::Object* _future_parent) const;
 
     public:
         const LDS::Vector<float>& get_data(const LEti::Object* _future_parent) const override;

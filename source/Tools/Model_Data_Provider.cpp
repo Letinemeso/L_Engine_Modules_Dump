@@ -22,7 +22,7 @@ ON_VALUES_ASSIGNED_IMPLEMENTATION(Model_Data_Provider)
 
 
 
-const LDS::Vector<float>& Model_Data_Provider::get_data() const
+const LDS::Vector<float>& Model_Data_Provider::get_data(const LEti::Object* _future_parent) const
 {
     L_ASSERT(m_model);
 
