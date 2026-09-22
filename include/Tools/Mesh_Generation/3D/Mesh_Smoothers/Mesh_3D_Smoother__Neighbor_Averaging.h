@@ -8,6 +8,9 @@ namespace LMD
 
     class Mesh_3D_Smoother__Neighbor_Averaging : public Mesh_3D_Smoother
     {
+    public:
+        INIT_VARIABLE(LMD::Mesh_3D_Smoother__Neighbor_Averaging, LMD::Mesh_3D_Smoother)
+
     private:
         float m_smooth_factor = 1.0f;
         unsigned int m_repetitions_amount = 1;
@@ -26,6 +29,31 @@ namespace LMD
     public:
         Mesh_3D_Utility::Points_Vec smooth(const Mesh_3D_Utility::Points_Vec& _old_mesh,
                                            const Mesh_3D_Utility::Voxel_Triangles_Map& _mesh_structure) const override;
+
+    };
+
+
+    class Mesh_3D_Smoother_Stub__Neighbor_Averaging : public Mesh_3D_Smoother_Stub
+    {
+    public:
+        INIT_VARIABLE(LMD::Mesh_3D_Smoother_Stub__Neighbor_Averaging, LMD::Mesh_3D_Smoother_Stub)
+
+        INIT_FIELDS
+        ADD_FIELD(float, smooth_factor)
+        ADD_FIELD(unsigned int, repetitions_amount)
+        FIELDS_END
+
+    public:
+        float smooth_factor = 1.0f;
+        unsigned int repetitions_amount = 1;
+
+    public:
+        INIT_DEFAULT_BUILDER_STUB(Mesh_3D_Smoother__Neighbor_Averaging)
+
+        INIT_BUILDER_STUB_SETTERS
+        ADD_BUILDER_STUB_SETTER(set_smooth_factor, smooth_factor)
+        ADD_BUILDER_STUB_SETTER(set_repetitions_amount, repetitions_amount)
+        BUILDER_STUB_SETTERS_END
 
     };
 

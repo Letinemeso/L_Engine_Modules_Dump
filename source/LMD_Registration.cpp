@@ -33,11 +33,17 @@
 #include <Misc_Modules/Data_Storage_Module.h>
 #include <Resources/Animation.h>
 #include <Resources/Model.h>
+#include <Resources/Generated_Model.h>
 #include <Resources/Vertex_Animation.h>
 #include <Tools/Objects_Storage.h>
 #include <Tools/Model_Data_Provider.h>
 #include <Tools/Owned_Model_Data_Provider.h>
 #include <Tools/Objects_Controller/Objects_Controller_Extension__Removal.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Extractor_3D.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor__Geometry.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor__Texture.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor__Normals.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Smoothers/Mesh_3D_Smoother__Neighbor_Averaging.h>
 #include <Physics/Rigid_Body/Physics_Module__Rigid_Body.h>
 
 using namespace LMD;
@@ -142,6 +148,10 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
 
     _object_constructor.register_type<LMD::Model_Stub>();
 
+    _object_constructor.register_type<LMD::Model_Stub__Voxel_Generated_Once>();
+
+    _object_constructor.register_type<LMD::Model_Stub__Voxel_Generated_On_Construction>();
+
     _object_constructor.register_type<LMD::Vertex_Animation_Stub>();
 
     _object_constructor.register_type<LMD::Objects_Storage>();
@@ -154,6 +164,16 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     });
 
     _object_constructor.register_type<LMD::Owned_Model_Data_Provider>();
+
+    _object_constructor.register_type<LMD::Mesh_Extractor_3D_Stub>();
+
+    _object_constructor.register_type<LMD::Mesh_Data_Extractor_Stub__Geometry>();
+
+    _object_constructor.register_type<LMD::Mesh_Data_Extractor_Stub__Texture>();
+
+    _object_constructor.register_type<LMD::Mesh_Data_Extractor_Stub__Normals>();
+
+    _object_constructor.register_type<LMD::Mesh_3D_Smoother_Stub__Neighbor_Averaging>();
 
     _object_constructor.register_type<LMD::Physics_Module_Stub__Rigid_Body>();
 }

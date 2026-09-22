@@ -91,6 +91,8 @@ void Mesh_Extractor_3D::M_append_mesh_data(const LST::Signed_Coordinates& _coord
 
 void Mesh_Extractor_3D::M_extract_meshes_data()
 {
+    L_ASSERT(m_max_extraction_depth > 0);
+
     m_voxel_triangles.clear();
 
     Chunk_3D_Layer layer;
@@ -207,4 +209,17 @@ Mesh_3D Mesh_Extractor_3D::construct_combined_mesh() const
     }
 
     return result;
+}
+
+
+
+
+
+Mesh_Extractor_3D_Stub::~Mesh_Extractor_3D_Stub()
+{
+    delete mesh_data_extractor__geometry;
+    delete mesh_data_extractor__texture;
+    delete mesh_data_extractor__normals;
+
+    delete mesh_smoother;
 }

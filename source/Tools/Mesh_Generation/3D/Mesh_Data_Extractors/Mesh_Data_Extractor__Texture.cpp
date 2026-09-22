@@ -39,3 +39,18 @@ LDS::Vector<float> Mesh_Data_Extractor__Texture::extract(const Mesh_3D_Utility::
 
     return result;
 }
+
+
+
+
+
+float Mesh_Data_Extractor_Stub__Texture::M_calculate_extraction_cell_size() const
+{
+    if(extraction_cell_size > 0.0f)
+        return extraction_cell_size;
+
+    L_ASSERT(voxel_size > 0.0f);
+    L_ASSERT(max_extraction_depth > 0);
+
+    return voxel_size / powf(2.0f, (float)max_extraction_depth);
+}

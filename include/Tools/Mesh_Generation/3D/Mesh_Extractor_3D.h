@@ -4,6 +4,9 @@
 #include <Data_Structures/Vector.h>
 #include <Stuff/Quantized_Vector.h>
 
+#include <Variable_Base.h>
+#include <Builder_Stub.h>
+
 #include <Tools/Mesh_Generation/3D/Utility/Mesh_3D_Utilty.h>
 #include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor.h>
 #include <Tools/Mesh_Generation/3D/Mesh_Smoothers/Mesh_3D_Smoother.h>
@@ -21,8 +24,11 @@ namespace LMD
     };
 
 
-    class Mesh_Extractor_3D
+    class Mesh_Extractor_3D : public LV::Variable_Base
     {
+    public:
+        INIT_VARIABLE(LMD::Mesh_Extractor_3D, LV::Variable_Base)
+
     public:
         using Voxel_Meshes_Map = LDS::Map<LST::Signed_Coordinates, Mesh_3D>;
 
@@ -34,8 +40,6 @@ namespace LMD
 
         unsigned int m_max_extraction_depth = 0;
         float m_extraction_cell_size = 0.0f;
-
-        float m_smooth_factor = 1.0f;
 
         Mesh_Data_Extractor* m_mesh_data_extractor__geometry = nullptr;
         Mesh_Data_Extractor* m_mesh_data_extractor__texture = nullptr;
@@ -52,9 +56,8 @@ namespace LMD
 
     public:
         inline void set_voxel_controller(const Voxel_3D_Controller* _ptr) { m_voxel_controller = _ptr; }
-        inline void set_max_extraction_depth(unsigned int _value) { m_max_extraction_depth = _value; }
 
-        inline void set_smooth_factor(float _value) { m_smooth_factor = _value; }
+        inline void set_max_extraction_depth(unsigned int _value) { m_max_extraction_depth = _value; }
 
         inline void set_mesh_data_extractor__geometry(Mesh_Data_Extractor* _ptr) { delete m_mesh_data_extractor__geometry; m_mesh_data_extractor__geometry = _ptr; }
         inline void set_mesh_data_extractor__texture(Mesh_Data_Extractor* _ptr) { delete m_mesh_data_extractor__texture; m_mesh_data_extractor__texture = _ptr; }
@@ -85,6 +88,48 @@ namespace LMD
     public:
         const Mesh_3D* get_mesh(const LST::Signed_Coordinates& _coords) const;
         Mesh_3D construct_combined_mesh() const;
+
+    };
+
+
+    class Mesh_Extractor_3D_Stub : public LV::Builder_Stub
+    {
+    public:
+        INIT_VARIABLE(LMD::Mesh_Extractor_3D_Stub, LV::Builder_Stub)
+
+        INIT_FIELDS
+        ADD_FIELD(unsigned int, max_extraction_depth)
+        FIELDS_END
+
+        INIT_CHILDS
+        ADD_CHILD("mesh_data_extractor__geometry", mesh_data_extractor__geometry)
+        ADD_CHILD("mesh_data_extractor__texture", mesh_data_extractor__texture)
+        ADD_CHILD("mesh_data_extractor__normals", mesh_data_extractor__normals)
+        ADD_CHILD("mesh_smoother", mesh_smoother)
+        CHILDS_END
+
+    public:
+        unsigned int max_extraction_depth = 0;
+
+        Mesh_Data_Extractor_Stub* mesh_data_extractor__geometry = nullptr;
+        Mesh_Data_Extractor_Stub* mesh_data_extractor__texture = nullptr;
+        Mesh_Data_Extractor_Stub* mesh_data_extractor__normals = nullptr;
+
+        Mesh_3D_Smoother_Stub* mesh_smoother = nullptr;
+
+    public:
+        INIT_DEFAULT_BUILDER_STUB(Mesh_Extractor_3D)
+
+        INIT_BUILDER_STUB_SETTERS
+        ADD_BUILDER_STUB_SETTER(set_max_extraction_depth, max_extraction_depth)
+        ADD_BUILDER_STUB_SETTER(set_mesh_data_extractor__geometry, Mesh_Data_Extractor_Stub::construct_from_if_exists(mesh_data_extractor__geometry))
+        ADD_BUILDER_STUB_SETTER(set_mesh_data_extractor__texture, Mesh_Data_Extractor_Stub::construct_from_if_exists(mesh_data_extractor__texture))
+        ADD_BUILDER_STUB_SETTER(set_mesh_data_extractor__normals, Mesh_Data_Extractor_Stub::construct_from_if_exists(mesh_data_extractor__normals))
+        ADD_BUILDER_STUB_SETTER(set_mesh_smoother, Mesh_3D_Smoother_Stub::construct_from_if_exists(mesh_smoother))
+        BUILDER_STUB_SETTERS_END
+
+    public:
+        ~Mesh_Extractor_3D_Stub();
 
     };
 

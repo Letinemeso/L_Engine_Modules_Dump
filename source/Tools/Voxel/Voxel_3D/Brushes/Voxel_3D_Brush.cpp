@@ -74,5 +74,5 @@ void Voxel_3D_Brush::M_merge_excessive_subvoxels(LMD::Voxel_3D* _voxel) const
 void Voxel_3D_Brush::apply(LMD::Voxel_3D* _voxel) const
 {
     M_apply_recursive(_voxel);
-    // M_merge_excessive_subvoxels(_voxel);
+    M_merge_excessive_subvoxels(_voxel);
 }
