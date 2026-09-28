@@ -153,7 +153,9 @@ void Mesh_Extractor_3D::M_extract_meshes()
 void Mesh_Extractor_3D::clear()
 {
     m_ids_cache.clear();
+    m_points_cache.clear();
     m_voxel_triangles.clear();
+    m_voxel_meshes_map.clear();
 }
 
 void Mesh_Extractor_3D::extract()
@@ -161,6 +163,8 @@ void Mesh_Extractor_3D::extract()
     L_ASSERT(m_voxel_controller);
 
     m_extraction_cell_size = m_voxel_controller->voxel_size() / powf(2.0f, (float)m_max_extraction_depth);
+
+    clear();
 
     M_extract_meshes_data();
     M_smooth_points();
