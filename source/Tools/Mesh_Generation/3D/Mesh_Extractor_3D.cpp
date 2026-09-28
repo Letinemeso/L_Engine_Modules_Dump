@@ -23,6 +23,8 @@ Mesh_Extractor_3D::~Mesh_Extractor_3D()
     delete m_mesh_data_extractor__normals;
 
     delete m_mesh_smoother;
+
+    clear_mesh_postprocessors();
 }
 
 
@@ -39,6 +41,13 @@ void Mesh_Extractor_3D::set_default_mesh_data_extractors()
     Mesh_Data_Extractor__Texture* texture_extractor = new Mesh_Data_Extractor__Texture;
     texture_extractor->set_extraction_cell_size(m_extraction_cell_size);
     m_mesh_data_extractor__texture = texture_extractor;
+}
+
+void Mesh_Extractor_3D::clear_mesh_postprocessors()
+{
+    for(unsigned int i = 0; i < m_mesh_postprocessors.size(); ++i)
+        delete m_mesh_postprocessors[i];
+    m_mesh_postprocessors.clear();
 }
 
 
@@ -124,6 +133,13 @@ void Mesh_Extractor_3D::M_smooth_points()
 }
 
 
+void Mesh_Extractor_3D::M_apply_postprocessors()
+{
+    for(unsigned int i = 0; i < m_mesh_postprocessors.size(); ++i)
+        m_mesh_postprocessors[i]->apply(m_points_cache, m_voxel_triangles);
+}
+
+
 void Mesh_Extractor_3D::M_extract_meshes()
 {
     m_voxel_meshes_map.clear();
@@ -168,6 +184,7 @@ void Mesh_Extractor_3D::extract()
 
     M_extract_meshes_data();
     M_smooth_points();
+    M_apply_postprocessors();
     M_extract_meshes();
 }
 
@@ -219,6 +236,27 @@ Mesh_3D Mesh_Extractor_3D::construct_combined_mesh() const
 
 
 
+LDS::Vector<Mesh_3D_Postprocessor*> Mesh_Extractor_3D_Stub::M_construct_postprocessors() const
+{
+    if(mesh_postprocessors.size() == 0)
+        return {};
+
+    LDS::Vector<Mesh_3D_Postprocessor*> result(mesh_postprocessors.size());
+    for(LV::Variable_Base::Childs_List::Const_Iterator it = mesh_postprocessors.begin(); !it.end_reached(); ++it)
+    {
+        L_ASSERT(LV::cast_variable<LMD::Mesh_3D_Postprocessor_Stub>(it->child_ptr));
+
+        const LMD::Mesh_3D_Postprocessor_Stub* stub = LST::raw_cast<LMD::Mesh_3D_Postprocessor_Stub>(it->child_ptr);
+        LMD::Mesh_3D_Postprocessor* postprocessor = LMD::Mesh_3D_Postprocessor_Stub::construct_from(stub);
+
+        result.push(postprocessor);
+    }
+
+    return result;
+}
+
+
+
 Mesh_Extractor_3D_Stub::~Mesh_Extractor_3D_Stub()
 {
     delete mesh_data_extractor__geometry;
@@ -226,4 +264,6 @@ Mesh_Extractor_3D_Stub::~Mesh_Extractor_3D_Stub()
     delete mesh_data_extractor__normals;
 
     delete mesh_smoother;
+
+    clear_childs_list(mesh_postprocessors);
 }

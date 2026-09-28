@@ -44,6 +44,7 @@
 #include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor__Texture.h>
 #include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor__Normals.h>
 #include <Tools/Mesh_Generation/3D/Mesh_Smoothers/Mesh_3D_Smoother__Neighbor_Averaging.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Postprocessors/Mesh_3D_Postprocessor__Random_Stride.h>
 #include <Physics/Rigid_Body/Physics_Module__Rigid_Body.h>
 
 using namespace LMD;
@@ -174,6 +175,8 @@ void LMD::register_types(LV::Object_Constructor& _object_constructor,
     _object_constructor.register_type<LMD::Mesh_Data_Extractor_Stub__Normals>();
 
     _object_constructor.register_type<LMD::Mesh_3D_Smoother_Stub__Neighbor_Averaging>();
+
+    _object_constructor.register_type<LMD::Mesh_3D_Postprocessor_Stub__Random_Stride>();
 
     _object_constructor.register_type<LMD::Physics_Module_Stub__Rigid_Body>();
 }

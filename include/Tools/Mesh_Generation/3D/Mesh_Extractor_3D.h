@@ -10,6 +10,7 @@
 #include <Tools/Mesh_Generation/3D/Utility/Mesh_3D_Utilty.h>
 #include <Tools/Mesh_Generation/3D/Mesh_Data_Extractors/Mesh_Data_Extractor.h>
 #include <Tools/Mesh_Generation/3D/Mesh_Smoothers/Mesh_3D_Smoother.h>
+#include <Tools/Mesh_Generation/3D/Mesh_Postprocessors/Mesh_3D_Postprocessor.h>
 #include <Tools/Voxel/Voxel_3D/Voxel_3D_Controller.h>
 
 
@@ -47,6 +48,8 @@ namespace LMD
 
         Mesh_3D_Smoother* m_mesh_smoother = nullptr;
 
+        LDS::Vector<Mesh_3D_Postprocessor*> m_mesh_postprocessors;
+
     private:
         const Voxel_3D_Controller* m_voxel_controller = nullptr;
 
@@ -65,10 +68,13 @@ namespace LMD
 
         inline void set_mesh_smoother(Mesh_3D_Smoother* _ptr) { delete m_mesh_smoother; m_mesh_smoother = _ptr; }
 
+        inline void set_mesh_postprocessors(LDS::Vector<Mesh_3D_Postprocessor*>&& _ptrs) { clear_mesh_postprocessors(); m_mesh_postprocessors = LST::move(_ptrs); }
+
         inline const Voxel_Meshes_Map& get_meshes() const { return m_voxel_meshes_map; }
 
     public:
         void set_default_mesh_data_extractors();
+        void clear_mesh_postprocessors();
 
     private:
         unsigned int M_get_or_add_id(const glm::vec3& _vec);
@@ -78,6 +84,8 @@ namespace LMD
         void M_extract_meshes_data();
 
         void M_smooth_points();
+
+        void M_apply_postprocessors();
 
         void M_extract_meshes();
 
@@ -108,6 +116,10 @@ namespace LMD
         ADD_CHILD("mesh_smoother", mesh_smoother)
         CHILDS_END
 
+        INIT_CHILDS_LISTS
+        ADD_CHILDS_LIST("mesh_postprocessor__*", &mesh_postprocessors)
+        CHILDS_LISTS_END
+
     public:
         unsigned int max_extraction_depth = 0;
 
@@ -116,6 +128,8 @@ namespace LMD
         Mesh_Data_Extractor_Stub* mesh_data_extractor__normals = nullptr;
 
         Mesh_3D_Smoother_Stub* mesh_smoother = nullptr;
+
+        LV::Variable_Base::Childs_List mesh_postprocessors;
 
     public:
         INIT_DEFAULT_BUILDER_STUB(Mesh_Extractor_3D)
@@ -126,7 +140,11 @@ namespace LMD
         ADD_BUILDER_STUB_SETTER(set_mesh_data_extractor__texture, Mesh_Data_Extractor_Stub::construct_from_if_exists(mesh_data_extractor__texture))
         ADD_BUILDER_STUB_SETTER(set_mesh_data_extractor__normals, Mesh_Data_Extractor_Stub::construct_from_if_exists(mesh_data_extractor__normals))
         ADD_BUILDER_STUB_SETTER(set_mesh_smoother, Mesh_3D_Smoother_Stub::construct_from_if_exists(mesh_smoother))
+        ADD_BUILDER_STUB_SETTER(set_mesh_postprocessors, M_construct_postprocessors())
         BUILDER_STUB_SETTERS_END
+
+    private:
+        LDS::Vector<Mesh_3D_Postprocessor*> M_construct_postprocessors() const;
 
     public:
         ~Mesh_Extractor_3D_Stub();
