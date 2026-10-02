@@ -92,21 +92,30 @@ bool Objects_Controller::M_need_to_remove_object(LEti::Object* _object) const
 
 void Objects_Controller::M_remove_objects()
 {
-    Objects_List::Iterator it = m_objects.begin();
-    while(!it.end_reached())
+    unsigned int objects_removed = 1;
+
+    while(objects_removed > 0)
     {
-        LEti::Object* object = *it;
-        if(!M_need_to_remove_object(object))
+        objects_removed = 0;
+
+        Objects_List::Iterator it = m_objects.begin();
+        while(!it.end_reached())
         {
-            ++it;
-            continue;
+            LEti::Object* object = *it;
+            if(!M_need_to_remove_object(object))
+            {
+                ++it;
+                continue;
+            }
+
+            for(unsigned int i = 0; i < m_extensions.size(); ++i)
+                m_extensions[i]->on_object_removed(object);
+
+            delete object;
+            it = m_objects.erase_and_iterate_forward(it);
+
+            ++objects_removed;
         }
-
-        for(unsigned int i = 0; i < m_extensions.size(); ++i)
-            m_extensions[i]->on_object_removed(object);
-
-        delete object;
-        it = m_objects.erase_and_iterate_forward(it);
     }
 }
 
