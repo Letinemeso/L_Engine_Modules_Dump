@@ -24,7 +24,7 @@ void Objects_Controller_Extension__Physics::on_object_added(LEti::Object* _objec
     });
 }
 
-void Objects_Controller_Extension__Physics::on_object_removed(LEti::Object* _object)
+void Objects_Controller_Extension__Physics::on_object_removed(LEti::Object* _object, bool _forcefuly)
 {
     _object->process_logic_for_modules_of_type<LPhys::Physics_Module>([this](LPhys::Physics_Module* _module)
     {

@@ -50,7 +50,7 @@ void Objects_Controller::remove_object(LEti::Object* _object)
     L_ASSERT(obj_it.is_ok());
 
     for(unsigned int i = 0; i < m_extensions.size(); ++i)
-        m_extensions[i]->on_object_removed(_object);
+        m_extensions[i]->on_object_removed(_object, false);
 
     m_objects.erase(obj_it);
 }
@@ -62,7 +62,7 @@ void Objects_Controller::clear_objects()
         LEti::Object* object = *it;
 
         for(unsigned int i = 0; i < m_extensions.size(); ++i)
-            m_extensions[i]->on_object_removed(object);
+            m_extensions[i]->on_object_removed(object, true);
 
         delete object;
     }
@@ -109,7 +109,7 @@ void Objects_Controller::M_remove_objects()
             }
 
             for(unsigned int i = 0; i < m_extensions.size(); ++i)
-                m_extensions[i]->on_object_removed(object);
+                m_extensions[i]->on_object_removed(object, false);
 
             delete object;
             it = m_objects.erase_and_iterate_forward(it);

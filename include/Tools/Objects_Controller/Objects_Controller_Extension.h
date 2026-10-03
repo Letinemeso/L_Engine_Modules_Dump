@@ -19,7 +19,7 @@ namespace LMD
 
     public:
         virtual void on_object_added(LEti::Object* _object) = 0;
-        virtual void on_object_removed(LEti::Object* _object) = 0;
+        virtual void on_object_removed(LEti::Object* _object, bool _forcefuly) = 0;
 
         virtual void reset() = 0;
         virtual void update(Objects_List& _objects, float _dt) = 0;

@@ -69,6 +69,10 @@ namespace LMD
         Mesh_Extractor_3D* m_mesh_extractor = nullptr;
 
     public:
+        Voxel_3D_Generator& voxel_generator() { return *m_voxel_generator; }
+        Mesh_Extractor_3D& mesh_extractor() { return *m_mesh_extractor; }
+
+    public:
         INIT_BUILDER_STUB(Model)
 
     public:
