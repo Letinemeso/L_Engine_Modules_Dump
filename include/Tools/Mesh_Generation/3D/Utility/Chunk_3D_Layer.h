@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Stuff/Thread_Pool.h>
 #include <Stuff/Signed_Coordinates.h>
 #include <Data_Structures/Map.h>
 
@@ -18,6 +19,8 @@ namespace LMD
         using Layer_Map = LDS::Map<LST::Signed_Coordinates, Chunk_3D_Generation_Data>;
 
     private:
+        LST::Thread_Pool m_thread_pool;
+
         Layer_Map m_layer_prev;
         Layer_Map m_layer_curr;
         Layer_Map m_layer_next;

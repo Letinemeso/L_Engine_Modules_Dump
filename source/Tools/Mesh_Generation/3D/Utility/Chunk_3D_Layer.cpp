@@ -58,11 +58,16 @@ void Chunk_3D_Layer::M_extract_current_layer_points()
     for(Layer_Map::Iterator it = m_layer_curr.iterator(); !it.end_reached(); ++it)
     {
         const LST::Signed_Coordinates& coords = it.key();
-        Chunk_3D_Generation_Data& generation_data = *it;
+        Chunk_3D_Generation_Data* generation_data = &(*it);
 
-        Chunk_3D_Generation_Data::Neighbors_Data neighbors = M_find_neighbors(coords);
-        generation_data.extract_points(neighbors, m_should_balance_points);
+        m_thread_pool.add_task([this, coords, generation_data]()
+        {
+            Chunk_3D_Generation_Data::Neighbors_Data neighbors = M_find_neighbors(coords);
+            generation_data->extract_points(neighbors, m_should_balance_points);
+        });
     }
+
+    m_thread_pool.wait_for_completion();
 }
 
 

@@ -67,7 +67,7 @@ unsigned int Chunk_3D_Grid::M_calculate_subvoxel_value(const Voxel_3D& _subvoxel
     return most_common_value;
 }
 
-void Chunk_3D_Grid::M_fill_subvoxel_area(const Voxel_3D& _subvoxel, const Spatial_Grid_3D_Indices& _offset, unsigned int _area_size)
+void Chunk_3D_Grid::M_fill_subvoxel_area(const Voxel_3D& _subvoxel, const LST::Coordinates& _offset, unsigned int _area_size)
 {
     if(_subvoxel.is_split() && _subvoxel.depth() < m_max_depth)
     {
@@ -77,32 +77,34 @@ void Chunk_3D_Grid::M_fill_subvoxel_area(const Voxel_3D& _subvoxel, const Spatia
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Left_Bottom_Close),
                              _offset, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Right_Bottom_Close),
-                             _offset + Spatial_Grid_3D_Indices{area_size_halved, 0, 0}, area_size_halved);
+                             _offset + LST::Coordinates{area_size_halved, 0, 0}, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Left_Top_Close),
-                             _offset + Spatial_Grid_3D_Indices{0, area_size_halved, 0}, area_size_halved);
+                             _offset + LST::Coordinates{0, area_size_halved, 0}, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Right_Top_Close),
-                             _offset + Spatial_Grid_3D_Indices{area_size_halved, area_size_halved, 0}, area_size_halved);
+                             _offset + LST::Coordinates{area_size_halved, area_size_halved, 0}, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Left_Bottom_Far),
-                             _offset + Spatial_Grid_3D_Indices{0, 0, area_size_halved}, area_size_halved);
+                             _offset + LST::Coordinates{0, 0, area_size_halved}, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Right_Bottom_Far),
-                             _offset + Spatial_Grid_3D_Indices{area_size_halved, 0, area_size_halved}, area_size_halved);
+                             _offset + LST::Coordinates{area_size_halved, 0, area_size_halved}, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Left_Top_Far),
-                             _offset + Spatial_Grid_3D_Indices{0, area_size_halved, area_size_halved}, area_size_halved);
+                             _offset + LST::Coordinates{0, area_size_halved, area_size_halved}, area_size_halved);
         M_fill_subvoxel_area(*_subvoxel.child(Voxel_3D::Subvoxel_Position::Right_Top_Far),
-                             _offset + Spatial_Grid_3D_Indices{area_size_halved, area_size_halved, area_size_halved}, area_size_halved);
+                             _offset + LST::Coordinates{area_size_halved, area_size_halved, area_size_halved}, area_size_halved);
 
         return;
     }
 
     unsigned int id = M_calculate_subvoxel_value(_subvoxel);
 
-    for(unsigned int x = _offset.x; x < _offset.x + _area_size; ++x)
+    LST::Coordinates coords;
+    LST::Coordinates limit = _offset + LST::Coordinates(_area_size, _area_size, _area_size);
+    for(coords.z() = _offset.z(); coords.z() < limit.z(); ++coords.z())
     {
-        for(unsigned int y = _offset.y; y < _offset.y + _area_size; ++y)
+        for(coords.y() = _offset.y(); coords.y() < limit.y(); ++coords.y())
         {
-            for(unsigned int z = _offset.z; z < _offset.z + _area_size; ++z)
+            for(coords.x() = _offset.x(); coords.x() < limit.x(); ++coords.x())
             {
-                m_grid.data(x, y, z) = id;
+                m_grid.data(coords) = id;
             }
         }
     }

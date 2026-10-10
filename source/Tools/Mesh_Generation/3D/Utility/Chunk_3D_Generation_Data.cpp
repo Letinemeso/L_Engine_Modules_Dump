@@ -59,21 +59,20 @@ void Chunk_3D_Generation_Data::operator=(Chunk_3D_Generation_Data&& _from)
 
 
 
-Chunk_3D_Generation_Data::Neighbor_Cell_Location Chunk_3D_Generation_Data::M_calculate_neighbor_cell_location(const Neighbors_Data& _neighbors, unsigned int _x, unsigned int _y, unsigned int _z) const
+Chunk_3D_Generation_Data::Neighbor_Cell_Location Chunk_3D_Generation_Data::M_calculate_neighbor_cell_location(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords) const
 {
-    unsigned int coords[3] = { _x, _y, _z };
     unsigned int neighbor_coords[3];
 
     Neighbor_Cell_Location result;
 
     for(unsigned int i = 0; i < 3; ++i)
     {
-        if(coords[i] < m_grid.grid_size())
+        if(_coords[i] < m_grid.grid_size())
         {
             neighbor_coords[i] = 1;
-            result.coordinates[i] = coords[i];
+            result.coordinates[i] = _coords[i];
         }
-        else if(coords[i] == LST::Math::Max_Unsigned_Int)
+        else if(_coords[i] == LST::Math::Max_Unsigned_Int)
         {
             neighbor_coords[i] = 0;
             result.coordinates[i] = m_grid.grid_size() - 1;
@@ -93,23 +92,24 @@ Chunk_3D_Generation_Data::Neighbor_Cell_Location Chunk_3D_Generation_Data::M_cal
     return result;
 }
 
-Chunk_3D_Generation_Data::Neighboring_Cells_Data Chunk_3D_Generation_Data::M_calculate_neighboring_cells_data(const Neighbors_Data& _neighbors, unsigned int _x, unsigned int _y, unsigned int _z) const
+Chunk_3D_Generation_Data::Neighboring_Cells_Data Chunk_3D_Generation_Data::M_calculate_neighboring_cells_data(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords) const
 {
     Neighboring_Cells_Data result;
 
+    LST::Coordinates neighbor_coord;
     for(unsigned int x = 0; x < 3; ++x)
     {
-        unsigned int neighbor_x = _x - 1 + x;
+        neighbor_coord.x() = _coords.x() - 1 + x;
 
         for(unsigned int y = 0; y < 3; ++y)
         {
-            unsigned int neighbor_y = _y - 1 + y;
+            neighbor_coord.y() = _coords.y() - 1 + y;
 
             for(unsigned int z = 0; z < 3; ++z)
             {
-                unsigned int neighbor_z = _z - 1 + z;
+                neighbor_coord.z() = _coords.z() - 1 + z;
 
-                Neighbor_Cell_Location cell_location = M_calculate_neighbor_cell_location(_neighbors, neighbor_x, neighbor_y, neighbor_z);
+                Neighbor_Cell_Location cell_location = M_calculate_neighbor_cell_location(_neighbors, neighbor_coord);
 
                 if(!cell_location.chunk)
                     continue;
@@ -221,14 +221,14 @@ void Chunk_3D_Generation_Data::M_append_quad(const glm::vec3& _point_0, const gl
     m_points.push(_point_1);
 }
 
-void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbors, unsigned int _x, unsigned int _y, unsigned int _z, bool _balance_points)
+void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords, bool _balance_points)
 {
-    Neighboring_Cells_Data neighbors_data = M_calculate_neighboring_cells_data(_neighbors, _x, _y, _z);
+    Neighboring_Cells_Data neighbors_data = M_calculate_neighboring_cells_data(_neighbors, _coords);
 
     glm::vec3 center = m_voxel->offset() + glm::vec3(
-                                                     (float)_x * m_cell_size,
-                                                     (float)_y * m_cell_size,
-                                                     (float)_z * m_cell_size
+                                                     (float)_coords.x() * m_cell_size,
+                                                     (float)_coords.y() * m_cell_size,
+                                                     (float)_coords.z() * m_cell_size
                                                     );
 
     /*
@@ -288,16 +288,17 @@ void Chunk_3D_Generation_Data::extract_points(const Neighbors_Data& _neighbors, 
 
     m_points.clear();
 
-    for(unsigned int x = 0; x < m_grid.grid_size(); ++x)
+    LST::Coordinates coords;
+    for(coords.z() = 0; coords.z() < m_grid.grid_size(); ++coords.z())
     {
-        for(unsigned int y = 0; y < m_grid.grid_size(); ++y)
+        for(coords.y() = 0; coords.y() < m_grid.grid_size(); ++coords.y())
         {
-            for(unsigned int z = 0; z < m_grid.grid_size(); ++z)
+            for(coords.x() = 0; coords.x() < m_grid.grid_size(); ++coords.x())
             {
-                if(m_grid.value_at(x, y, z) == 0)
+                if(m_grid.value_at(coords) == 0)
                     continue;
 
-                M_append_cell_data(_neighbors, x, y, z, _balance_points);
+                M_append_cell_data(_neighbors, coords, _balance_points);
             }
         }
     }
