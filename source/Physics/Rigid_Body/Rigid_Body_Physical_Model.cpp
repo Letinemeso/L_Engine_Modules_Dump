@@ -11,13 +11,6 @@ Rigid_Body_Physical_Model::Rigid_Body_Physical_Model()
 {
 
 }
-
-Rigid_Body_Physical_Model::Rigid_Body_Physical_Model(const Rigid_Body_Physical_Model &_other)
-    : LPhys::Physical_Model(_other)
-{
-    set_mass(_other.m_mass);
-}
-
 Rigid_Body_Physical_Model::~Rigid_Body_Physical_Model()
 {
 

@@ -18,7 +18,6 @@ namespace LMD
 
     public:
         Rigid_Body_Physical_Model();
-        Rigid_Body_Physical_Model(const Rigid_Body_Physical_Model& _other);
         ~Rigid_Body_Physical_Model();
 
     private:
