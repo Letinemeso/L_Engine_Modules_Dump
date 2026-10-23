@@ -3,7 +3,7 @@
 using namespace LMD;
 
 
-void Voxel_3D_Generator::M_apply_brush(const Voxel_3D_Brush& _brush) const
+void Voxel_3D_Generator::apply_brush(const Voxel_3D_Brush& _brush) const
 {
     L_ASSERT(m_voxel_controller);
 

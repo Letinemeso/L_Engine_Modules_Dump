@@ -95,6 +95,8 @@ namespace LMD
 
     public:
         const Mesh_3D* get_mesh(const LST::Signed_Coordinates& _coords) const;
+        Mesh_3D* get_mesh(const LST::Signed_Coordinates& _coords);
+
         Mesh_3D construct_combined_mesh() const;
 
     };

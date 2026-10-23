@@ -30,8 +30,8 @@ namespace LMD
         inline Voxel_3D_Controller* voxel_controller() const { return m_voxel_controller; }
         inline unsigned int max_voxel_depth() const { return m_max_voxel_depth; }
 
-    protected:
-        void M_apply_brush(const Voxel_3D_Brush& _brush) const;
+    public:
+        void apply_brush(const Voxel_3D_Brush& _brush) const;
 
     public:
         virtual void generate() const = 0;

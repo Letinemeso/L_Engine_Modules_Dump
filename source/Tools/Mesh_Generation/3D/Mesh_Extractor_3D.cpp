@@ -198,6 +198,15 @@ const Mesh_3D* Mesh_Extractor_3D::get_mesh(const LST::Signed_Coordinates& _coord
     return &(*it);
 }
 
+Mesh_3D* Mesh_Extractor_3D::get_mesh(const LST::Signed_Coordinates& _coords)
+{
+    Voxel_Meshes_Map::Iterator it = m_voxel_meshes_map.find(_coords);
+    if(!it.is_ok())
+        return nullptr;
+    return &(*it);
+}
+
+
 Mesh_3D Mesh_Extractor_3D::construct_combined_mesh() const
 {
     unsigned int geometry_data_size = 0;
