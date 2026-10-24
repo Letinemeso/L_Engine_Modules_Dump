@@ -6,8 +6,8 @@
 using namespace LMD;
 
 
-Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(const Voxel_3D* _voxel, unsigned int _max_depth)
-    : m_voxel(_voxel)
+Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(const Voxel_3D* _voxel, unsigned int _max_depth, unsigned int _default_value)
+    : m_voxel(_voxel), m_default_value(_default_value)
 {
     L_ASSERT(_voxel);
 
@@ -25,6 +25,7 @@ Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(const Chunk_3D_Generation_Dat
 
     m_cell_size = _other.m_cell_size;
     m_cell_size_halved = _other.m_cell_size_halved;
+    m_default_value = _other.m_default_value;
 }
 
 Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(Chunk_3D_Generation_Data&& _from)
@@ -35,6 +36,7 @@ Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(Chunk_3D_Generation_Data&& _f
 
     m_cell_size = _from.m_cell_size;
     m_cell_size_halved = _from.m_cell_size_halved;
+    m_default_value = _from.m_default_value;
 }
 
 void Chunk_3D_Generation_Data::operator=(const Chunk_3D_Generation_Data& _other)
@@ -45,6 +47,7 @@ void Chunk_3D_Generation_Data::operator=(const Chunk_3D_Generation_Data& _other)
 
     m_cell_size = _other.m_cell_size;
     m_cell_size_halved = _other.m_cell_size_halved;
+    m_default_value = _other.m_default_value;
 }
 
 void Chunk_3D_Generation_Data::operator=(Chunk_3D_Generation_Data&& _from)
@@ -55,6 +58,7 @@ void Chunk_3D_Generation_Data::operator=(Chunk_3D_Generation_Data&& _from)
 
     m_cell_size = _from.m_cell_size;
     m_cell_size_halved = _from.m_cell_size_halved;
+    m_default_value = _from.m_default_value;
 }
 
 
@@ -112,7 +116,10 @@ Chunk_3D_Generation_Data::Neighboring_Cells_Data Chunk_3D_Generation_Data::M_cal
                 Neighbor_Cell_Location cell_location = M_calculate_neighbor_cell_location(_neighbors, neighbor_coord);
 
                 if(!cell_location.chunk)
+                {
+                    result.values[x][y][z] = m_default_value;
                     continue;
+                }
 
                 const Chunk_3D_Grid& expected_grid = cell_location.chunk->grid();
                 result.values[x][y][z] = expected_grid.value_at(cell_location.coordinates.x(), cell_location.coordinates.y(), cell_location.coordinates.z());

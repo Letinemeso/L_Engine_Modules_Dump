@@ -108,6 +108,7 @@ void Mesh_Extractor_3D::M_extract_meshes_data()
     layer.set_should_balance_points( m_mesh_smoother != nullptr );
     layer.set_voxel_controller(m_voxel_controller);
     layer.set_max_depth(m_max_extraction_depth);
+    layer.set_default_voxel_value(m_default_voxel_value);
     layer.reload();
 
     bool last_layer_reached = false;

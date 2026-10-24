@@ -41,6 +41,7 @@ namespace LMD
 
         unsigned int m_max_extraction_depth = 0;
         float m_extraction_cell_size = 0.0f;
+        unsigned int m_default_voxel_value = 0;
 
         Mesh_Data_Extractor* m_mesh_data_extractor__geometry = nullptr;
         Mesh_Data_Extractor* m_mesh_data_extractor__texture = nullptr;
@@ -61,6 +62,7 @@ namespace LMD
         inline void set_voxel_controller(const Voxel_3D_Controller* _ptr) { m_voxel_controller = _ptr; }
 
         inline void set_max_extraction_depth(unsigned int _value) { m_max_extraction_depth = _value; }
+        inline void set_default_voxel_value(unsigned int _value) { m_default_voxel_value = _value; }
 
         inline void set_mesh_data_extractor__geometry(Mesh_Data_Extractor* _ptr) { delete m_mesh_data_extractor__geometry; m_mesh_data_extractor__geometry = _ptr; }
         inline void set_mesh_data_extractor__texture(Mesh_Data_Extractor* _ptr) { delete m_mesh_data_extractor__texture; m_mesh_data_extractor__texture = _ptr; }
@@ -109,6 +111,7 @@ namespace LMD
 
         INIT_FIELDS
         ADD_FIELD(unsigned int, max_extraction_depth)
+        ADD_FIELD(unsigned int, default_voxel_value)
         FIELDS_END
 
         INIT_CHILDS
@@ -124,6 +127,7 @@ namespace LMD
 
     public:
         unsigned int max_extraction_depth = 0;
+        unsigned int default_voxel_value = 0;
 
         Mesh_Data_Extractor_Stub* mesh_data_extractor__geometry = nullptr;
         Mesh_Data_Extractor_Stub* mesh_data_extractor__texture = nullptr;
@@ -138,6 +142,7 @@ namespace LMD
 
         INIT_BUILDER_STUB_SETTERS
         ADD_BUILDER_STUB_SETTER(set_max_extraction_depth, max_extraction_depth)
+        ADD_BUILDER_STUB_SETTER(set_default_voxel_value, default_voxel_value)
         ADD_BUILDER_STUB_SETTER(set_mesh_data_extractor__geometry, Mesh_Data_Extractor_Stub::construct_from_if_exists(mesh_data_extractor__geometry))
         ADD_BUILDER_STUB_SETTER(set_mesh_data_extractor__texture, Mesh_Data_Extractor_Stub::construct_from_if_exists(mesh_data_extractor__texture))
         ADD_BUILDER_STUB_SETTER(set_mesh_data_extractor__normals, Mesh_Data_Extractor_Stub::construct_from_if_exists(mesh_data_extractor__normals))

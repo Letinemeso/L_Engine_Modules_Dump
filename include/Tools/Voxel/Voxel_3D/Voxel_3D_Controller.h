@@ -25,7 +25,10 @@ namespace LMD
         float m_voxel_size = 0.0f;
         float m_voxel_size_inverted = 0.0f;
 
+        unsigned int m_default_voxel_data = 0;
+
     public:
+        Voxel_3D_Controller();
         Voxel_3D_Controller(float _voxel_size);
         Voxel_3D_Controller(const Voxel_3D_Controller& _other);
         Voxel_3D_Controller(Voxel_3D_Controller&& _from);
@@ -35,6 +38,9 @@ namespace LMD
         ~Voxel_3D_Controller();
 
     public:
+        inline void set_voxel_size(float _value) { L_ASSERT(m_voxels.size() == 0); m_voxel_size = _value; m_voxel_size_inverted = 1.0f / _value; }
+        inline void set_default_voxel_value(unsigned int _value) { m_default_voxel_data = _value; }
+
         inline const Voxel_Map& voxels() const { return m_voxels; }
         inline float voxel_size() const { return m_voxel_size; }
 

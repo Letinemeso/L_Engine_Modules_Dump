@@ -35,9 +35,10 @@ namespace LMD
 
         float m_cell_size = 0.0f;
         float m_cell_size_halved = 0.0f;
+        unsigned int m_default_value = 0;
 
     public:
-        Chunk_3D_Generation_Data(const Voxel_3D* _voxel, unsigned int _max_depth);
+        Chunk_3D_Generation_Data(const Voxel_3D* _voxel, unsigned int _max_depth, unsigned int _default_value);
         Chunk_3D_Generation_Data(const Chunk_3D_Generation_Data& _other);
         Chunk_3D_Generation_Data(Chunk_3D_Generation_Data&& _from);
         void operator=(const Chunk_3D_Generation_Data& _other);

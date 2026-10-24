@@ -5,10 +5,14 @@
 using namespace LMD;
 
 
+Voxel_3D_Controller::Voxel_3D_Controller()
+{
+
+}
+
 Voxel_3D_Controller::Voxel_3D_Controller(float _voxel_size)
 {
-    m_voxel_size = _voxel_size;
-    m_voxel_size_inverted = 1.0f / _voxel_size;
+    set_voxel_size(_voxel_size);
 }
 
 Voxel_3D_Controller::Voxel_3D_Controller(const Voxel_3D_Controller& _other)
@@ -122,6 +126,7 @@ Voxel_3D* Voxel_3D_Controller::get_or_insert_voxel(const LST::Signed_Coordinates
     Voxel_3D* voxel = new Voxel_3D();
     voxel->set_offset( calculate_coordinates(_coordinates) );
     voxel->set_size(m_voxel_size);
+    voxel->set_value(m_default_voxel_data);
 
     m_voxels.insert(_coordinates, voxel);
 
