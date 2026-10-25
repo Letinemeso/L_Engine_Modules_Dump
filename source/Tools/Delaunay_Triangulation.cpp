@@ -299,10 +299,6 @@ Triangles_Vec LMD::triangulate(const Points_Vec& _points)
     for(unsigned int i = 0; i < _points.size(); ++i)
     {
         Index_Triangles_List::Iterator owner_triangle_it = find_owner_triangle(list, _points[i]);
-        if(!owner_triangle_it.is_ok())
-        {
-            L_ASSERT(owner_triangle_it.is_ok());
-        }
         L_ASSERT(owner_triangle_it.is_ok());
 
         Index_Triangle triangle = *owner_triangle_it;
