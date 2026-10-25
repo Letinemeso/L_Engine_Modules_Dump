@@ -111,6 +111,19 @@ void Chunk_3D_Grid::M_fill_subvoxel_area(const Voxel_3D& _subvoxel, const LST::C
 }
 
 
+LST::Coordinates Chunk_3D_Grid::M_convert_signed_coordinates(const LST::Signed_Coordinates& _coords) const
+{
+    L_ASSERT(_coords.x() >= 0);
+    L_ASSERT(_coords.y() >= 0);
+    L_ASSERT(_coords.z() >= 0);
+
+    LST::Coordinates result;
+    for(unsigned int i = 0; i < 3; ++i)
+        result[i] = (unsigned int)_coords[i];
+    return result;
+}
+
+
 
 void Chunk_3D_Grid::construct_grid(const Voxel_3D& _from, unsigned int _max_depth)
 {
@@ -119,7 +132,180 @@ void Chunk_3D_Grid::construct_grid(const Voxel_3D& _from, unsigned int _max_dept
     m_max_depth = _max_depth;
 
     unsigned int grid_size = LST::Math::pow_ui(2, _max_depth);
-    m_grid.resize(grid_size, grid_size, grid_size);
+    m_grid.resize(grid_size + 2, grid_size + 2, grid_size + 2);
 
-    M_fill_subvoxel_area(_from, {0, 0, 0}, grid_size);
+    M_fill_subvoxel_area(_from, {1, 1, 1}, grid_size);
+}
+
+
+void Chunk_3D_Grid::fill_halo_left(const Chunk_3D_Grid& _neighbor)
+{
+    unsigned int size = grid_size();
+    L_ASSERT(_neighbor.grid_size() == size);
+    unsigned int last_coord = size;
+
+    for(unsigned int y = 0; y < size; ++y)
+    {
+        for(unsigned int z = 0; z < size; ++z)
+        {
+            m_grid.data(0, y + 1, z + 1) = _neighbor.value_at(last_coord, y, z);
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_right(const Chunk_3D_Grid& _neighbor)
+{
+    unsigned int size = grid_size();
+    L_ASSERT(_neighbor.grid_size() == size);
+    unsigned int last_coord = size + 1;
+
+    for(unsigned int y = 0; y < size; ++y)
+    {
+        for(unsigned int z = 0; z < size; ++z)
+        {
+            m_grid.data(last_coord, y + 1, z + 1) = _neighbor.value_at(0, y, z);
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_bottom(const Chunk_3D_Grid& _neighbor)
+{
+    unsigned int size = grid_size();
+    L_ASSERT(_neighbor.grid_size() == size);
+    unsigned int last_coord = size;
+
+    for(unsigned int x = 0; x < size; ++x)
+    {
+        for(unsigned int z = 0; z < size; ++z)
+        {
+            m_grid.data(x + 1, 0, z + 1) = _neighbor.value_at(x, last_coord, z);
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_top(const Chunk_3D_Grid& _neighbor)
+{
+    unsigned int size = grid_size();
+    L_ASSERT(_neighbor.grid_size() == size);
+    unsigned int last_coord = size + 1;
+
+    for(unsigned int x = 0; x < size; ++x)
+    {
+        for(unsigned int z = 0; z < size; ++z)
+        {
+            m_grid.data(x + 1, last_coord, z + 1) = _neighbor.value_at(x, 0, z);
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_back(const Chunk_3D_Grid& _neighbor)
+{
+    unsigned int size = grid_size();
+    L_ASSERT(_neighbor.grid_size() == size);
+    unsigned int last_coord = size;
+
+    for(unsigned int x = 0; x < size; ++x)
+    {
+        for(unsigned int y = 0; y < size; ++y)
+        {
+            m_grid.data(x + 1, y + 1, 0) = _neighbor.value_at(x, y, last_coord);
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_front(const Chunk_3D_Grid& _neighbor)
+{
+    unsigned int size = grid_size();
+    L_ASSERT(_neighbor.grid_size() == size);
+    unsigned int last_coord = size + 1;
+
+    for(unsigned int x = 0; x < size; ++x)
+    {
+        for(unsigned int y = 0; y < size; ++y)
+        {
+            m_grid.data(x + 1, y + 1, last_coord) = _neighbor.value_at(x, y, 0);
+        }
+    }
+}
+
+
+void Chunk_3D_Grid::fill_halo_left(unsigned int _value)
+{
+    unsigned int size = grid_size();
+
+    for(unsigned int y = 0; y < size; ++y)
+    {
+        for(unsigned int z = 0; z < size; ++z)
+        {
+            m_grid.data(0, y + 1, z + 1) = _value;
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_right(unsigned int _value)
+{
+    unsigned int size = grid_size();
+    unsigned int last_coord = size + 1;
+
+    for(unsigned int y = 0; y < size; ++y)
+    {
+        for(unsigned int z = 0; z < size; ++z)
+        {
+            m_grid.data(last_coord, y + 1, z + 1) = _value;
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_bottom(unsigned int _value)
+{
+    unsigned int size = grid_size();
+
+    for(unsigned int x = 0; x < size; ++x)
+    {
+        for(unsigned int z = 0; z < size; ++z)
+        {
+            m_grid.data(x + 1, 0, z + 1) = _value;
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_top(unsigned int _value)
+{
+    unsigned int size = grid_size();
+    unsigned int last_coord = size + 1;
+
+    for(unsigned int x = 0; x < size; ++x)
+    {
+        for(unsigned int z = 0; z < size; ++z)
+        {
+            m_grid.data(x + 1, last_coord, z + 1) = _value;
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_back(unsigned int _value)
+{
+    unsigned int size = grid_size();
+
+    for(unsigned int x = 0; x < size; ++x)
+    {
+        for(unsigned int y = 0; y < size; ++y)
+        {
+            m_grid.data(x + 1, y + 1, 0) = _value;
+        }
+    }
+}
+
+void Chunk_3D_Grid::fill_halo_front(unsigned int _value)
+{
+    unsigned int size = grid_size();
+    unsigned int last_coord = size + 1;
+
+    for(unsigned int x = 0; x < size; ++x)
+    {
+        for(unsigned int y = 0; y < size; ++y)
+        {
+            m_grid.data(x + 1, y + 1, last_coord) = _value;
+        }
+    }
 }

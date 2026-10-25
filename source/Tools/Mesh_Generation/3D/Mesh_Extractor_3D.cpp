@@ -105,7 +105,6 @@ void Mesh_Extractor_3D::M_extract_meshes_data()
     m_voxel_triangles.clear();
 
     Chunk_3D_Layer layer;
-    layer.set_should_balance_points( m_mesh_smoother != nullptr );
     layer.set_voxel_controller(m_voxel_controller);
     layer.set_max_depth(m_max_extraction_depth);
     layer.set_default_voxel_value(m_default_voxel_value);

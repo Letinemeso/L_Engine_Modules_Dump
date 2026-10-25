@@ -49,15 +49,13 @@ namespace LMD
         inline const LDS::Vector<glm::vec3>& points() const { return m_points; }
 
     private:
-        Neighbor_Cell_Location M_calculate_neighbor_cell_location(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords) const;
-        Neighboring_Cells_Data M_calculate_neighboring_cells_data(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords) const;
-        void M_balance_point(const Neighboring_Cells_Data& _neighbors_data, const glm::vec3& _voxel_center, glm::vec3& _point,
-                             bool _positive_offset_x, bool _positive_offset_y, bool _positive_offset_z) const;
         void M_append_quad(const glm::vec3& _point_0, const glm::vec3& _point_1, const glm::vec3& _point_2, const glm::vec3& _point_3);
-        void M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords, bool _balance_points);
+        void M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords);
+
+        void M_fill_grid_halo(const Neighbors_Data& _neighbors);
 
     public:
-        void extract_points(const Neighbors_Data& _neighbors, bool _balance_points);
+        void extract_points(const Neighbors_Data& _neighbors);
 
     };
 

@@ -36,14 +36,10 @@ namespace LMD
         const Voxel_3D_Controller* m_voxel_controller = nullptr;
         unsigned int m_max_depth = 0;
 
-        bool m_should_balance_points = true;
-
     public:
         inline void set_voxel_controller(const Voxel_3D_Controller* _ptr) { m_voxel_controller = _ptr;  }
         inline void set_max_depth(unsigned int _value) { m_max_depth = _value; }
         inline void set_default_voxel_value(unsigned int _value) { m_default_voxel_value = _value; }
-
-        inline void set_should_balance_points(bool _value) { m_should_balance_points = _value; }
 
         inline const Layer_Map& current_layer() const { return m_layer_curr; }
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Stuff/Coordinates.h>
+#include <Stuff/Signed_Coordinates.h>
+
 #include <Tools/Spatial_Grid/Spatial_Grid_3D.h>
 #include <Tools/Voxel/Voxel_3D/Voxel_3D.h>
 
@@ -24,13 +27,29 @@ namespace LMD
         unsigned int M_calculate_subvoxel_value(const Voxel_3D& _subvoxel) const;
         void M_fill_subvoxel_area(const Voxel_3D& _subvoxel, const LST::Coordinates& _offset, unsigned int _area_size);
 
+        LST::Coordinates M_convert_signed_coordinates(const LST::Signed_Coordinates& _coords) const;
+
     public:
         void construct_grid(const Voxel_3D& _from, unsigned int _max_depth);
 
+        void fill_halo_left(const Chunk_3D_Grid& _neighbor);
+        void fill_halo_right(const Chunk_3D_Grid& _neighbor);
+        void fill_halo_bottom(const Chunk_3D_Grid& _neighbor);
+        void fill_halo_top(const Chunk_3D_Grid& _neighbor);
+        void fill_halo_back(const Chunk_3D_Grid& _neighbor);
+        void fill_halo_front(const Chunk_3D_Grid& _neighbor);
+
+        void fill_halo_left(unsigned int _value);
+        void fill_halo_right(unsigned int _value);
+        void fill_halo_bottom(unsigned int _value);
+        void fill_halo_top(unsigned int _value);
+        void fill_halo_back(unsigned int _value);
+        void fill_halo_front(unsigned int _value);
+
     public:
-        inline unsigned int grid_size() const { return m_grid.size_x(); }
-        inline unsigned int value_at(unsigned int _x, unsigned int _y, unsigned int _z) const { return m_grid.data(_x, _y, _z); }
-        inline unsigned int value_at(const LST::Coordinates& _coordinates) const { return m_grid.data(_coordinates); }
+        inline unsigned int grid_size() const { return m_grid.size_x() - 2; }
+        inline unsigned int value_at(int _x, int _y, int _z) const { return m_grid.data(_x + 1, _y + 1, _z + 1); }
+        inline unsigned int value_at(const LST::Signed_Coordinates& _coordinates) const { return m_grid.data( M_convert_signed_coordinates(_coordinates + LST::Signed_Coordinates(1, 1, 1)) ); }
 
     };
 
