@@ -37,7 +37,7 @@ Chunk_3D_Generation_Data::Neighbors_Data Chunk_3D_Layer::M_find_neighbors(const 
 }
 
 
-void Chunk_3D_Layer::M_load_layer(Layer_Map& _layer_data, unsigned int _z)
+void Chunk_3D_Layer::M_load_layer(Layer_Map& _layer_data, int _z)
 {
     _layer_data.clear();
 

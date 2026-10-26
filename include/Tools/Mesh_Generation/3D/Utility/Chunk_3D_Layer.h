@@ -25,7 +25,7 @@ namespace LMD
         Layer_Map m_layer_curr;
         Layer_Map m_layer_next;
 
-        unsigned int m_current_z_offset = 0;
+        int m_current_z_offset = 0;
 
         int m_z_min = 0;
         int m_z_max = 0;
@@ -46,7 +46,7 @@ namespace LMD
     private:
         Chunk_3D_Generation_Data::Neighbors_Data M_find_neighbors(const LST::Signed_Coordinates& _coords) const;
 
-        void M_load_layer(Layer_Map& _layer_data, unsigned int _z);
+        void M_load_layer(Layer_Map& _layer_data, int _z);
         void M_extract_current_layer_points();
 
     public:
