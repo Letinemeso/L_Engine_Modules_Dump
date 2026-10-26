@@ -30,7 +30,7 @@ namespace LMD
         LST::Coordinates M_convert_signed_coordinates(const LST::Signed_Coordinates& _coords) const;
 
     public:
-        void construct_grid(const Voxel_3D& _from, unsigned int _max_depth);
+        void construct_grid(const Voxel_3D& _from, unsigned int _max_depth, unsigned int _default_value);
 
         void fill_halo_left(const Chunk_3D_Grid& _neighbor);
         void fill_halo_right(const Chunk_3D_Grid& _neighbor);
@@ -38,13 +38,6 @@ namespace LMD
         void fill_halo_top(const Chunk_3D_Grid& _neighbor);
         void fill_halo_back(const Chunk_3D_Grid& _neighbor);
         void fill_halo_front(const Chunk_3D_Grid& _neighbor);
-
-        void fill_halo_left(unsigned int _value);
-        void fill_halo_right(unsigned int _value);
-        void fill_halo_bottom(unsigned int _value);
-        void fill_halo_top(unsigned int _value);
-        void fill_halo_back(unsigned int _value);
-        void fill_halo_front(unsigned int _value);
 
     public:
         inline unsigned int grid_size() const { return m_grid.size_x() - 2; }

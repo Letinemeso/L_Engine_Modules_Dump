@@ -7,11 +7,11 @@ using namespace LMD;
 
 
 Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(const Voxel_3D* _voxel, unsigned int _max_depth, unsigned int _default_value)
-    : m_voxel(_voxel), m_default_value(_default_value)
+    : m_voxel(_voxel)
 {
     L_ASSERT(_voxel);
 
-    m_grid.construct_grid(*_voxel, _max_depth);
+    m_grid.construct_grid(*_voxel, _max_depth, _default_value);
 
     m_cell_size = m_voxel->size() / (float)m_grid.grid_size();
     m_cell_size_halved = m_cell_size * 0.5f;
@@ -25,7 +25,6 @@ Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(const Chunk_3D_Generation_Dat
 
     m_cell_size = _other.m_cell_size;
     m_cell_size_halved = _other.m_cell_size_halved;
-    m_default_value = _other.m_default_value;
 }
 
 Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(Chunk_3D_Generation_Data&& _from)
@@ -36,7 +35,6 @@ Chunk_3D_Generation_Data::Chunk_3D_Generation_Data(Chunk_3D_Generation_Data&& _f
 
     m_cell_size = _from.m_cell_size;
     m_cell_size_halved = _from.m_cell_size_halved;
-    m_default_value = _from.m_default_value;
 }
 
 void Chunk_3D_Generation_Data::operator=(const Chunk_3D_Generation_Data& _other)
@@ -47,7 +45,6 @@ void Chunk_3D_Generation_Data::operator=(const Chunk_3D_Generation_Data& _other)
 
     m_cell_size = _other.m_cell_size;
     m_cell_size_halved = _other.m_cell_size_halved;
-    m_default_value = _other.m_default_value;
 }
 
 void Chunk_3D_Generation_Data::operator=(Chunk_3D_Generation_Data&& _from)
@@ -58,7 +55,6 @@ void Chunk_3D_Generation_Data::operator=(Chunk_3D_Generation_Data&& _from)
 
     m_cell_size = _from.m_cell_size;
     m_cell_size_halved = _from.m_cell_size_halved;
-    m_default_value = _from.m_default_value;
 }
 
 
@@ -131,35 +127,23 @@ void Chunk_3D_Generation_Data::M_fill_grid_halo(const Neighbors_Data& _neighbors
 {
     if(_neighbors.data[0][1][1])
         m_grid.fill_halo_left(_neighbors.data[0][1][1]->grid());
-    else
-        m_grid.fill_halo_left(m_default_value);
 
     if(_neighbors.data[2][1][1])
         m_grid.fill_halo_right(_neighbors.data[2][1][1]->grid());
-    else
-        m_grid.fill_halo_right(m_default_value);
 
 
     if(_neighbors.data[1][0][1])
         m_grid.fill_halo_bottom(_neighbors.data[1][0][1]->grid());
-    else
-        m_grid.fill_halo_bottom(m_default_value);
 
     if(_neighbors.data[1][2][1])
         m_grid.fill_halo_top(_neighbors.data[1][2][1]->grid());
-    else
-        m_grid.fill_halo_top(m_default_value);
 
 
     if(_neighbors.data[1][1][0])
         m_grid.fill_halo_back(_neighbors.data[1][1][0]->grid());
-    else
-        m_grid.fill_halo_back(m_default_value);
 
     if(_neighbors.data[1][1][2])
         m_grid.fill_halo_front(_neighbors.data[1][1][2]->grid());
-    else
-        m_grid.fill_halo_front(m_default_value);
 }
 
 
