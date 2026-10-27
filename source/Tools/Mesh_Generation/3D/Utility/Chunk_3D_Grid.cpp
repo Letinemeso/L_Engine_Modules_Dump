@@ -144,13 +144,13 @@ void Chunk_3D_Grid::fill_halo_left(const Chunk_3D_Grid& _neighbor)
 {
     unsigned int size = grid_size();
     L_ASSERT(_neighbor.grid_size() == size);
-    unsigned int last_coord = size;
+    unsigned int last_coord = size - 1;
 
-    for(unsigned int y = 0; y < size; ++y)
+    for(unsigned int y = 1; y < size + 1; ++y)
     {
-        for(unsigned int z = 0; z < size; ++z)
+        for(unsigned int z = 1; z < size + 1; ++z)
         {
-            m_grid.data(0, y + 1, z + 1) = _neighbor.value_at(last_coord, y, z);
+            m_grid.data(0, y, z) = _neighbor.value_at(last_coord, y - 1, z - 1);
         }
     }
 }
@@ -161,11 +161,11 @@ void Chunk_3D_Grid::fill_halo_right(const Chunk_3D_Grid& _neighbor)
     L_ASSERT(_neighbor.grid_size() == size);
     unsigned int last_coord = size + 1;
 
-    for(unsigned int y = 0; y < size; ++y)
+    for(unsigned int y = 1; y < size + 1; ++y)
     {
-        for(unsigned int z = 0; z < size; ++z)
+        for(unsigned int z = 1; z < size + 1; ++z)
         {
-            m_grid.data(last_coord, y + 1, z + 1) = _neighbor.value_at(0, y, z);
+            m_grid.data(last_coord, y, z) = _neighbor.value_at(0, y - 1, z - 1);
         }
     }
 }
@@ -174,13 +174,13 @@ void Chunk_3D_Grid::fill_halo_bottom(const Chunk_3D_Grid& _neighbor)
 {
     unsigned int size = grid_size();
     L_ASSERT(_neighbor.grid_size() == size);
-    unsigned int last_coord = size;
+    unsigned int last_coord = size - 1;
 
-    for(unsigned int x = 0; x < size; ++x)
+    for(unsigned int x = 1; x < size + 1; ++x)
     {
-        for(unsigned int z = 0; z < size; ++z)
+        for(unsigned int z = 1; z < size + 1; ++z)
         {
-            m_grid.data(x + 1, 0, z + 1) = _neighbor.value_at(x, last_coord, z);
+            m_grid.data(x, 0, z) = _neighbor.value_at(x - 1, last_coord, z - 1);
         }
     }
 }
@@ -191,11 +191,11 @@ void Chunk_3D_Grid::fill_halo_top(const Chunk_3D_Grid& _neighbor)
     L_ASSERT(_neighbor.grid_size() == size);
     unsigned int last_coord = size + 1;
 
-    for(unsigned int x = 0; x < size; ++x)
+    for(unsigned int x = 1; x < size + 1; ++x)
     {
-        for(unsigned int z = 0; z < size; ++z)
+        for(unsigned int z = 1; z < size + 1; ++z)
         {
-            m_grid.data(x + 1, last_coord, z + 1) = _neighbor.value_at(x, 0, z);
+            m_grid.data(x, last_coord, z) = _neighbor.value_at(x - 1, 0, z - 1);
         }
     }
 }
@@ -204,13 +204,13 @@ void Chunk_3D_Grid::fill_halo_back(const Chunk_3D_Grid& _neighbor)
 {
     unsigned int size = grid_size();
     L_ASSERT(_neighbor.grid_size() == size);
-    unsigned int last_coord = size;
+    unsigned int last_coord = size - 1;
 
-    for(unsigned int x = 0; x < size; ++x)
+    for(unsigned int x = 1; x < size + 1; ++x)
     {
-        for(unsigned int y = 0; y < size; ++y)
+        for(unsigned int y = 1; y < size + 1; ++y)
         {
-            m_grid.data(x + 1, y + 1, 0) = _neighbor.value_at(x, y, last_coord);
+            m_grid.data(x, y, 0) = _neighbor.value_at(x - 1, y - 1, last_coord);
         }
     }
 }
@@ -221,11 +221,11 @@ void Chunk_3D_Grid::fill_halo_front(const Chunk_3D_Grid& _neighbor)
     L_ASSERT(_neighbor.grid_size() == size);
     unsigned int last_coord = size + 1;
 
-    for(unsigned int x = 0; x < size; ++x)
+    for(unsigned int x = 1; x < size + 1; ++x)
     {
-        for(unsigned int y = 0; y < size; ++y)
+        for(unsigned int y = 1; y < size + 1; ++y)
         {
-            m_grid.data(x + 1, y + 1, last_coord) = _neighbor.value_at(x, y, 0);
+            m_grid.data(x, y, last_coord) = _neighbor.value_at(x - 1, y - 1, 0);
         }
     }
 }

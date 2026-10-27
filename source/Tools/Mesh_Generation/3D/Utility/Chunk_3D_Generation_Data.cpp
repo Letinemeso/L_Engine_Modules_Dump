@@ -62,12 +62,12 @@ void Chunk_3D_Generation_Data::operator=(Chunk_3D_Generation_Data&& _from)
 void Chunk_3D_Generation_Data::M_append_quad(const glm::vec3& _point_0, const glm::vec3& _point_1, const glm::vec3& _point_2, const glm::vec3& _point_3)
 {
     m_points.push(_point_3);
-    m_points.push(_point_0);
     m_points.push(_point_2);
+    m_points.push(_point_0);
 
     m_points.push(_point_2);
-    m_points.push(_point_0);
     m_points.push(_point_1);
+    m_points.push(_point_0);
 }
 
 void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords)
@@ -76,7 +76,7 @@ void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbo
     int y = _coords.y();
     int z = _coords.z();
 
-    if(m_grid.value_at(x, y, z) == 0)
+    if(m_grid.value_at(x, y, z) != 0)
         return;
 
     glm::vec3 center = m_voxel->offset() + glm::vec3(
@@ -108,17 +108,17 @@ void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbo
     /* 6 */ glm::vec3 left_up_far = center +     glm::vec3(-m_cell_size_halved,  m_cell_size_halved,  m_cell_size_halved);
     /* 7 */ glm::vec3 right_up_far = center +    glm::vec3( m_cell_size_halved,  m_cell_size_halved,  m_cell_size_halved);
 
-    if(m_grid.value_at(x - 1, y, z) == 0)
+    if(m_grid.value_at(x - 1, y, z) != 0)
         M_append_quad(left_down_far, left_up_far, left_up_near, left_down_near);
-    if(m_grid.value_at(x + 1, y, z) == 0)
+    if(m_grid.value_at(x + 1, y, z) != 0)
         M_append_quad(right_down_near, right_up_near, right_up_far, right_down_far);
-    if(m_grid.value_at(x, y - 1, z) == 0)
+    if(m_grid.value_at(x, y - 1, z) != 0)
         M_append_quad(right_down_near, right_down_far, left_down_far, left_down_near);
-    if(m_grid.value_at(x, y + 1, z) == 0)
+    if(m_grid.value_at(x, y + 1, z) != 0)
         M_append_quad(right_up_far, right_up_near, left_up_near, left_up_far);
-    if(m_grid.value_at(x, y, z - 1) == 0)
+    if(m_grid.value_at(x, y, z - 1) != 0)
         M_append_quad(left_down_near, left_up_near, right_up_near, right_down_near);
-    if(m_grid.value_at(x, y, z + 1) == 0)
+    if(m_grid.value_at(x, y, z + 1) != 0)
         M_append_quad(right_up_far, left_up_far, left_down_far, right_down_far);
 }
 
