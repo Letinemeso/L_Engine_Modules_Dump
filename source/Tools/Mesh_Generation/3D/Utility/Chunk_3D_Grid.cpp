@@ -129,7 +129,7 @@ void Chunk_3D_Grid::construct_grid(const Voxel_3D& _from, unsigned int _max_dept
 {
     L_ASSERT(_from.depth() == 0);
 
-    m_grid.fill(1);
+    m_grid.fill(_default_value);
 
     m_max_depth = _max_depth;
 
@@ -159,7 +159,7 @@ void Chunk_3D_Grid::fill_halo_right(const Chunk_3D_Grid& _neighbor)
 {
     unsigned int size = grid_size();
     L_ASSERT(_neighbor.grid_size() == size);
-    unsigned int last_coord = size + 1;
+    unsigned int last_coord = m_grid.size_x() - 1;
 
     for(unsigned int y = 1; y < size + 1; ++y)
     {
@@ -189,7 +189,7 @@ void Chunk_3D_Grid::fill_halo_top(const Chunk_3D_Grid& _neighbor)
 {
     unsigned int size = grid_size();
     L_ASSERT(_neighbor.grid_size() == size);
-    unsigned int last_coord = size + 1;
+    unsigned int last_coord = m_grid.size_y() - 1;
 
     for(unsigned int x = 1; x < size + 1; ++x)
     {
@@ -219,7 +219,7 @@ void Chunk_3D_Grid::fill_halo_front(const Chunk_3D_Grid& _neighbor)
 {
     unsigned int size = grid_size();
     L_ASSERT(_neighbor.grid_size() == size);
-    unsigned int last_coord = size + 1;
+    unsigned int last_coord = m_grid.size_z() - 1;
 
     for(unsigned int x = 1; x < size + 1; ++x)
     {

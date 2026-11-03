@@ -49,7 +49,7 @@ namespace LMD
 
     private:
         void M_append_quad(const glm::vec3& _point_0, const glm::vec3& _point_1, const glm::vec3& _point_2, const glm::vec3& _point_3);
-        void M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords);
+        void M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Signed_Coordinates& _coords);
 
         void M_fill_grid_halo(const Neighbors_Data& _neighbors);
 

@@ -70,7 +70,7 @@ void Chunk_3D_Generation_Data::M_append_quad(const glm::vec3& _point_0, const gl
     m_points.push(_point_0);
 }
 
-void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Coordinates& _coords)
+void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Signed_Coordinates& _coords)
 {
     int x = _coords.x();
     int y = _coords.y();
@@ -156,7 +156,7 @@ void Chunk_3D_Generation_Data::extract_points(const Neighbors_Data& _neighbors)
 
     M_fill_grid_halo(_neighbors);
 
-    LST::Coordinates coords;
+    LST::Signed_Coordinates coords;
     for(coords.z() = 0; coords.z() < m_grid.grid_size(); ++coords.z())
     {
         for(coords.y() = 0; coords.y() < m_grid.grid_size(); ++coords.y())
