@@ -17,15 +17,6 @@ namespace LMD
         {
             const Chunk_3D_Generation_Data* data[3][3][3] = {{{nullptr}}};
         };
-        struct Neighboring_Cells_Data
-        {
-            unsigned int values[3][3][3] = {{{0}}};
-        };
-        struct Neighbor_Cell_Location
-        {
-            const Chunk_3D_Generation_Data* chunk = nullptr;
-            LST::Coordinates coordinates;
-        };
 
     private:
         const Voxel_3D* m_voxel = nullptr;
@@ -49,7 +40,7 @@ namespace LMD
 
     private:
         void M_append_quad(const glm::vec3& _point_0, const glm::vec3& _point_1, const glm::vec3& _point_2, const glm::vec3& _point_3);
-        void M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Signed_Coordinates& _coords);
+        void M_append_cell_data(const Neighbors_Data& _neighbors, int _x, int _y, int _z);
 
         void M_fill_grid_halo(const Neighbors_Data& _neighbors);
 

@@ -70,19 +70,15 @@ void Chunk_3D_Generation_Data::M_append_quad(const glm::vec3& _point_0, const gl
     m_points.push(_point_0);
 }
 
-void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbors, const LST::Signed_Coordinates& _coords)
+void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbors, int _x, int _y, int _z)
 {
-    int x = _coords.x();
-    int y = _coords.y();
-    int z = _coords.z();
-
-    if(m_grid.value_at(x, y, z) != 0)
+    if(m_grid.value_at(_x, _y, _z) != 0)
         return;
 
     glm::vec3 center = m_voxel->offset() + glm::vec3(
-                                                     (float)_coords.x() * m_cell_size,
-                                                     (float)_coords.y() * m_cell_size,
-                                                     (float)_coords.z() * m_cell_size
+                                                     (float)_x * m_cell_size,
+                                                     (float)_y * m_cell_size,
+                                                     (float)_z * m_cell_size
                                                     );
 
     /*
@@ -108,17 +104,17 @@ void Chunk_3D_Generation_Data::M_append_cell_data(const Neighbors_Data& _neighbo
     /* 6 */ glm::vec3 left_up_far = center +     glm::vec3(-m_cell_size_halved,  m_cell_size_halved,  m_cell_size_halved);
     /* 7 */ glm::vec3 right_up_far = center +    glm::vec3( m_cell_size_halved,  m_cell_size_halved,  m_cell_size_halved);
 
-    if(m_grid.value_at(x - 1, y, z) != 0)
+    if(m_grid.value_at(_x - 1, _y, _z) != 0)
         M_append_quad(left_down_far, left_up_far, left_up_near, left_down_near);
-    if(m_grid.value_at(x + 1, y, z) != 0)
+    if(m_grid.value_at(_x + 1, _y, _z) != 0)
         M_append_quad(right_down_near, right_up_near, right_up_far, right_down_far);
-    if(m_grid.value_at(x, y - 1, z) != 0)
+    if(m_grid.value_at(_x, _y - 1, _z) != 0)
         M_append_quad(right_down_near, right_down_far, left_down_far, left_down_near);
-    if(m_grid.value_at(x, y + 1, z) != 0)
+    if(m_grid.value_at(_x, _y + 1, _z) != 0)
         M_append_quad(right_up_far, right_up_near, left_up_near, left_up_far);
-    if(m_grid.value_at(x, y, z - 1) != 0)
+    if(m_grid.value_at(_x, _y, _z - 1) != 0)
         M_append_quad(left_down_near, left_up_near, right_up_near, right_down_near);
-    if(m_grid.value_at(x, y, z + 1) != 0)
+    if(m_grid.value_at(_x, _y, _z + 1) != 0)
         M_append_quad(right_up_far, left_up_far, left_down_far, right_down_far);
 }
 
@@ -156,14 +152,13 @@ void Chunk_3D_Generation_Data::extract_points(const Neighbors_Data& _neighbors)
 
     M_fill_grid_halo(_neighbors);
 
-    LST::Signed_Coordinates coords;
-    for(coords.z() = 0; coords.z() < m_grid.grid_size(); ++coords.z())
+    for(int z = 0; z < m_grid.grid_size(); ++z)
     {
-        for(coords.y() = 0; coords.y() < m_grid.grid_size(); ++coords.y())
+        for(int y = 0; y < m_grid.grid_size(); ++y)
         {
-            for(coords.x() = 0; coords.x() < m_grid.grid_size(); ++coords.x())
+            for(int x = 0; x < m_grid.grid_size(); ++x)
             {
-                M_append_cell_data(_neighbors, coords);
+                M_append_cell_data(_neighbors, x, y, z);
             }
         }
     }

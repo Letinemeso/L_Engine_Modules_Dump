@@ -23,6 +23,9 @@ namespace LMD
         void operator=(const Chunk_3D_Grid& _other);
         void operator=(Chunk_3D_Grid&& _from);
 
+    public:
+        inline const LMD::Spatial_Grid_3D<unsigned int>& raw_grid() const { return m_grid; }
+
     private:
         unsigned int M_calculate_subvoxel_value(const Voxel_3D& _subvoxel) const;
         void M_fill_subvoxel_area(const Voxel_3D& _subvoxel, const LST::Coordinates& _offset, unsigned int _area_size);
