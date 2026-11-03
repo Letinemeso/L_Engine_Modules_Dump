@@ -129,12 +129,11 @@ void Chunk_3D_Grid::construct_grid(const Voxel_3D& _from, unsigned int _max_dept
 {
     L_ASSERT(_from.depth() == 0);
 
-    m_grid.fill(_default_value);
-
     m_max_depth = _max_depth;
 
     unsigned int grid_size = LST::Math::pow_ui(2, _max_depth);
     m_grid.resize(grid_size + 2, grid_size + 2, grid_size + 2);
+    m_grid.fill(_default_value);
 
     M_fill_subvoxel_area(_from, {1, 1, 1}, grid_size);
 }
