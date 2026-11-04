@@ -2,7 +2,9 @@
 
 #include <vec3.hpp>
 
+#include <Data_Structures/Vector.h>
 #include <Data_Structures/List.h>
+#include <Data_Structures/Conversions.h>
 
 
 namespace LMD
@@ -28,6 +30,7 @@ namespace LMD
         inline void set_interpolation_step_length(float _value) { m_interpolation_step_length = _value; }
         inline void set_tension(float _value) { L_ASSERT(_value >= 0.0f && _value <= 1.0f); m_tension = _value; }
         inline void add_point(const glm::vec3& _point) { m_points.push_back(_point); }
+        inline void set_points(const LDS::Vector<glm::vec3>& _points) { m_points = LDS::to_list(_points); }
         inline void set_points(const Points_List& _points) { m_points = _points; }
         inline void set_points(Points_List&& _points) { m_points = (Points_List&&)_points; }
         inline void clear_points() { m_points.clear(); }
