@@ -20,18 +20,14 @@ void Module_Container::add_module(LEti::Module* _module, bool _push_back)
     L_ASSERT(_module);
     L_DEBUG_FUNC_NOARG([&]()
     {
-        for(LDS::List<Module*>::Iterator it = m_modules.begin(); !it.end_reached(); ++it)
+        for(unsigned int i = 0; i < m_modules.size(); ++i)
         {
-            if(*it == _module)
-            {
-                L_ASSERT(false);
-                return;
-            }
+            L_ASSERT(m_modules[i] != _module);
         }
     });
 
     if(_push_back)
-        m_modules.push_back(_module);
+        m_modules.push(_module);
     else
         m_modules.push_front(_module);
 
@@ -47,36 +43,37 @@ void Module_Container::remove_module(LEti::Module* _module)
 {
     L_ASSERT(_module);
 
-    LDS::List<Module*>::Iterator it = m_modules.begin();
-    for(; !it.end_reached(); ++it)
+    unsigned int index = 0;
+    for(; index < m_modules.size(); ++index)
     {
-        if(*it == _module)
+        if(m_modules[index] == _module)
             break;
     }
 
-    L_ASSERT(!it.end_reached());
+    L_ASSERT(index < m_modules.size());
+
     _module->set_transformation_data(nullptr);
     _module->set_transformation_data_prev_state(nullptr);
     _module->set_parent_object(nullptr);
-    if(!it.end_reached())
-        m_modules.erase(it);
+
+    m_modules.pop(index);
 }
 
 void Module_Container::remove_all_modules()
 {
-    for(LDS::List<Module*>::Iterator it = m_modules.begin(); !it.end_reached(); ++it)
-        delete *it;
+    for(unsigned int i = 0; i < m_modules.size(); ++i)
+        delete m_modules[i];
 
-    m_modules.clear();
+    m_modules.mark_empty();
 }
 
 
 
 void Module_Container::M_on_parent_object_set()
 {
-    for(LDS::List<Module*>::Iterator it = m_modules.begin(); !it.end_reached(); ++it)
+    for(unsigned int i = 0; i < m_modules.size(); ++i)
     {
-        LEti::Module* module = *it;
+        LEti::Module* module = m_modules[i];
 
         module->set_transformation_data(transformation_data());
         module->set_transformation_data_prev_state(transformation_data_prev_state());
@@ -88,22 +85,14 @@ void Module_Container::M_on_parent_object_set()
 
 void Module_Container::update_prev_state()
 {
-    for(LDS::List<Module*>::Iterator it = m_modules.begin(); !it.end_reached(); ++it)
-    {
-        LEti::Module* module = *it;
-
-        module->update_prev_state();
-    }
+    for(unsigned int i = 0; i < m_modules.size(); ++i)
+        m_modules[i]->update_prev_state();
 }
 
 void Module_Container::update(float _dt)
 {
-    for(LDS::List<Module*>::Iterator it = m_modules.begin(); !it.end_reached(); ++it)
-    {
-        LEti::Module* module = *it;
-
-        module->update(_dt);
-    }
+    for(unsigned int i = 0; i < m_modules.size(); ++i)
+        m_modules[i]->update(_dt);
 }
 
 

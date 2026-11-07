@@ -15,7 +15,7 @@ namespace LMD
         INIT_VARIABLE(LMD::Module_Container, LEti::Module)
 
     private:
-        LEti::Object::Modules_List m_modules;
+        LEti::Object::Modules_Vec m_modules;
 
     public:
         Module_Container();
@@ -27,15 +27,15 @@ namespace LMD
         void remove_all_modules();
 
     public:
-        inline const LEti::Object::Modules_List& modules() const { return m_modules; }
+        inline const LEti::Object::Modules_Vec& modules() const { return m_modules; }
 
     public:
-        template<typename Module_Type>
-        void process_logic_for_modules_of_type(const LST::Function<void(Module_Type*)>& _logic);
-        template<typename Module_Type>
-        void process_logic_for_modules_of_type(const LST::Function<void(const Module_Type*)>& _logic) const;
-        template<typename Module_Type>
-        Module_Type* get_module_of_type(unsigned int _skip_amount = 0) const;
+        template<typename _Module_Type>
+        void process_logic_for_modules_of_type(const LST::Function<void(_Module_Type*)>& _logic);
+        template<typename _Module_Type>
+        void process_logic_for_modules_of_type(const LST::Function<void(const _Module_Type*)>& _logic) const;
+        template<typename _Module_Type>
+        _Module_Type* get_module_of_type(unsigned int _skip_amount = 0) const;
 
     protected:
         void M_on_parent_object_set() override;
@@ -46,14 +46,14 @@ namespace LMD
 
     };
 
-    template<typename Module_Type>
-    void Module_Container::process_logic_for_modules_of_type(const LST::Function<void(Module_Type*)>& _logic)
+    template<typename _Module_Type>
+    void Module_Container::process_logic_for_modules_of_type(const LST::Function<void(_Module_Type*)>& _logic)
     {
         L_ASSERT(_logic);
 
-        for(LEti::Object::Modules_List::Iterator module_it = m_modules.begin(); !module_it.end_reached(); ++module_it)
+        for(unsigned int i = 0; i < m_modules.size(); ++i)
         {
-            Module_Type* requested_type_module = LV::cast_variable<Module_Type>(*module_it);
+            _Module_Type* requested_type_module = LV::cast_variable<_Module_Type>(m_modules[i]);
             if(!requested_type_module)
                 continue;
 
@@ -61,14 +61,14 @@ namespace LMD
         }
     }
 
-    template<typename Module_Type>
-    void Module_Container::process_logic_for_modules_of_type(const LST::Function<void(const Module_Type*)>& _logic) const
+    template<typename _Module_Type>
+    void Module_Container::process_logic_for_modules_of_type(const LST::Function<void(const _Module_Type*)>& _logic) const
     {
         L_ASSERT(_logic);
 
-        for(LEti::Object::Modules_List::Const_Iterator module_it = m_modules.begin(); !module_it.end_reached(); ++module_it)
+        for(unsigned int i = 0; i < m_modules.size(); ++i)
         {
-            const Module_Type* requested_type_module = LV::cast_variable<Module_Type>(*module_it);
+            const _Module_Type* requested_type_module = LV::cast_variable<_Module_Type>(m_modules[i]);
             if(!requested_type_module)
                 continue;
 
@@ -76,12 +76,12 @@ namespace LMD
         }
     }
 
-    template<typename Module_Type>
-    Module_Type* Module_Container::get_module_of_type(unsigned int _skip_amount) const
+    template<typename _Module_Type>
+    _Module_Type* Module_Container::get_module_of_type(unsigned int _skip_amount) const
     {
-        for(LEti::Object::Modules_List::Const_Iterator module_it = m_modules.begin(); !module_it.end_reached(); ++module_it)
+        for(unsigned int i = 0; i < m_modules.size(); ++i)
         {
-            Module_Type* requested_type_module = LV::cast_variable<Module_Type>(*module_it);
+            _Module_Type* requested_type_module = LV::cast_variable<_Module_Type>(m_modules[i]);
             if(!requested_type_module)
                 continue;
 
