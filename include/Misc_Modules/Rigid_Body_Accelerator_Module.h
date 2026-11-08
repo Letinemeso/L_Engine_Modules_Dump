@@ -27,6 +27,7 @@ namespace LMD
         inline void set_acceleration(const glm::vec3& _value) { m_acceleration = _value; }
         inline void set_rotate_with_object(bool _value) { m_rotate_with_object = _value; }
 
+        inline bool enabled() const { return m_enabled; }
         inline const glm::vec3& acceleration() const { return m_acceleration; }
         inline bool rotating_with_object() const { return m_rotate_with_object; }
 
