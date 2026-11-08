@@ -80,7 +80,7 @@ namespace LMD
         Prep_Data M_calculate_dvs_prep_data(const LPhys::Physics_Module* _dynamic_pm,                   //  dynamic vs static
                                             const LPhys::Physics_Module* _static_pm,
                                             const glm::vec3& _normal,
-                                            const LDS::Vector<glm::vec3>& _contact_points);
+                                            const LDS::Array<glm::vec3, 4>& _contact_points);
 
         void M_apply_old_dvs_data(Physics_Module__Rigid_Body* _dynamic_rb, Prep_Data& _prep_data, const glm::vec3& _normal);
 

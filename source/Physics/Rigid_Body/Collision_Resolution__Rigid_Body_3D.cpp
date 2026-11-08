@@ -177,7 +177,7 @@ Collision_Resolution__Rigid_Body_3D::WS_Contact_Data* Collision_Resolution__Rigi
 Collision_Resolution__Rigid_Body_3D::Prep_Data Collision_Resolution__Rigid_Body_3D::M_calculate_dvs_prep_data(const LPhys::Physics_Module* _dynamic_pm,
                                                                                                               const LPhys::Physics_Module* _static_pm,
                                                                                                               const glm::vec3& _normal,
-                                                                                                              const LDS::Vector<glm::vec3>& _contact_points)
+                                                                                                              const LDS::Array<glm::vec3, 4>& _contact_points)
 {
     Prep_Data result;
 
