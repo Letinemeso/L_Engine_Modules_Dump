@@ -12,5 +12,8 @@ namespace Rigid_Body_Utility
 
     glm::vec3 calculate_point_velocity(const Physics_Module__Rigid_Body& _rb, const glm::vec3& _radius_vector);
 
+    void apply_force_in_point(Physics_Module__Rigid_Body& _rb, const glm::vec3& _point, const glm::vec3& _force);
+    void apply_force_in_point(Physics_Module__Rigid_Body& _rb, const glm::vec3& _point, const glm::vec3& _direction, float _force);
+
 }
 }
