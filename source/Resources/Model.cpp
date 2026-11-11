@@ -1,7 +1,7 @@
 #include <Resources/Model.h>
 
+#include <fstream>
 #include <sstream>
-#include <regex>
 
 #include <vec2.hpp>
 #include <vec3.hpp>
