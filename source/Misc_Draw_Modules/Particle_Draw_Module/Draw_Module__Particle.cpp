@@ -31,6 +31,8 @@ void Draw_Module__Particle::add_initialization_compute_uniform_setter(LR::Unifor
 
     if(m_initialization_shader)
         _ptr->init(m_initialization_shader);
+
+    _ptr->set_parent_draw_module(this);
 }
 
 
