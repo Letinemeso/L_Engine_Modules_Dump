@@ -63,11 +63,6 @@ unsigned int Graphics_Component__Particles_Amount_Reader::vertices_amount() cons
     return 0;
 }
 
-unsigned int Graphics_Component__Particles_Amount_Reader::required_compute_shader_invocations() const
-{
-    return 0;
-}
-
 void Graphics_Component__Particles_Amount_Reader::setup_buffer() const
 {
 

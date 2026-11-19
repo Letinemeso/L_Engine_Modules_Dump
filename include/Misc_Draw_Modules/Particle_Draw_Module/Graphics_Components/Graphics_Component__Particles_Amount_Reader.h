@@ -42,7 +42,6 @@ namespace LMD
     public:
         unsigned int layout_index() const override;
         unsigned int vertices_amount() const override;
-        unsigned int required_compute_shader_invocations() const override;
         void setup_buffer() const override;
         void update(float _dt) override;
         void prepare_to_draw() const override;

@@ -107,6 +107,16 @@ void Draw_Module__Particle::update(float _dt)
 
 
 
+ON_VALUES_ASSIGNED_IMPLEMENTATION(Draw_Module_Stub__Particle)
+{
+    if(required_compute_shader_invocations == 0)
+        required_compute_shader_invocations = max_particles_amount;
+
+    PARENT_ON_VALUES_ASSIGNED;
+}
+
+
+
 BUILDER_STUB_DEFAULT_CONSTRUCTION_FUNC(Draw_Module_Stub__Particle)
 
 BUILDER_STUB_INITIALIZATION_FUNC(Draw_Module_Stub__Particle)

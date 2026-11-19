@@ -94,6 +94,8 @@ namespace LMD
         ADD_CHILDS_LIST("Initialization_Compute_Uniform_Setter_Stub__*", &initialization_compute_uniform_setter_stubs)
         CHILDS_LISTS_END
 
+        OVERRIDE_ON_VALUES_ASSIGNED
+
     public:
         unsigned int max_particles_amount = 0;
         float emission_frequency = 0.0f;
